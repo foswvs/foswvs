@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Captive Portal</title>
+<style>
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #333333;
+  background-color: #fff; 
+}
+.main{margin-top:10px;text-align:center;}
+button{background:#22aa22;border:1px solid #55bb55;color:#fff;cursor:pointer;font-size:26px;padding:10px 50px;text-transform:uppercase}
+button:hover{background:#11bb11;}
+h1{text-align:center;}
+h3{text-align:center;}
+hr{border:0;border-top:1px solid #ddd;}
+table{margin:auto;width:360px;}
+table td{text-align:left;}
+table th{text-align:left;}
+</style>
+</head>
+<body>
+
+<div class="main">
+  <h1>CAPTIVE PORTAL</h1>
+  <button id="insertCoin">Insert Coin</button>
+  <br><br>
+  <hr>
+  <h3>DISCONNECTED</h3>
+  <div>Credits: <span id="credits">0/0MB</span></div>
+  <div>Internet: <span id="stat">Online</span> <span id="ping">0ms</span></div>
+  <div>MAC Address: <span id="mac_addr">XX:XX:XX:XX:XX:XX</span></div>
+</div>
+
+<script src="./app.js"></script>
+</body>
+</html>

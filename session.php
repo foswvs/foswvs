@@ -1,11 +1,11 @@
 <?php
 ini_set('display_errors', 1);
 
-require './client.php';
+require './device.php';
 
 $ip_addr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
 
-$client = new Client($ip_addr);
+$device = new Device($ip_addr);
 
 $data = [];
 
@@ -14,10 +14,10 @@ if( isset($_GET['do']) ) {
 
   switch($action) {
     case "topup":
-      $client->pay();
+      $device->topup();
       break;
     case "cancel":
-      $client->cancel();
+      $device->deactivate();
       break;
     default:
       exit('topup/cancel');
@@ -25,13 +25,14 @@ if( isset($_GET['do']) ) {
 }
 else {
   $data = [
-    "ip_addr" => $ip_addr,
-    "mac_addr" => $client->mac_addr,
+    "ip_addr" => $device->ip_addr,
+    "mac_addr" => $device->mac_addr,
+    "device_id" => $device->device_id,
+    "insert_coin" => $device->state(),
+    "piso_count" => $device->piso_count,
+    "mb_credit" => $device->mb_credit,
+    "mb_used" => $device->mb_used,
     "ping" => 1,
-    "coins" => $client->coins,
-    "mb_credit" => $client->mb_credit,
-    "mb_used" => $client->mb_used,
-    "coinslot_state" => $client->coinslot_state()
    ];
 }
 

@@ -5,7 +5,7 @@ var button = document.getElementById('insertCoin'),
     mac_addr = document.getElementById('mac_addr');
 
 setInterval(() => {
-  fetch('/session.php')
+  fetch('/api.php')
   .then((res) => res.json() )
   .then((wifi) => {
     credits.innerText = `${wifi.mb_used} / ${wifi.mb_credit}MB`;
@@ -26,11 +26,11 @@ button.addEventListener('click', function(e) {
   btn = e.target;
 
   if( btn.innerText.toLowerCase() !== 'cancel' ) {
-    fetch('/session.php?do=topup'); btnCancelState();
+    fetch('/api.php?do=topup'); btnCancelState();
 
   }
   else {
-    fetch('/session.php?do=cancel'); btnInsertState();
+    fetch('/api.php?do=topup_cancel'); btnInsertState();
   }
 });
 

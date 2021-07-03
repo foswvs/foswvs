@@ -50,13 +50,13 @@ class Session {
     while($this->timer < $this->wait) {
       $this->coinslot->count();
 
-      if( !$this->coinslot->relay_state() ) {
-        break;
-      }
-
       if( $this->coinslot->piso_count > 0 ) {
         $this->mb_credit = $this->coinslot->piso_count * $this->mb_per_piso;
         $this->db->set_piso_count();
+      }
+
+      if( !$this->coinslot->relay_state() ) {
+        break;
       }
 
       $this->timer = time() - $this->start;

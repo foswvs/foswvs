@@ -7,7 +7,10 @@ class Database extends SQLite3 {
   public $mac_addr;
 
   function __construct() {
-    $this->open('./log/foswvs.db');
+    $dbf = __DIR__ . '/foswvs.db';
+
+    $this->open($dbf);
+    $this->exec("PRAGMA journal_mode=WAL;");
   }
 
   public function create_table() {

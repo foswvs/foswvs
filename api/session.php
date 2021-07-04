@@ -12,9 +12,14 @@ class Session {
 
   public $piso_count = 0;
 
+  public $total_mb_used = 0;
+  public $total_mb_credit = 0;
+
   public $wait = 20;
   public $timer = 0;
   public $start = 0;
+
+  private $COINLOG = __DIR__ . "/coin.log";
 
   function __construct($ip) {
     $this->db = new Database();
@@ -23,7 +28,6 @@ class Session {
 
     $this->coinslot = new Coinslot();
 
-    $this->db->ip_addr = $this->device->ip;
     $this->db->mac_addr = $this->device->mac;
 
     if( !$this->db->get_device_id() ) {
@@ -32,15 +36,23 @@ class Session {
 
     $this->device->id = $this->db->devid;
 
+    $this->id = $this->db->get_device_session();
+
     $this->mb_credit = $this->db->get_mb_credit();
     $this->mb_used = $this->db->get_mb_used();
 
-    $this->id = $this->db->get_device_session();
+    $this->total_mb_credit = $this->db->get_total_mb_credit();
+    $this->total_mb_used = $this->db->get_total_mb_used();
 
-    $this->piso_count = $this->db->get_piso_count();
+    $data = $this->readlog();
+
+    $this->mb_credit = $data['mb_credit'];
+    $this->piso_count = $data['piso'];
   }
 
   function topup() {
+    $flog = fopen($this->COINLOG,'w');
+
     $this->start = time();
 
     $this->coinslot->activate();
@@ -52,7 +64,8 @@ class Session {
 
       if( $this->coinslot->piso_count > 0 ) {
         $this->mb_credit = $this->coinslot->piso_count * $this->mb_per_piso;
-        $this->db->set_piso_count();
+        fseek($flog,0);
+        fwrite($flog, json_encode(['mac' => $this->device->mac, 'piso' => $this->coinslot->piso_count,'mb_credit' => $this->mb_credit]));
       }
 
       if( !$this->coinslot->relay_state() ) {
@@ -66,5 +79,24 @@ class Session {
     $this->db->set_device_session();
 
     $this->coinslot->deactivate();
+
+    fclose($flog);
+  }
+
+  function readlog() {
+    $flog = fopen($this->COINLOG,'r');
+
+    $data = fgets($flog);
+
+    fclose($flog);
+
+    $data = json_decode($data, true);
+
+    if( $data['mac'] !== $this->device->mac ) {
+      $data['piso'] = 0;
+      $data['mb_credit'] = 0;
+    }
+
+    return $data;
   }
 }

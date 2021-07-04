@@ -6,10 +6,10 @@ require __DIR__ . '/api/autoload.php';
 class Initialize extends Database {
   function __construct() {
     parent::__construct();
-    parent::create_table();
+
+    echo "Database created!" . PHP_EOL;
   }
 }
 
 new Initialize();
 
-echo "Database created!" . PHP_EOL;

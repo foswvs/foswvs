@@ -32,7 +32,7 @@ class Coinslot {
   }
 
   public function count() {
-    if( shell_exec("gpio read " . self::COIN) === 1 ) {
+    if( shell_exec("gpio read " . self::COIN) == 1 ) {
       $this->piso_count++; usleep(17000);
     }
   }

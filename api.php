@@ -24,6 +24,7 @@ if( isset($_GET['do']) ) {
 }
 else {
   $data = [
+    "initr" => $sess->initr,
     "ip_addr" => $sess->device->ip,
     "mac_addr" => $sess->device->mac,
     "device_id" => $sess->device->id,
@@ -33,7 +34,7 @@ else {
     "mb_used" => $sess->mb_used,
     "total_mb_credit" => $sess->total_mb_credit,
     "total_mb_used" => $sess->total_mb_used,
-    "ping" => $sess->device->ping,
+    "ping" => 1, //$sess->device->ping,
     "sid" => $sess->id
    ];
 }

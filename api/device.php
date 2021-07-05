@@ -16,6 +16,6 @@ class Device {
   }
 
   public function ping() {
-   return exec("ping 1.1.1.1 -c1 -W2|grep -oP '/(\d+\.\d+)/'|grep -oP '\d+\.\d+'");
+   return exec("ping 8.8.8.8 -c1|grep -oP '/(\d+\.\d+)/'|grep -oP '\d+\.\d+'");
   }
 }

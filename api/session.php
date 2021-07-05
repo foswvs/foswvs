@@ -19,6 +19,8 @@ class Session {
   public $timer = 0;
   public $start = 0;
 
+  public $initr = true;
+
   private $COINLOG = __DIR__ . "/coin.log";
 
   function __construct($ip) {
@@ -46,6 +48,12 @@ class Session {
 
     $data = $this->readlog();
 
+    if( $this->coinslot->relay_state() ) {
+      if( $this->device->mac != $data['mac'] ) {
+        $this->initr = false;
+      }
+    }
+
     $this->mb_credit = $data['mb_credit'];
     $this->piso_count = $data['piso'];
   }
@@ -53,11 +61,12 @@ class Session {
   function topup() {
     $flog = fopen($this->COINLOG,'w');
 
+    fseek($flog,0);
+    fwrite($flog, json_encode(['mac' => $this->device->mac, 'piso' => $this->coinslot->piso_count,'mb_credit' => $this->mb_credit]));
+
     $this->start = time();
 
     $this->coinslot->activate();
-
-    $this->db->add_session();
 
     while($this->timer < $this->wait) {
       $this->coinslot->count();
@@ -75,10 +84,15 @@ class Session {
       $this->timer = time() - $this->start;
     }
 
-    $this->db->set_mb_credit($this->mb_credit);
-    $this->db->set_device_session();
+    if( $this->coinslot->relay_state() ) {
+      $this->coinslot->deactivate();
+    }
 
-    $this->coinslot->deactivate();
+    if( $this->mb_credit ) {
+      $this->db->add_session();
+      $this->db->set_mb_credit($this->mb_credit);
+      $this->db->set_device_session();
+    }
 
     fclose($flog);
   }

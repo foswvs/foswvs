@@ -15,15 +15,15 @@ class Iptables {
   }
 
   function add_client() {
-    while( !exec("sudo iptables -nL FORWARD | grep '{$this->mac}'") ) {
-      exec("sudo iptables -t nat -I PREROUTING 1 -s {$this->ip} -j ACCEPT");
+    while( shell_exec("sudo iptables -nL FORWARD | grep '{$this->mac}'") == NULL) {
+      exec("sudo iptables -t nat -I PREROUTING -s {$this->ip} -j ACCEPT");
       exec("sudo iptables -I FORWARD -s {$this->ip} -j ACCEPT");
       exec("sudo iptables -I FORWARD -m mac --mac-source {$this->mac} -j ACCEPT");
     }
   }
 
   function rm_client() {
-    while( exec("sudo iptables -nL FORWARD | grep '{$this->mac}'") ) {
+    while( shell_exec("sudo iptables -nL FORWARD | grep '{$this->mac}'") ) {
       exec("sudo iptables -D FORWARD -s {$this->ip} -j ACCEPT");
       exec("sudo iptables -D FORWARD -m mac --mac-source {$this->mac} -j ACCEPT");
     }

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-watch -n1 sudo iptables -L FORWARD -vn
+watch -n1 sudo iptables -L FORWARD -vn --line-numbers

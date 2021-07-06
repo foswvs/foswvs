@@ -7,7 +7,7 @@ class Device {
 
   function __construct($client_ip) {
     $this->ip = $client_ip;
-    $this->mac = $this->get_mac();
+    $this->mac = strtoupper($this->get_mac());
     $this->ping = $this->ping();
   }
 

@@ -19,7 +19,7 @@ class Session {
   public $timer = 0;
   public $start = 0;
 
-  public $initr = false;
+  public $initr = true;
 
   private $COINLOG = __DIR__ . "/coin.log";
 
@@ -29,6 +29,7 @@ class Session {
     $this->device = new Device($ip);
 
     $this->coinslot = new Coinslot();
+
     $this->iptables = new Iptables($this->device->ip, $this->device->mac);
 
     $this->init_vars();
@@ -54,8 +55,8 @@ class Session {
     $data = $this->readlog();
 
     if( $this->coinslot->relay_state() ) {
-      if( isset($data['mac']) && $this->device->mac == $data['mac'] ) {
-        $this->initr = true;
+      if( isset($data['mac']) && $this->device->mac != $data['mac'] ) {
+        $this->initr = false;
       }
     }
 
@@ -86,20 +87,28 @@ class Session {
       $this->timer = time() - $this->start;
     }
 
-    if( $this->coinslot->relay_state() ) {
-      $this->coinslot->deactivate();
-    }
+    $this->coinslotOff();
 
+    $this->save_credit();
+
+    clearlog($flog);
+
+    fclose($flog);
+  }
+
+  function save_credit() {
     if( $this->mb_credit ) {
       $this->db->add_session();
       $this->db->set_mb_credit($this->mb_credit);
       $this->db->set_device_session();
       $this->iptables->add_client();
     }
+  }
 
-    clearlog($flog);
-
-    fclose($flog);
+  function coinslotOff() {
+    if( $this->coinslot->relay_state() ) {
+      $this->coinslot->deactivate();
+    }
   }
 
   function readlog() {

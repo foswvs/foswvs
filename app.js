@@ -13,7 +13,7 @@ setInterval(() => {
   .then((wifi) => {
     initr = wifi.initr;
     credits.innerText = `${wifi.total_mb_used} / ${wifi.total_mb_credit}MB`;
-    mac_addr.innerText = wifi.mac_addr.toUpperCase();
+    mac_addr.innerText = wifi.mac_addr;
     ping.innerText = `${Math.floor(wifi.ping)}ms`;
 
     if( wifi.ping ) {
@@ -41,7 +41,7 @@ button.addEventListener('click', function(e) {
   btn = e.target;
 
   if( !initr ) {
-    alert("please wait, someone is paying.");
+    alert("Coinslot is not ready.");
     return false;
   }
 

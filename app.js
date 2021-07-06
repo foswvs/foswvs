@@ -1,4 +1,4 @@
-var initr = true,
+var initr = false,
     stat = document.getElementById('stat'),
     ping = document.getElementById('ping'),
     button = document.getElementById('insert'),

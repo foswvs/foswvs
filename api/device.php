@@ -12,7 +12,7 @@ class Device {
   }
 
   public function get_mac() {
-    return exec("arp {$this->ip} | grep -o '..:..:..:..:..:..'");
+    return exec("arp -a {$this->ip} | grep -o '..:..:..:..:..:..'");
   }
 
   public function ping() {

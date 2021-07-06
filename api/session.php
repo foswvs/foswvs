@@ -19,7 +19,7 @@ class Session {
   public $timer = 0;
   public $start = 0;
 
-  public $initr = true;
+  public $initr = false;
 
   private $COINLOG = __DIR__ . "/coin.log";
 
@@ -29,7 +29,12 @@ class Session {
     $this->device = new Device($ip);
 
     $this->coinslot = new Coinslot();
+    $this->iptables = new Iptables($this->device->ip, $this->device->mac);
 
+    $this->init_vars();
+  }
+
+  function init_vars() {
     $this->db->mac_addr = $this->device->mac;
 
     if( !$this->db->get_device_id() ) {
@@ -49,8 +54,8 @@ class Session {
     $data = $this->readlog();
 
     if( $this->coinslot->relay_state() ) {
-      if( $this->device->mac != $data['mac'] ) {
-        $this->initr = false;
+      if( isset($data['mac']) && $this->device->mac == $data['mac'] ) {
+        $this->initr = true;
       }
     }
 
@@ -60,9 +65,6 @@ class Session {
 
   function topup() {
     $flog = fopen($this->COINLOG,'w');
-
-    fseek($flog,0);
-    fwrite($flog, json_encode(['mac' => $this->device->mac, 'piso' => $this->coinslot->piso_count,'mb_credit' => $this->mb_credit]));
 
     $this->start = time();
 
@@ -92,7 +94,10 @@ class Session {
       $this->db->add_session();
       $this->db->set_mb_credit($this->mb_credit);
       $this->db->set_device_session();
+      $this->iptables->add_client();
     }
+
+    clearlog($flog);
 
     fclose($flog);
   }
@@ -112,5 +117,10 @@ class Session {
     }
 
     return $data;
+  }
+
+  function clearlog($flog) {
+    fseek($flog,0);
+    fwrite($flog, json_encode(['mac' => '00:00:00:00:00:00', 'piso' => 0,'mb_credit' => 0]));
   }
 }

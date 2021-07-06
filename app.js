@@ -32,7 +32,6 @@ setInterval(() => {
       }
     } else {
       btnInsertState();
-      mb_credit.style.display = 'none';
     }
   });
 },3000);
@@ -61,6 +60,7 @@ function btnInsertState() {
     button.style.borderColor = '#11aa11';
     button.style.backgroundColor = '#22aa22';
     waiting.style.display = 'none';
+    mb_credit.style.display = 'none';
   }
 }
 

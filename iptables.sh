@@ -1,4 +1,7 @@
 #!/bin/bash
+# sudo cp iptables.sh /etc/init.d/iptables-foswvs
+# sudo update-rc.d iptables-foswvs defaults
+
 sudo iptables -F
 sudo iptables -t nat -F
 

@@ -15,20 +15,32 @@ class Iptables {
   }
 
   function add_client() {
-    while( shell_exec("sudo iptables -nL FORWARD | grep '{$this->mac}'") == NULL) {
-      exec("sudo iptables -t nat -I PREROUTING -s {$this->ip} -j ACCEPT");
-      exec("sudo iptables -I FORWARD -s {$this->ip} -j ACCEPT");
-      exec("sudo iptables -I FORWARD -m mac --mac-source {$this->mac} -j ACCEPT");
+    while( shell_exec("sudo iptables -nL FORWARD | grep '{$this->ip}'") == NULL ) {
+      //exec("sudo iptables -t nat -I PREROUTING -s {$this->ip} -j ACCEPT");
+      exec("sudo iptables -I FORWARD -d {$this->ip} -j ACCEPT");
+      //exec("sudo iptables -I FORWARD -m mac --mac-source {$this->mac} -j ACCEPT");
     }
   }
 
   function rm_client() {
-    while( shell_exec("sudo iptables -nL FORWARD | grep '{$this->mac}'") ) {
-      exec("sudo iptables -D FORWARD -s {$this->ip} -j ACCEPT");
-      exec("sudo iptables -D FORWARD -m mac --mac-source {$this->mac} -j ACCEPT");
+    while( shell_exec("sudo iptables -nL FORWARD | grep '{$this->ip}'") ) {
+      //exec("sudo iptables -t nat -D PREROUTING -s {$this->ip} -j ACCEPT");
+      exec("sudo iptables -D FORWARD -d {$this->ip} -j ACCEPT");
+      //exec("sudo iptables -D FORWARD -m mac --mac-source {$this->mac} -j ACCEPT");
     }
   }
 
+  function bytes_used() {
+    return exec("sudo iptables -xvnL FORWARD | grep {$this->ip} | awk '{print $2}'");
+  }
+
+  function connected() {
+    if( exec("sudo iptables -C FORWARD -d {$this->ip} -j ACCEPT; echo $?") ) {
+      return false;
+    }
+
+    return true;
+  }
   function init() {
     exec("sudo iptables -A FORWARD -s 10.0.0.0/20 -p tcp --dport 53 -j ACCEPT");
     exec("sudo iptables -A FORWARD -s 10.0.0.0/20 -p udp --dport 53 -j ACCEPT");

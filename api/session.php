@@ -5,6 +5,7 @@ class Session {
   public $db;
   public $device;
   public $coinslot;
+  public $iptables;
 
   public $mb_used = 0;
   public $mb_credit = 0;
@@ -20,6 +21,8 @@ class Session {
   public $start = 0;
 
   public $initr = true;
+
+  public $connected;
 
   private $COINLOG = __DIR__ . "/coin.log";
 
@@ -62,6 +65,8 @@ class Session {
 
     $this->mb_credit = $data['mb_credit'];
     $this->piso_count = $data['piso'];
+
+    $this->connected = $this->iptables->connected();
   }
 
   function topup() {

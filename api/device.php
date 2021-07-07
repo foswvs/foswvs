@@ -8,14 +8,13 @@ class Device {
   function __construct($client_ip) {
     $this->ip = $client_ip;
     $this->mac = strtoupper($this->get_mac());
-    $this->ping = $this->ping();
   }
 
   public function get_mac() {
-    return exec("arp -a {$this->ip} | grep -o '..:..:..:..:..:..'");
+    return exec("arp -an {$this->ip} | grep -o '..:..:..:..:..:..'");
   }
 
   public function ping() {
-   return exec("ping 8.8.8.8 -c1|grep -oP '/(\d+\.\d+)/'|grep -oP '\d+\.\d+'");
+   return exec("ping 8.8.8.8 -c1 -W1|grep -oP '/(\d+\.\d+)/'|grep -oP '\d+\.\d+'");
   }
 }

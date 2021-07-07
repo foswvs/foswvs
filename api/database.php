@@ -71,8 +71,8 @@ class Database extends SQLite3 {
     return $row[0] ? $row[0] : 0;
   }
 
-  public function set_mb_credit($mb) {
-    $this->exec("UPDATE session SET mb_credit={$mb} WHERE id={$this->sid}");
+  public function set_mb_credit($bytes) {
+    $this->exec("UPDATE session SET mb_credit={$bytes} WHERE id={$this->sid}");
   }
 
   public function get_mb_credit() {

@@ -5,52 +5,21 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Captive Portal</title>
-<style>
-@font-face {
-  font-family: 'Otomanopee One';
-  src: url('/fonts/OtomanopeeOne-Regular.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Orbitron';
-  src: url('/fonts/Orbitron-VariableFont_wght.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Zen Tokyo Zoo';
-  src: url('/fonts/ZenTokyoZoo-Regular.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Tourney';
-  src: url('/fonts/Tourney-VariableFont_wdth,wght.ttf') format('truetype');
-}
-@font-face {
-  font-family: 'Alfa Slab One';
-  src: url('/fonts/AlfaSlabOne-Regular.ttf') format('truetype');
-}
-body{font-family: arial, san-serif;font-size: 14px;line-height:1.42857143;color:#333333;background-color #fff;}
-#waiting{font-family: 'Otomanopee One', sans-serif;font-size:18px;display:none;}
-#insert{font-family: 'Orbitron', sans-serif;}
-#mb_credit{font-family: Tourney; font-size:48px;text-align:center;display:none;}
-.main{margin-top:10px;text-align:center;}
-button{background:#22aa22;border:1px solid #55bb55;color:#fff;cursor:pointer;font-size:26px;padding:10px 50px;text-transform:uppercase;}
-button:hover{background:#11bb11;}
-h1{text-align:center;font-family: 'Zen Tokyo Zoo', cursive;font-weight:400;font-size:36px;}
-h2{text-align:center;font-family: 'Alfa Slab One';}
-hr{border:0;border-top:1px solid #ddd;}
-</style>
+<link href="./app.css" rel="stylesheet"
 </head>
 <body>
 
 <div class="main">
-  <h1>CAPTIVE PORTAL</h1>
+  <h1 id="title">CAPTIVE PORTAL</h1>
   <p id="waiting">waiting for payment</p>
   <p id="mb_credit">0MB</p>
   <button id="insert">Insert Coin</button>
   <br><br>
   <hr>
-  <h2>DISCONNECTED</h2>
+  <h2 id="conn">DETECTING DEVICE</h2>
   <div>Data Usage: <span id="credits">0/0MB</span></div>
   <div>MAC Address: <span id="mac_addr">XX:XX:XX:XX:XX:XX</span></div>
-  <div>Internet: <span id="stat">Detecting...</span> <span id="ping">0ms</span></div>
+  <div>Internet: <span id="ping">Detecting</span></div>
 </div>
 
 <script src="./app.js"></script>

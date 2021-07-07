@@ -28,13 +28,14 @@ else {
     "ip_addr" => $sess->device->ip,
     "mac_addr" => $sess->device->mac,
     "device_id" => $sess->device->id,
+    "connected" => $sess->connected,
     "insert_coin" => $sess->coinslot->slot_state,
     "piso_count" => $sess->piso_count,
     "mb_credit" => $sess->mb_credit,
     "mb_used" => $sess->mb_used,
     "total_mb_credit" => $sess->total_mb_credit,
     "total_mb_used" => $sess->total_mb_used,
-    "ping" => rand(1,10), //$sess->device->ping,
+    "ping" => $sess->device->ping(),
     "sid" => $sess->id
    ];
 }

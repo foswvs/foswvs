@@ -14,3 +14,5 @@ sudo iptables -A FORWARD -s 10.0.0.0/20 -p tcp --dport 80 -d 10.0.14.22 -j ACCEP
 sudo iptables -P FORWARD DROP
 
 sudo iptables -t nat -A POSTROUTING -j MASQUERADE
+
+echo "iptables successfully setup!"

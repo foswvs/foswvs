@@ -1,11 +1,11 @@
 # file: /etc/network/interfaces auto lo
-iface lo inet loopback
-
+# eth0 is brought up at boot
 auto eth0
+
 iface eth0 inet dhcp
 
-auto eth1
+# eth1 is brought up whenever the network hardware is detected
+allow-hotplug eth1
+
 iface eth1 inet static
-address 10.0.0.1
-network 10.0.0.0	
-netmask 255.255.240.0
+address 10.0.0.1/20

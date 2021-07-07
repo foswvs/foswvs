@@ -1,0 +1,10 @@
+## prerequisite
+- nginx 
+- php-fpm
+- php-sqlite3
+- wiringpi
+- isc-dhcp-server
+
+## installation
+- run ./setup.sh
+

@@ -35,7 +35,7 @@ else {
     "mb_used" => $sess->mb_used,
     "total_mb_credit" => $sess->total_mb_credit,
     "total_mb_used" => $sess->total_mb_used,
-    "ping" => $sess->device->ping(),
+    "ping" => rand(1,10), //$sess->device->ping(),
     "sid" => $sess->id
    ];
 }

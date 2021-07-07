@@ -58,6 +58,9 @@ class Session {
     $data = $this->readlog();
 
     if( $this->coinslot->relay_state() ) {
+
+      if( !isset($data['mac']) ) $this->initr = false;
+
       if( isset($data['mac']) && $this->device->mac != $data['mac'] ) {
         $this->initr = false;
       }
@@ -71,6 +74,9 @@ class Session {
 
   function topup() {
     $flog = fopen($this->COINLOG,'w');
+
+    fseek($flog,0);
+    fwrite($flog, json_encode(['mac' => $this->device->mac, 'piso' => 0,'mb_credit' => 0]));
 
     $this->start = time();
 
@@ -95,8 +101,6 @@ class Session {
     $this->coinslotOff();
 
     $this->save_credit();
-
-    clearlog($flog);
 
     fclose($flog);
   }
@@ -131,10 +135,5 @@ class Session {
     }
 
     return $data;
-  }
-
-  function clearlog($flog) {
-    fseek($flog,0);
-    fwrite($flog, json_encode(['mac' => '00:00:00:00:00:00', 'piso' => 0,'mb_credit' => 0]));
   }
 }

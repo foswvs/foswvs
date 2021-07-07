@@ -8,7 +8,7 @@ button{background:#22aa22;border:1px solid #55bb55;color:#fff;cursor:pointer;fon
 button:hover{background:#11bb11;}
 hr{border:0;border-top:1px solid #ddd;}
 .main{margin-top:10px;text-align:center;}
-#conn{text-align:center;font-family: 'Alfa Slab One';text-transform:uppercase;}
+#conn{text-align:center;font-size:26px;font-family: 'Alfa Slab One';text-transform:uppercase;}
 #waiting{font-family: 'Otomanopee One', sans-serif;font-size:18px;display:none;}
 #insert{font-family: 'Orbitron', sans-serif;}
 #mb_credit{font-family: Tourney; font-size:48px;text-align:center;display:none;}

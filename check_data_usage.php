@@ -7,20 +7,21 @@ $bytes_cap = 0;
 $bytes_used = 0;
 
 if( isset($_GET['ip']) ) {
-  $db = new Database();
-  $device = new Device($_GET['ip']);
-  $iptables = new Iptables($device->ip, $device->mac);
+  $sess = new Session($_GET['ip']);
 
-  if( $db->get_device_id() ) {
-    $bytes = $iptables->bytes_used();
+  if( $sess->db->get_device_id() ) {
+    $bytes = $sess->iptables->mb_used();
 
-    $db->set_mb_credit($bytes);
+    $sess->db->set_mb_used($bytes);
 
-    $bytes_cap = $db->get_total_mb_credit();
-    $bytes_used = $db->get_total_mb_used();
+    $bytes_cap = $sess->db->get_total_mb_credit();
+    $bytes_used = $sess->db->get_total_mb_used();
 
     if( $bytes_cap <= $bytes_used ) {
-      $iptables->rm_client();
+      $sess->iptables->rem_client();
+    }
+    else {
+      $sess->iptables->add_client();
     }
   }
 }

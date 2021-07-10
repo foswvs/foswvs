@@ -1,6 +1,11 @@
-#!/usr/bin/bash
+#!/bin/bash
 
-for ip in $(arp -an|grep -oE '10.0.[0-9]{1,3}.[0-9]{1,3}');
+while true
 do
-  /usr/bin/curl -s "http://127.0.0.1/check_data_usage.php?ip=$ip" -o /dev/null
+  for ip in $(arp -an|grep -oE '10.0.[0-9]{1,3}.[0-9]{1,3}');
+  do
+    curl -s "http://127.0.0.1/check_data_usage.php?ip=$ip" -o /dev/null
+  done
+
+  sleep 60
 done

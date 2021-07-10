@@ -1,0 +1,8 @@
+[Unit]
+Description=foswvs
+
+[Service]
+ExecStart=/home/pi/foswvs/setup.sh
+
+[Install]
+WantedBy=multi-user.target

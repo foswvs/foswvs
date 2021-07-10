@@ -4,6 +4,7 @@ var initr = false,
     button = document.getElementById('insert'),
     credits = document.getElementById('credits'),
     mb_credit = document.getElementById('mb_credit'),
+    ip_addr = document.getElementById('ip_addr'),
     mac_addr = document.getElementById('mac_addr'),
     waiting = document.getElementById('waiting');
 
@@ -12,7 +13,9 @@ setInterval(() => {
   .then((res) => res.json() )
   .then((wifi) => {
     initr = wifi.initr;
+    ip_addr.innerText = wifi.ip_addr;
     mac_addr.innerText = wifi.mac_addr;
+    ping.innerText = `${Math.floor(wifi.ping)}ms`;
     credits.innerText = `${wifi.total_mb_used} / ${wifi.total_mb_credit}MB`;
 
     if( initr && wifi.insert_coin ) {
@@ -26,13 +29,6 @@ setInterval(() => {
       btnInsertState();
     }
 
-    if( wifi.ping ) {
-      ping.innerText = `Online ${Math.floor(wifi.ping)}ms`;
-    }
-    else{
-      ping.innerText = 'Offline';
-    }
-
     if( wifi.connected ) {
       conn.innerText = 'connected';
     }
@@ -40,7 +36,7 @@ setInterval(() => {
       conn.innerText = 'disconnected';
     }
   });
-},2000);
+},3000);
 
 button.addEventListener('click', function(e) {
   btn = e.target;

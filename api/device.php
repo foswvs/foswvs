@@ -15,6 +15,6 @@ class Device {
   }
 
   public function ping() {
-   return exec("ping 8.8.8.8 -c1 -W1|grep -oP '/(\d+\.\d+)/'|grep -oP '\d+\.\d+'");
+   return exec("ping -qA {$this->ip} -c1 -W1|grep -oP '/(\d+\.\d+)/'|grep -oP '\d+\.\d+'");
   }
 }

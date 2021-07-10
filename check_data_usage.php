@@ -14,7 +14,7 @@ if( isset($_GET['ip']) ) {
 
     $sess->db->set_mb_used($bytes);
 
-    $bytes_cap = $sess->db->get_total_mb_credit();
+    $bytes_cap = $sess->db->get_total_mb_limit();
     $bytes_used = $sess->db->get_total_mb_used();
 
     if( $bytes_cap <= $bytes_used ) {

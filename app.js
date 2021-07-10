@@ -3,7 +3,7 @@ var initr = false,
     ping = document.getElementById('ping'),
     button = document.getElementById('insert'),
     credits = document.getElementById('credits'),
-    mb_credit = document.getElementById('mb_credit'),
+    mb_limit = document.getElementById('mb_limit'),
     ip_addr = document.getElementById('ip_addr'),
     mac_addr = document.getElementById('mac_addr'),
     waiting = document.getElementById('waiting');
@@ -16,14 +16,14 @@ setInterval(() => {
     ip_addr.innerText = wifi.ip_addr;
     mac_addr.innerText = wifi.mac_addr;
     ping.innerText = `${Math.floor(wifi.ping)}ms`;
-    credits.innerText = `${wifi.total_mb_used} / ${wifi.total_mb_credit}MB`;
+    credits.innerText = `${wifi.total_mb_used} / ${wifi.total_mb_limit}MB`;
 
     if( initr && wifi.insert_coin ) {
       btnCancelState();
 
-      if( wifi.mb_credit ) {
-        mb_credit.innerText = wifi.mb_credit + 'MB';
-        mb_credit.style.display = 'block';
+      if( wifi.mb_limit ) {
+        mb_limit.innerText = wifi.mb_limit + 'MB';
+        mb_limit.style.display = 'block';
       }
     } else {
       btnInsertState();
@@ -62,7 +62,7 @@ function btnInsertState() {
     button.style.borderColor = '#11aa11';
     button.style.backgroundColor = '#22aa22';
     waiting.style.display = 'none';
-    mb_credit.style.display = 'none';
+    mb_limit.style.display = 'none';
   }
 }
 

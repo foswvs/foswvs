@@ -31,9 +31,9 @@ else {
     "connected" => $sess->connected,
     "insert_coin" => $sess->coinslot->slot_state,
     "piso_count" => $sess->piso_count,
-    "mb_credit" => $sess->mb_credit,
+    "mb_limit" => $sess->mb_limit,
     "mb_used" => $sess->mb_used,
-    "total_mb_credit" => $sess->total_mb_credit,
+    "total_mb_limit" => $sess->total_mb_limit,
     "total_mb_used" => $sess->total_mb_used,
     "ping" => $sess->device->ping(),
     "sid" => $sess->id

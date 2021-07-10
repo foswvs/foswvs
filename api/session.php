@@ -8,13 +8,13 @@ class Session {
   public $iptables;
 
   public $mb_used = 0;
-  public $mb_credit = 0;
+  public $mb_limit = 0;
   public $mb_per_piso = 50;
 
   public $piso_count = 0;
 
   public $total_mb_used = 0;
-  public $total_mb_credit = 0;
+  public $total_mb_limit = 0;
 
   public $wait = 20;
   public $timer = 0;
@@ -49,10 +49,10 @@ class Session {
 
     $this->id = $this->db->get_device_session();
 
-    $this->mb_credit = $this->db->get_mb_credit();
+    $this->mb_limit = $this->db->get_mb_limit();
     $this->mb_used = $this->db->get_mb_used();
 
-    $this->total_mb_credit = $this->db->get_total_mb_credit();
+    $this->total_mb_limit = $this->db->get_total_mb_limit();
     $this->total_mb_used = $this->db->get_total_mb_used();
 
     $data = $this->readlog();
@@ -66,8 +66,8 @@ class Session {
       }
     }
 
-    $this->mb_credit = $data['mb_credit'];
-    $this->piso_count = $data['piso'];
+    $this->piso_count = isset($data['piso']) ? $data['piso'] : 0;
+    $this->mb_limit = isset($data['mb_limit']) ? $data['mb_limit'] : 0;
 
     $this->connected = $this->iptables->connected();
   }
@@ -76,7 +76,7 @@ class Session {
     $flog = fopen($this->COINLOG,'w');
 
     fseek($flog,0);
-    fwrite($flog, json_encode(['mac' => $this->device->mac, 'piso' => 0,'mb_credit' => 0]));
+    fwrite($flog, json_encode(['mac' => $this->device->mac, 'piso' => 0,'mb_limit' => 0]));
 
     $this->start = time();
 
@@ -86,9 +86,9 @@ class Session {
       $this->coinslot->count();
 
       if( $this->coinslot->piso_count > 0 ) {
-        $this->mb_credit = $this->coinslot->piso_count * $this->mb_per_piso;
+        $this->mb_limit = $this->coinslot->piso_count * $this->mb_per_piso;
         fseek($flog,0);
-        fwrite($flog, json_encode(['mac' => $this->device->mac, 'piso' => $this->coinslot->piso_count,'mb_credit' => $this->mb_credit]));
+        fwrite($flog, json_encode(['mac' => $this->device->mac, 'piso' => $this->coinslot->piso_count,'mb_limit' => $this->mb_limit]));
       }
 
       if( !$this->coinslot->relay_state() ) {
@@ -100,15 +100,15 @@ class Session {
 
     $this->coinslotOff();
 
-    $this->save_credit();
+    $this->save_limit();
 
     fclose($flog);
   }
 
-  function save_credit() {
-    if( $this->mb_credit ) {
+  function save_limit() {
+    if( $this->mb_limit ) {
       $this->db->add_session();
-      $this->db->set_mb_credit($this->mb_credit);
+      $this->db->set_mb_limit($this->mb_limit);
       $this->db->set_device_session();
       $this->iptables->add_client();
     }
@@ -131,7 +131,7 @@ class Session {
 
     if( $data['mac'] !== $this->device->mac ) {
       $data['piso'] = 0;
-      $data['mb_credit'] = 0;
+      $data['mb_limit'] = 0;
     }
 
     return $data;

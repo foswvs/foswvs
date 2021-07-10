@@ -3,6 +3,7 @@
 auto eth0
 
 iface eth0 inet dhcp
+dns-nameservers 8.8.8.8
 
 # eth1 is brought up whenever the network hardware is detected
 allow-hotplug eth1

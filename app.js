@@ -16,13 +16,13 @@ setInterval(() => {
     ip_addr.innerText = wifi.ip_addr;
     mac_addr.innerText = wifi.mac_addr;
     ping.innerText = `${Math.floor(wifi.ping)}ms`;
-    credits.innerText = `${wifi.total_mb_used} / ${wifi.total_mb_limit}MB`;
+    credits.innerText = `${wifi.total_mb_used} / ${wifi.total_mb_limit}`;
 
     if( initr && wifi.insert_coin ) {
       btnCancelState();
 
       if( wifi.mb_limit ) {
-        mb_limit.innerText = wifi.mb_limit + 'MB';
+        mb_limit.innerText = wifi.mb_limit;
         mb_limit.style.display = 'block';
       }
     } else {

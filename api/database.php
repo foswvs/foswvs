@@ -75,6 +75,10 @@ class Database extends SQLite3 {
     $this->exec("UPDATE session SET mb_limit={$mb} WHERE id={$this->sid}");
   }
 
+  public function set_mb_used($mb) {
+    $this->exec("UPDATE session SET mb_used=mb_used+{$mb} WHERE id={$this->sid}");
+  }
+
   public function get_mb_limit() {
     $res = $this->query("SELECT mb_limit FROM session WHERE id={$this->sid}");
     $row = $res->fetchArray(SQLITE3_NUM);
@@ -87,10 +91,6 @@ class Database extends SQLite3 {
     $row = $res->fetchArray(SQLITE3_NUM);
 
     return $row[0] ? $row[0] : 0;
-  }
-
-  public function set_mb_used($mb) {
-    $this->exec("UPDATE session SET mb_used=mb_used+{$mb} WHERE id={$this->sid}");
   }
 
   public function get_mb_used() {

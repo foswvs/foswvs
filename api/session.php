@@ -100,12 +100,12 @@ class Session {
 
     $this->coinslotOff();
 
-    $this->save_limit();
+    $this->mk_limit();
 
     fclose($flog);
   }
 
-  function save_limit() {
+  function mk_limit() {
     if( $this->mb_limit ) {
       $this->db->add_session();
       $this->db->set_mb_limit($this->mb_limit);

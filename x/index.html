@@ -1,21 +1,26 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>Xtra Info</title>
-<link href="/app.css" rel="stylesheet">
+<link href="/css/normalize.css" rel="stylesheet">
+<link href="/css/skeleton.css" rel="stylesheet">
 </head>
 <body>
-<div class="main">
-<table>
-  <thead>
-    <tr><th>IP</th><th>MAC</th><th>Option</th></tr>
-  </thead>
-</table>
+<div class="container">
+  <div class="row">
+    <table class="u-full-width" id="devices">
+      <thead>
+        <tr><th>IP</th><th>MAC</th><th>HOSTNAME</th><th>Option</th></tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
 </div>
-<script src="/app.js"></script>
+<script src="x.js"></script>
 </body>
 </html>

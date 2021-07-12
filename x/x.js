@@ -7,6 +7,21 @@ const url = window.location,
 
 const foswvs = {};
 
+foswvs.txn_o = 0;
+foswvs.txn_l = 25;
+
+foswvs.txn = function() {
+  fetch('./x.php?txn=get_all&offset='+this.txn_o)
+    .then((x) => x.json())
+    .then((x) => {
+      x.forEach((txn) => {
+        displayTxn(txn);
+      })
+      this.txn_o += 25;
+    }
+  );
+}
+
 foswvs.bw_add = function(mac, limit) {
   fetch(`./x.php?device=add_session&mac=${mac}&limit=${limit}`)
     .then((x) => x.json())
@@ -45,6 +60,10 @@ if( path == '/x/' ) {
   );
 }
 
+if( path == '/x/txn.html' ) {
+  foswvs.txn();
+}
+
 if( path == '/x/device.html' ) {
   let mac = search.substr(5);
 
@@ -75,23 +94,59 @@ function displayDHCP(dev) {
 
     txt_mac = document.createTextNode(dev['mac']),
      txt_ip = document.createTextNode(dev['ip']),
-   txt_host = document.createTextNode(dev['host']),
-    btn_opt = document.createElement('button');
+   txt_host = document.createTextNode(dev['host']);
 
-    btn_opt.setAttribute('class','button');
-    btn_opt.setAttribute('onclick','return false;');
-    btn_opt.setAttribute('data-mac', dev['mac']);
-    btn_opt.innerText = 'details';
-
+        row.setAttribute('class', 'devinfo');
         row.setAttribute('data-mac',dev['mac']);
+
     col_mac.appendChild(txt_mac);
      col_ip.appendChild(txt_ip);
    col_host.appendChild(txt_host);
-    //col_opt.appendChild(btn_opt);
+}
+
+function displayTxn(txn) {
+  let table = document.getElementById('txns').getElementsByTagName('tbody')[0];
+        row = table.insertRow(-1);
+    col_mac = row.insertCell(0);
+    col_amt = row.insertCell(1);
+     col_mb = row.insertCell(2);
+     col_ts = row.insertCell(3);
+
+    txt_mac = document.createTextNode(txn.mac);
+    txt_amt = document.createTextNode(txn.amt);
+     txt_mb = document.createTextNode(format_mb(txn.mb));
+     txt_ts = document.createTextNode(txn.ts);
+
+    col_mac.appendChild(txt_mac);
+    col_amt.appendChild(txt_amt);
+     col_mb.appendChild(txt_mb);
+     col_ts.appendChild(txt_ts);
+
+    row.setAttribute('title', 'device id: ' + txn.devId);
+}
+
+function format_mb(size) {
+  if( !size ) return size + 'MB';
+
+  let base = Math.floor(Math.log(size) / Math.log(1024));
+  console.log(base);
+  let tags = ['MB','GB','TB','PB','EB','ZB','YB'];
+
+  return parseFloat(size / Math.pow(1024, base)).toFixed(2) + tags[base];
+}
+
+function moretxn() {
+  foswvs.txn();
 }
 
 document.addEventListener('click', function(e) {
-  if( e.target.tagName == 'TD' ) {
+  console.log(e);
+
+  if( e.target.id == 'moretxns' ) {
+    foswvs.txn();
+  }
+
+  if( e.target.parentNode.className == 'devinfo' ) {
     window.location.href = '/x/device.html?mac=' + e.target.parentNode.dataset.mac;
   }
 

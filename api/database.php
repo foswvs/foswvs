@@ -76,7 +76,7 @@ class Database extends SQLite3 {
   }
 
   public function set_mb_used($mb) {
-    $this->exec("UPDATE session SET mb_used=mb_used+{$mb} WHERE id={$this->sid}");
+    $this->exec("UPDATE session SET mb_used={$mb} WHERE id={$this->sid}");
   }
 
   public function get_mb_limit() {
@@ -105,5 +105,17 @@ class Database extends SQLite3 {
     $row = $res->fetchArray(SQLITE3_NUM);
 
     return $row[0] ? $row[0] : 0;
+  }
+
+  public function get_all_txn($offset = 0, $limit = 25) {
+    $cmd = $this->query("SELECT s.piso_count AS amt,s.mb_limit AS mb,s.created_at AS ts,d.mac_addr AS mac,d.id AS devId FROM session s LEFT JOIN devices d ON s.device_id=d.id ORDER BY s.id DESC LIMIT {$offset},{$limit}");
+
+    $res = [];
+
+    while( $row = $cmd->fetchArray(SQLITE3_ASSOC) ) {
+      array_push($res, $row);
+    }
+
+    return $res;
   }
 }

@@ -1,10 +1,12 @@
 <?php
 require_once '../api/autoload.php';
 
+$txn = filter_input(INPUT_GET, 'txn');
 $device = filter_input(INPUT_GET, 'device');
 $network = filter_input(INPUT_GET, 'network');
 
-if( $device ) {
+if( $device || $txn ) {
+  $db = new Database();
   $help = new Helper();
 }
 
@@ -21,8 +23,6 @@ if( $device == 'add_session' ) {
   if( $limit < 1 ) exit;
 
   if( empty($mac) ) exit;
-
-  $db = new Database();
 
   $db->mac_addr = $mac;
   $db->get_device_id();
@@ -41,8 +41,6 @@ if( $device == 'get_session' ) {
 
   if( empty($mac) ) exit;
 
-  $db = new Database();
-
   $db->mac_addr = $mac;
 
   $db->get_device_id();
@@ -52,4 +50,13 @@ if( $device == 'get_session' ) {
   $total_mb_limit = $help->format_mb($db->get_total_mb_limit());
 
   echo json_encode(['devid' => $db->devid, 'sid' => $db->sid, 'mac' => $db->mac_addr, 'total_mb_limit' => $total_mb_limit, 'total_mb_used' => $total_mb_used]);
+}
+
+
+if( $txn == 'get_all' ) {
+  $offset = filter_input(INPUT_GET, 'offset', FILTER_VALIDATE_INT);
+
+  if( !$offset ) $offset = 0;
+
+  echo json_encode($db->get_all_txn($offset), JSON_PRETTY_PRINT);
 }

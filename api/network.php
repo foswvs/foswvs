@@ -10,7 +10,9 @@ class Network {
 
   public function dhcp_leases() {
     $cmd = shell_exec("dhcp-lease-list --parsable |awk '{ print $2 \"||\" $4 \"||\" $6 \"||\" $8 \" @ \" $9 \"||\" $11 \" @ \" $12}'");
-    $dev = array_map(function($s) { return array_combine(['mac','ip','host','begin','expire'], explode("||", $s) ); },  explode("\n",trim($cmd)) );
+
+    $dev = array_map(function($a) { return array_combine(['mac','ip','host','begin','expire'], explode("||", $a) ); },  explode("\n",trim($cmd)) );
+    $dev = array_map(function($a){ foreach($a as $a0=>$a1){ if($a0 == 'mac'){ $a[$a0] = strtoupper($a1); } } return $a; }, $dev);
 
     return $dev;
   }

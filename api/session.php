@@ -16,7 +16,7 @@ class Session {
   public $total_mb_used = 0;
   public $total_mb_limit = 0;
 
-  public $wait = 20;
+  public $wait = 30;
   public $timer = 0;
   public $start = 0;
 

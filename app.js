@@ -8,35 +8,7 @@ var initr = false,
     mac_addr = document.getElementById('mac_addr'),
     waiting = document.getElementById('waiting');
 
-setInterval(() => {
-  fetch('/api.php')
-  .then((res) => res.json() )
-  .then((wifi) => {
-    initr = wifi.initr;
-    ip_addr.innerText = wifi.ip_addr;
-    mac_addr.innerText = wifi.mac_addr;
-    ping.innerText = `${Math.floor(wifi.ping)}ms`;
-    credits.innerText = `${wifi.total_mb_used} / ${wifi.total_mb_limit}`;
-
-    if( initr && wifi.insert_coin ) {
-      btnCancelState();
-
-      if( wifi.mb_limit ) {
-        mb_limit.innerText = wifi.mb_limit;
-        mb_limit.style.display = 'block';
-      }
-    } else {
-      btnInsertState();
-    }
-
-    if( wifi.connected ) {
-      conn.innerText = 'connected';
-    }
-    else {
-      conn.innerText = 'disconnected';
-    }
-  });
-},3000);
+device_session();
 
 button.addEventListener('click', function(e) {
   btn = e.target;
@@ -77,6 +49,37 @@ function btnCancelState() {
 }
 
 function payment_count_down() {
-  /* fix for https://github.com/ligrevx/foswvs-php/blob/7405c0d747b98a6d5fc2310a97a1b1eea351981d/app.js#L66 */
-  var count = 20, timer = setInterval(function(){ if(button.innerText.toLowerCase()!=='done'){ clearInterval(timer);count=20;} waiting.innerText = `waiting for payment (${count})`;count--;},1000);
+  var count = 30, timer = setInterval(function(){ if(button.innerText.toLowerCase()!=='done'){ clearInterval(timer);count=20;} waiting.innerText = `waiting for payment (${count})`;count--;},1000);
+}
+
+function device_session() {
+  fetch('/api.php')
+  .then((res) => res.json() )
+  .then((wifi) => {
+    initr = wifi.initr;
+    ip_addr.innerText = wifi.ip_addr;
+    mac_addr.innerText = wifi.mac_addr;
+    ping.innerText = `${Math.floor(wifi.ping)}ms`;
+    credits.innerText = `${wifi.total_mb_used} / ${wifi.total_mb_limit}`;
+
+    if( initr && wifi.insert_coin ) {
+      btnCancelState();
+
+      if( parseFloat(wifi.mb_limit) ) {
+        mb_limit.innerText = wifi.mb_limit;
+        mb_limit.style.display = 'block';
+      }
+    } else {
+      btnInsertState();
+    }
+
+    if( wifi.connected ) {
+      conn.innerText = 'connected';
+    }
+    else {
+      conn.innerText = 'disconnected';
+    }
+
+    setTimeout(() => device_session(),2000);
+  });
 }

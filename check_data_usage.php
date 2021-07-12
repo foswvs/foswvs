@@ -1,23 +1,29 @@
 <?php
 require 'api/autoload.php';
 
-$bytes = 0;
+$mb_used = 0;
 
-$bytes_cap = 0;
-$bytes_used = 0;
+$total_mb_used = 0;
+$total_mb_limit = 0;
 
-if( isset($_GET['ip']) ) {
-  $sess = new Session($_GET['ip']);
+$mac = NULL;
+
+if( $IP = filter_input(INPUT_GET, 'ip', FILTER_VALIDATE_IP) ) {
+  $sess = new Session($IP);
+
+  $mac = $sess->device->mac;
+
+  if( empty($mac) ) exit;
 
   if( $sess->db->get_device_id() ) {
-    $bytes = $sess->iptables->mb_used();
+    $mb_used = $sess->iptables->mb_used();
 
-    $sess->db->set_mb_used($bytes);
+    $sess->db->set_mb_used($mb_used);
 
-    $bytes_cap = $sess->db->get_total_mb_limit();
-    $bytes_used = $sess->db->get_total_mb_used();
+    $total_mb_limit = $sess->db->get_total_mb_limit();
+    $total_mb_used = $sess->db->get_total_mb_used();
 
-    if( $bytes_cap <= $bytes_used ) {
+    if( $total_mb_limit <= $total_mb_used ) {
       $sess->iptables->rem_client();
     }
     else {
@@ -26,4 +32,6 @@ if( isset($_GET['ip']) ) {
   }
 }
 
-echo json_encode(['bytes_cap' => $bytes_cap, 'bytes_used' => $bytes_used]);
+if( isset($debug) ) {
+  echo json_encode(['total_mb_limit' => $total_mb_limit, 'total_mb_used' => $total_mb_used, 'mac' => $mac]);
+}

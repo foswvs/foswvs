@@ -45,8 +45,8 @@ class Database extends SQLite3 {
     $this->devid = $this->lastInsertRowID();
   }
 
-  public function set_device() {
-    $this->exec("UPDATE devices SET hostname={$this->hostname},ip_addr={$this->ip_addr},updated_at={$this->updated_at} WHERE mac_addr={$this->mac}");
+  public function update_device() {
+    $this->exec("UPDATE devices SET hostname='{$this->hostname}',ip_addr='{$this->ip_addr}',updated_at='{$this->updated_at}' WHERE id='{$this->devid}'");
   }
 
   public function get_device_id() {
@@ -56,17 +56,23 @@ class Database extends SQLite3 {
     return $this->devid = $row['id'];
   }
 
-  public function set_device_session() {
+  public function set_device_sid() {
     $this->exec("UPDATE devices SET session_id={$this->sid} WHERE id={$this->devid}");
   }
 
-  public function get_device_session() {
+  public function get_device_sid() {
     $res = $this->query("SELECT session_id FROM devices WHERE id={$this->devid}");
     $row = $res->fetchArray(SQLITE3_NUM);
 
     $this->sid = $row[0] ? $row[0] : 0;
 
     return $this->sid;
+  }
+
+  public function get_device_info() {
+    $cmd = $this->query("SELECT * FROM devices WHERE id='{$this->devid}'");
+
+    return $cmd->fetchArray(SQLITE3_ASSOC);
   }
 
   public function add_session() {
@@ -123,7 +129,19 @@ class Database extends SQLite3 {
   }
 
   public function get_all_txn() {
-    $cmd = $this->query("SELECT s.piso_count AS amt,s.mb_limit AS mb,s.created_at AS ts,d.mac_addr AS mac,d.id AS devId FROM session s LEFT JOIN devices d ON s.device_id=d.id ORDER BY s.id DESC LIMIT {$this->offset},{$this->limit}");
+    $cmd = $this->query("SELECT s.piso_count AS amt,s.mb_limit AS mb,s.created_at AS ts,d.mac_addr AS mac,d.ip_addr AS ip,d.hostname AS host FROM session s LEFT JOIN devices d ON s.device_id=d.id ORDER BY s.id DESC LIMIT {$this->offset},{$this->limit}");
+
+    $res = [];
+
+    while( $row = $cmd->fetchArray(SQLITE3_ASSOC) ) {
+      array_push($res, $row);
+    }
+
+    return $res;
+  }
+
+  public function get_device_sessions() {
+    $cmd = $this->query("SELECT * FROM devices d LEFT JOIN session s ON d.id=s.device_id WHERE d.id='{$this->devid}'");
 
     $res = [];
 

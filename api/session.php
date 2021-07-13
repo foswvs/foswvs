@@ -47,7 +47,7 @@ class Session {
 
     $this->device->id = $this->db->devid;
 
-    $this->id = $this->db->get_device_session();
+    $this->id = $this->db->get_device_sid();
 
     $this->mb_limit = $this->db->get_mb_limit();
     $this->mb_used = $this->db->get_mb_used();
@@ -115,7 +115,7 @@ class Session {
       $this->db->piso_count = $this->coinslot->piso_count;
       $this->db->set_piso_count();
 
-      $this->db->set_device_session();
+      $this->db->set_device_sid();
 
       $this->iptables->add_client();
     }

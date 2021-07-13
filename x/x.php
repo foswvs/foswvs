@@ -31,7 +31,7 @@ if( $dev == 'add_session' ) {
   $db->add_session();
 
   $db->set_mb_limit();
-  $db->set_device_session();
+  $db->set_device_sid();
 
   $total_mb_limit = $help->format_mb($db->get_total_mb_limit());
   $total_mb_used = $help->format_mb($db->get_total_mb_used());
@@ -47,19 +47,23 @@ if( $dev == 'get_session' ) {
   $db->mac_addr = $mac;
 
   $db->get_device_id();
-  $db->get_device_session();
+  $db->get_device_sid();
+
+  $device_info = $db->get_device_info();
 
   $total_mb_used = $help->format_mb($db->get_total_mb_used());
   $total_mb_limit = $help->format_mb($db->get_total_mb_limit());
 
-  echo json_encode(['devid' => $db->devid, 'sid' => $db->sid, 'mac' => $db->mac_addr, 'total_mb_limit' => $total_mb_limit, 'total_mb_used' => $total_mb_used]);
+  echo json_encode(['device' => $device_info, 'total_mb_limit' => $total_mb_limit, 'total_mb_used' => $total_mb_used]);
 }
 
 
 if( $txn == 'get_all' ) {
   $db->offset = filter_input(INPUT_GET, 'offset', FILTER_VALIDATE_INT);
+  $db->limit  = filter_input(INPUT_GET, 'limit', FILTER_VALIDATE_INT);
 
   if( !$db->offset ) $db->offset = 0;
+  if( !$db->limit )  $db->limit = 10;
 
   echo json_encode($db->get_all_txn(), JSON_PRETTY_PRINT);
 }

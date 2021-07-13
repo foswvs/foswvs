@@ -11,13 +11,14 @@ foswvs.txn_o = 0;
 foswvs.txn_l = 25;
 
 foswvs.txn = function() {
-  fetch('./x.php?txn=get_all&offset='+this.txn_o)
+  fetch(`./x.php?txn=get_all&offset=${this.txn_o}&limit=${this.txn_l}`)
     .then((x) => x.json())
     .then((x) => {
       x.forEach((txn) => {
         displayTxn(txn);
       })
-      this.txn_o += 25;
+      if (x.length == this.txn_l)
+        this.txn_o += this.txn_l;
     }
   );
 }
@@ -33,15 +34,22 @@ foswvs.bw_add = function(mac, limit) {
 }
 
 foswvs.devinfo = function(mac) {
-  let mac_addr = document.getElementById('mac_addr');
-  let total_mb_used = document.getElementById('total_mb_used');
-  let total_mb_limit = document.getElementById('total_mb_limit');
+  let mac_addr = document.getElementById('mac_addr'),
+      ip_addr  = document.getElementById('ip_addr'),
+      hostname = document.getElementById('hostname'),
+      total_mb_used  = document.getElementById('total_mb_used'),
+      total_mb_limit = document.getElementById('total_mb_limit');
 
   fetch('./x.php?dev=get_session&mac='+mac)
     .then((x) => x.json())
     .then((x) => {
-      mac_addr.innerText = x.mac;
-      total_mb_used.innerText = x.total_mb_used;
+      let dev = x.device;
+
+      mac_addr.innerText = dev.mac_addr;
+      ip_addr.innerText  = dev.ip_addr;
+      hostname.innerText = dev.hostname;
+
+      total_mb_used.innerText  = x.total_mb_used;
       total_mb_limit.innerText = x.total_mb_limit;
 
       setTimeout(() => foswvs.devinfo(mac), 2000);
@@ -122,14 +130,15 @@ function displayTxn(txn) {
      col_mb.appendChild(txt_mb);
      col_ts.appendChild(txt_ts);
 
-    row.setAttribute('title', 'device id: ' + txn.devId);
+    row.setAttribute('class',  'devinfo');
+    row.setAttribute('data-mac', txn.mac);
+    row.setAttribute('title', `host: ${txn.host} ip: ${txn.ip}`);
 }
 
 function format_mb(size) {
   if( !size ) return size + 'MB';
 
   let base = Math.floor(Math.log(size) / Math.log(1024));
-  console.log(base);
   let tags = ['MB','GB','TB','PB','EB','ZB','YB'];
 
   return parseFloat(size / Math.pow(1024, base)).toFixed(2) + tags[base];

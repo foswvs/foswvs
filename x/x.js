@@ -2,8 +2,8 @@ const url = window.location,
      hash = url.hash,
      href = url.href,
      path = url.pathname,
-   search = url.search;
-
+   search = url.search,
+     peso = Intl.NumberFormat('en-US', {style: 'currency', currency: 'PHP'});
 
 const foswvs = {};
 
@@ -23,7 +23,7 @@ foswvs.txn = function() {
 }
 
 foswvs.bw_add = function(mac, limit) {
-  fetch(`./x.php?device=add_session&mac=${mac}&limit=${limit}`)
+  fetch(`./x.php?dev=add_session&mac=${mac}&limit=${limit}`)
     .then((x) => x.json())
     .then((x) => {
       total_mb_used.innerText = x.total_mb_used;
@@ -37,7 +37,7 @@ foswvs.devinfo = function(mac) {
   let total_mb_used = document.getElementById('total_mb_used');
   let total_mb_limit = document.getElementById('total_mb_limit');
 
-  fetch('./x.php?device=get_session&mac='+mac)
+  fetch('./x.php?dev=get_session&mac='+mac)
     .then((x) => x.json())
     .then((x) => {
       mac_addr.innerText = x.mac;
@@ -50,7 +50,7 @@ foswvs.devinfo = function(mac) {
 }
 
 if( path == '/x/' ) {
-  fetch('./x.php?network=dhcp_leases')
+  fetch('./x.php?net=dhcp_leases')
     .then((x) => x.json())
     .then((x) => {
       x.forEach((d) => {
@@ -113,7 +113,7 @@ function displayTxn(txn) {
      col_ts = row.insertCell(3);
 
     txt_mac = document.createTextNode(txn.mac);
-    txt_amt = document.createTextNode(txn.amt);
+    txt_amt = document.createTextNode(txn.amt==0 ? 'FREE' : peso.format(txn.amt));
      txt_mb = document.createTextNode(format_mb(txn.mb));
      txt_ts = document.createTextNode(txn.ts);
 

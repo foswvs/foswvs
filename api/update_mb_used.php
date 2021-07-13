@@ -1,5 +1,5 @@
 <?php
-require 'api/autoload.php';
+require 'autoload.php';
 
 $total_mb_used = 0;
 $total_mb_limit = 0;

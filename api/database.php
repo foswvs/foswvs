@@ -2,9 +2,20 @@
 class Database extends SQLite3 {
   public $sid;
   public $devid;
+  public $ip_addr;
   public $mac_addr;
+  public $hostname;
+  public $updated_at;
 
-  function __construct() {
+  public $offset = 0;
+  public $limit  = 25;
+
+  public $mb_limit = 0;
+  public $mb_used  = 0;
+
+  public $piso_count = 0;
+
+  public function __construct() {
     $dbf = __DIR__ . '/foswvs.db';
 
     $this->open($dbf);
@@ -19,12 +30,12 @@ class Database extends SQLite3 {
     }
   }
 
-  function __destruct() {
+  public function __destruct() {
     $this->close();
   }
 
   public function create_table() {
-    $this->exec("CREATE TABLE devices (id INTEGER PRIMARY KEY AUTOINCREMENT, mac_addr BLOB UNIQUE, session_id INTEGER, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP)");
+    $this->exec("CREATE TABLE devices (id INTEGER PRIMARY KEY AUTOINCREMENT, mac_addr BLOB UNIQUE, ip_addr BLOB, hostname BLOB, session_id INTEGER, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP)");
     $this->exec("CREATE TABLE session (id INTEGER PRIMARY KEY AUTOINCREMENT, device_id INTEGER, piso_count INTEGER DEFAULT 0, mb_limit INTEGER DEFAULT 0, mb_used INTEGER DEFAULT 0, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP)");
   }
 
@@ -32,6 +43,10 @@ class Database extends SQLite3 {
     $this->exec("INSERT INTO devices(mac_addr) VALUES('{$this->mac_addr}')");
 
     $this->devid = $this->lastInsertRowID();
+  }
+
+  public function set_device() {
+    $this->exec("UPDATE devices SET hostname={$this->hostname},ip_addr={$this->ip_addr},updated_at={$this->updated_at} WHERE mac_addr={$this->mac}");
   }
 
   public function get_device_id() {
@@ -60,8 +75,8 @@ class Database extends SQLite3 {
     $this->sid = $this->lastInsertRowID();
   }
 
-  public function set_piso_count($piso) {
-    $this->exec("UPDATE session SET piso_count={$piso} WHERE id={$this->sid}");
+  public function set_piso_count() {
+    $this->exec("UPDATE session SET piso_count={$this->piso_count} WHERE id={$this->sid}");
   }
 
   public function get_piso_count() {
@@ -71,12 +86,12 @@ class Database extends SQLite3 {
     return $row[0] ? $row[0] : 0;
   }
 
-  public function set_mb_limit($mb) {
-    $this->exec("UPDATE session SET mb_limit={$mb} WHERE id={$this->sid}");
+  public function set_mb_limit() {
+    $this->exec("UPDATE session SET mb_limit={$this->mb_limit} WHERE id={$this->sid}");
   }
 
-  public function set_mb_used($mb) {
-    $this->exec("UPDATE session SET mb_used={$mb} WHERE id={$this->sid}");
+  public function set_mb_used() {
+    $this->exec("UPDATE session SET mb_used={$this->mb_used} WHERE id={$this->sid}");
   }
 
   public function get_mb_limit() {
@@ -107,8 +122,8 @@ class Database extends SQLite3 {
     return $row[0] ? $row[0] : 0;
   }
 
-  public function get_all_txn($offset = 0, $limit = 25) {
-    $cmd = $this->query("SELECT s.piso_count AS amt,s.mb_limit AS mb,s.created_at AS ts,d.mac_addr AS mac,d.id AS devId FROM session s LEFT JOIN devices d ON s.device_id=d.id ORDER BY s.id DESC LIMIT {$offset},{$limit}");
+  public function get_all_txn() {
+    $cmd = $this->query("SELECT s.piso_count AS amt,s.mb_limit AS mb,s.created_at AS ts,d.mac_addr AS mac,d.id AS devId FROM session s LEFT JOIN devices d ON s.device_id=d.id ORDER BY s.id DESC LIMIT {$this->offset},{$this->limit}");
 
     $res = [];
 

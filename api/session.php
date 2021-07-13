@@ -108,11 +108,15 @@ class Session {
   function mk_limit() {
     if( $this->mb_limit ) {
       $this->db->add_session();
-      $this->db->set_mb_limit($this->mb_limit);
 
-      $this->db->set_piso_count($this->coinslot->piso_count);
+      $this->db->mb_limit = $this->mb_limit;
+      $this->db->set_mb_limit();
+
+      $this->db->piso_count = $this->coinslot->piso_count;
+      $this->db->set_piso_count();
 
       $this->db->set_device_session();
+
       $this->iptables->add_client();
     }
   }

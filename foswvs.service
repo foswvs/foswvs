@@ -1,8 +1,8 @@
 [Unit]
-Description=foswvs
+Description=Free and Open-Source WiFi Vendo Software
 
 [Service]
-ExecStart=/home/pi/foswvs/setup.sh
+ExecStart=/home/pi/foswvs/start.sh
 
 [Install]
 WantedBy=multi-user.target

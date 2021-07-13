@@ -5,6 +5,27 @@ $txn = filter_input(INPUT_GET, 'txn');
 $net = filter_input(INPUT_GET, 'net');
 $dev = filter_input(INPUT_GET, 'dev');
 
+$hash = trim(file_get_contents('password.sha256'));
+
+session_start();
+
+if( $net == 'login' ) {
+  $_SESSION['hash'] = hash('sha256',filter_input(INPUT_POST, 'password'));
+}
+
+if( $net == 'chpwd' ) {
+  file_put_contents('password.sha256', hash('sha256',filter_input(INPUT_POST, 'password')));
+  session_destroy();
+  http_response_code(200);
+  exit;
+}
+
+if( $_SESSION['hash'] !== $hash ) {
+  session_destroy();
+  http_response_code(401);
+  exit;
+}
+
 if( $dev || $txn ) {
   $db = new Database();
   $help = new Helper();

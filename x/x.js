@@ -5,6 +5,8 @@ const url = window.location,
    search = url.search,
      peso = Intl.NumberFormat('en-US', {style: 'currency', currency: 'PHP'});
 
+const xmbar  = {'exit': '/x/index.html', 'dhcp':'/x/dhcp.html', 'txns':'/x/txn.html', 'pwd':'/x/change_password.html'}
+
 const foswvs = {};
 
 foswvs.txn_o = 0;
@@ -57,7 +59,11 @@ foswvs.devinfo = function(mac) {
   );
 }
 
-if( path == '/x/' ) {
+if( path == '/x/index.html' ) {
+  fetch('./x.php?net=login');
+}
+
+if( path == '/x/dhcp.html' ) {
   fetch('./x.php?net=dhcp_leases')
     .then((x) => x.json())
     .then((x) => {
@@ -144,12 +150,38 @@ function format_mb(size) {
   return parseFloat(size / Math.pow(1024, base)).toFixed(2) + tags[base];
 }
 
-function moretxn() {
-  foswvs.txn();
-}
-
 document.addEventListener('click', function(e) {
   console.log(e);
+
+  if( e.target.parentNode.id == 'login' ) {
+    let form = e.target.parentNode;
+
+    if( form.password.value ) {
+      fetch('./x.php?net=login', {
+        method: 'POST',
+        body: new FormData(form)
+      }).then((x) => {
+        if(x.status==200) {
+          window.location.href = '/x/dhcp.html';
+        }
+      });
+    }
+  }
+
+  if( e.target.parentNode.id == 'chpwd' ) {
+    let form = e.target.parentNode;
+
+    if( form.password.value ) {
+      fetch('./x.php?net=chpwd', {
+        method: 'POST',
+        body: new FormData(form)
+      }).then((x) => {
+        if(x.status==200) {
+          window.location.href = '/x/index.html';
+        }
+      });
+    }
+  }
 
   if( e.target.id == 'moretxns' ) {
     foswvs.txn();
@@ -172,3 +204,21 @@ document.addEventListener('click', function(e) {
   }
 });
 
+
+if( xpane = document.getElementById('xmenubar') ) {
+  let ul = document.createElement('ul');
+
+  for(let x in xmbar) {
+    let li = document.createElement('li'),
+         a = document.createElement('a');
+
+    a.setAttribute('class', 'button');
+    a.setAttribute('href', xmbar[x]);
+    a.innerText = x;
+
+    li.appendChild(a);
+    ul.appendChild(li);
+  }
+
+  xpane.appendChild(ul);
+}

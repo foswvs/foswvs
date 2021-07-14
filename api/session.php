@@ -24,21 +24,21 @@ class Session {
 
   public $connected;
 
-  private $COINLOG = __DIR__ . "/coin.log";
+  public $COINLOG = __DIR__ . "/coin.log";
 
-  function __construct($ip) {
-    $this->db = new Database();
-
+  public function __construct($ip) {
     $this->device = new Device($ip);
 
-    $this->coinslot = new Coinslot();
+    $this->recognized_device();
 
-    $this->iptables = new Iptables($this->device->ip, $this->device->mac);
+    $this->network_check();
 
-    $this->init_vars();
+    $this->coinslot_check();
   }
 
-  function init_vars() {
+  public function recognized_device() {
+    $this->db = new Database();
+
     $this->db->mac_addr = $this->device->mac;
 
     if( !$this->db->get_device_id() ) {
@@ -48,12 +48,28 @@ class Session {
     $this->device->id = $this->db->devid;
 
     $this->id = $this->db->get_device_sid();
+  }
 
-    $this->mb_limit = $this->db->get_mb_limit();
-    $this->mb_used = $this->db->get_mb_used();
+  public function network_check() {
+    $this->iptables = new Iptables($this->device->ip, $this->device->mac);
 
-    $this->total_mb_limit = $this->db->get_total_mb_limit();
-    $this->total_mb_used = $this->db->get_total_mb_used();
+    $this->connected = $this->iptables->connected();
+
+    $this->calc_usage();
+  }
+
+  public function calc_usage() {
+    if( $this->connected ) {
+      $this->mb_limit = $this->db->get_mb_limit();
+      $this->mb_used = $this->db->get_mb_used();
+
+      $this->total_mb_limit = $this->db->get_total_mb_limit();
+      $this->total_mb_used = $this->db->get_total_mb_used();
+    }
+  }
+
+  public function coinslot_check() {
+    $this->coinslot = new Coinslot();
 
     $data = $this->readlog();
 
@@ -66,13 +82,16 @@ class Session {
       }
     }
 
-    $this->piso_count = isset($data['piso']) ? $data['piso'] : 0;
-    $this->mb_limit = isset($data['mb_limit']) ? $data['mb_limit'] : 0;
+    if( isset($data['piso']) ) {
+      $this->piso_count = $data['piso'];
+    }
 
-    $this->connected = $this->iptables->connected();
+    if( isset($data['mb_limit']) ) {
+      $this->mb_limit = $data['mb_limit'];
+    }
   }
 
-  function topup() {
+  public function topup() {
     $flog = fopen($this->COINLOG,'w');
 
     fseek($flog,0);
@@ -105,7 +124,7 @@ class Session {
     fclose($flog);
   }
 
-  function mk_limit() {
+  public function mk_limit() {
     if( $this->mb_limit ) {
       $this->db->add_session();
 
@@ -121,13 +140,13 @@ class Session {
     }
   }
 
-  function coinslotOff() {
+  public function coinslotOff() {
     if( $this->coinslot->relay_state() ) {
       $this->coinslot->deactivate();
     }
   }
 
-  function readlog() {
+  public function readlog() {
     $flog = fopen($this->COINLOG,'r');
 
     $data = fgets($flog);

@@ -1,3 +1,4 @@
 tbody > tr:hover{background:#eee;cursor:pointer;}
 ul{list-style-type:none !important;}
 ul li{display:inline;padding:2px;}
+#clear_mb{height:25px;line-height:25px;padding:0 5px;letter-spacing:0;font-size:10px;font-weight:400;}

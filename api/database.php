@@ -35,8 +35,20 @@ class Database extends SQLite3 {
   }
 
   public function create_table() {
-    $this->exec("CREATE TABLE devices (id INTEGER PRIMARY KEY AUTOINCREMENT, mac_addr BLOB UNIQUE, ip_addr BLOB, hostname BLOB, session_id INTEGER, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP)");
+    $this->exec("CREATE TABLE devices (id INTEGER PRIMARY KEY AUTOINCREMENT, mac_addr BLOB NOT NULL UNIQUE, ip_addr BLOB, hostname BLOB, session_id INTEGER, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP)");
     $this->exec("CREATE TABLE session (id INTEGER PRIMARY KEY AUTOINCREMENT, device_id INTEGER, piso_count INTEGER DEFAULT 0, mb_limit INTEGER DEFAULT 0, mb_used INTEGER DEFAULT 0, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP)");
+  }
+
+  public function get_devices() {
+    $cmd = $this->query("SELECT mac_addr AS mac, IFNULL(ip_addr,'-NA-') AS ip, IFNULL(hostname,'-NA-') AS host,updated_at FROM devices WHERE mac_addr!='' ORDER BY updated_at DESC");
+
+    $res = [];
+
+    while( $row = $cmd->fetchArray(SQLITE3_ASSOC) ) {
+      array_push($res, $row);
+    }
+
+    return $res;
   }
 
   public function add_device() {
@@ -70,7 +82,7 @@ class Database extends SQLite3 {
   }
 
   public function get_device_info() {
-    $cmd = $this->query("SELECT * FROM devices WHERE id='{$this->devid}'");
+    $cmd = $this->query("SELECT mac_addr AS mac, IFNULL(ip_addr,'-NA-') AS ip, IFNULL(hostname,'-NA-') AS host FROM devices WHERE id='{$this->devid}'");
 
     return $cmd->fetchArray(SQLITE3_ASSOC);
   }
@@ -126,6 +138,10 @@ class Database extends SQLite3 {
     $row = $res->fetchArray(SQLITE3_NUM);
 
     return $row[0] ? $row[0] : 0;
+  }
+
+  public function clear_mb() {
+    $this->exec("DELETE FROM session WHERE device_id={$this->devid}");
   }
 
   public function get_all_txn() {

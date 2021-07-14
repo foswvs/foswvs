@@ -37,18 +37,25 @@ if( $net == 'dhcp_leases') {
   echo json_encode($network->dhcp_leases(), JSON_PRETTY_PRINT);
 }
 
+if( $dev == 'all' ) {
+  echo json_encode($db->get_devices(), JSON_PRETTY_PRINT);
+}
+
 if( $dev == 'add_session' ) {
   $limit = filter_input(INPUT_GET, 'limit', FILTER_VALIDATE_INT);
-    $mac = filter_input(INPUT_GET, 'mac', FILTER_VALIDATE_MAC);
+    $mac = filter_input(INPUT_GET, 'mac');
 
   if( $limit < 1 ) exit;
 
-  if( empty($mac) ) exit;
+  if( empty($mac) ) exit("provide mac address");
 
   $db->mac_addr = $mac;
   $db->mb_limit = $limit;
 
   $db->get_device_id();
+
+  if(!$db->devid) exit("mac address doesn't exist.");
+
   $db->add_session();
 
   $db->set_mb_limit();
@@ -61,23 +68,39 @@ if( $dev == 'add_session' ) {
 }
 
 if( $dev == 'get_session' ) {
-  $mac = filter_input(INPUT_GET, 'mac', FILTER_VALIDATE_MAC);
+  $mac = filter_input(INPUT_GET, 'mac');
 
-  if( empty($mac) ) exit;
+  if( empty($mac) ) exit("provide mac address");
 
   $db->mac_addr = $mac;
 
   $db->get_device_id();
+
+  if(!$db->devid) exit("mac address doesn't exist.");
+
   $db->get_device_sid();
 
-  $device_info = $db->get_device_info();
+  $device = $db->get_device_info();
 
   $total_mb_used = $help->format_mb($db->get_total_mb_used());
   $total_mb_limit = $help->format_mb($db->get_total_mb_limit());
 
-  echo json_encode(['device' => $device_info, 'total_mb_limit' => $total_mb_limit, 'total_mb_used' => $total_mb_used]);
+  echo json_encode(['mac' => $device['mac'], 'ip' => $device['ip'], 'host' => $device['host'], 'total_mb_limit' => $total_mb_limit, 'total_mb_used' => $total_mb_used]);
 }
 
+if( $dev == 'clear_mb' ) {
+  $mac = filter_input(INPUT_GET, 'mac');
+
+  if( empty($mac) ) exit("provide mac address");
+
+  $db->mac_addr = $mac;
+
+  $db->get_device_id();
+
+  if(!$db->devid) exit("mac address doesn't exist.");
+
+  $db->clear_mb();
+}
 
 if( $txn == 'get_all' ) {
   $db->offset = filter_input(INPUT_GET, 'offset', FILTER_VALIDATE_INT);

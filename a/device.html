@@ -8,9 +8,8 @@
 <title>Xtra Info</title>
 <link href="/css/normalize.css" rel="stylesheet">
 <link href="/css/skeleton.css" rel="stylesheet">
-<link href="./x.css" rel="stylesheet">
-<style>
-</style>
+<link href="x.css" rel="stylesheet">
+<style>tr:hover{cursor:default !important;background:none !important;}</style>
 </head>
 <body>
 <div class="container" style="margin-top:10px;">
@@ -31,8 +30,8 @@
       <tr><th>IP Address :</th><td id="ip_addr">Identifying</td></tr>
       <tr><th>MAC Address :</th><td id="mac_addr">Identifying</td></tr>
       <tr><th>Hostname :</th><td id="hostname">Identifying</td></tr>
-      <tr><th>Total MB Used :</th><td id="total_mb_used">Calculating</td></tr>
-      <tr><th>Total MB Limit :</th><td id="total_mb_limit">Calculating</td></tr>
+      <tr><th>Total MB Used :</th><td><span id="total_mb_used">Calculating</span></td></tr>
+      <tr><th>Total MB Limit :</th><td><span id="total_mb_limit">Calculating</span> <button class="button" id="clear_mb">reset</button></td></tr>
       </table>
     </div>
   </div>

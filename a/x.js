@@ -5,7 +5,7 @@ const url = window.location,
    search = url.search,
      peso = Intl.NumberFormat('en-US', {style: 'currency', currency: 'PHP'});
 
-const xmbar  = {'exit': '/x/index.html', 'dhcp':'/x/dhcp.html', 'txns':'/x/txn.html', 'pwd':'/x/change_password.html'}
+const xmbar  = {'exit': '/a/index.html', 'devices':'/a/devices.html', 'txns':'/a/txn.html', 'pwd':'/a/chpwd.html'}
 
 const foswvs = {};
 
@@ -36,34 +36,46 @@ foswvs.bw_add = function(mac, limit) {
 }
 
 foswvs.devinfo = function(mac) {
-  let mac_addr = document.getElementById('mac_addr'),
-      ip_addr  = document.getElementById('ip_addr'),
+  let ip_addr  = document.getElementById('ip_addr'),
+      mac_addr = document.getElementById('mac_addr'),
       hostname = document.getElementById('hostname'),
+      clear_mb = document.getElementById('clear_mb'),
       total_mb_used  = document.getElementById('total_mb_used'),
       total_mb_limit = document.getElementById('total_mb_limit');
 
   fetch('./x.php?dev=get_session&mac='+mac)
     .then((x) => x.json())
     .then((x) => {
-      let dev = x.device;
-
-      mac_addr.innerText = dev.mac_addr;
-      ip_addr.innerText  = dev.ip_addr;
-      hostname.innerText = dev.hostname;
+      mac_addr.innerText = x.mac;
+      ip_addr.innerText  = x.ip;
+      hostname.innerText = x.host;
 
       total_mb_used.innerText  = x.total_mb_used;
       total_mb_limit.innerText = x.total_mb_limit;
+
+      clear_mb.setAttribute('data-mac', x.mac);
 
       setTimeout(() => foswvs.devinfo(mac), 2000);
     }
   );
 }
 
-if( path == '/x/index.html' ) {
+if( path == '/a/index.html' ) {
   fetch('./x.php?net=login');
 }
 
-if( path == '/x/dhcp.html' ) {
+if( path == '/a/devices.html' ) {
+  fetch('./x.php?dev=all')
+    .then((x) => x.json())
+    .then((x) => {
+      x.forEach((d) => {
+        displayDHCP(d);
+      })
+    }
+  );
+}
+
+if( path == '/a/dhcp.html' ) {
   fetch('./x.php?net=dhcp_leases')
     .then((x) => x.json())
     .then((x) => {
@@ -74,11 +86,11 @@ if( path == '/x/dhcp.html' ) {
   );
 }
 
-if( path == '/x/txn.html' ) {
+if( path == '/a/txn.html' ) {
   foswvs.txn();
 }
 
-if( path == '/x/device.html' ) {
+if( path == '/a/device.html' ) {
   let mac = search.substr(5);
 
   foswvs.devinfo(mac);
@@ -151,7 +163,11 @@ function format_mb(size) {
 }
 
 document.addEventListener('click', function(e) {
-  console.log(e);
+  console.log(e.target);
+
+  if( e.target.id == 'clear_mb' ) {
+    fetch(`./x.php?dev=clear_mb&mac=${e.target.dataset.mac}`);
+  }
 
   if( e.target.parentNode.id == 'login' ) {
     let form = e.target.parentNode;
@@ -162,7 +178,7 @@ document.addEventListener('click', function(e) {
         body: new FormData(form)
       }).then((x) => {
         if(x.status==200) {
-          window.location.href = '/x/dhcp.html';
+          window.location.href = '/a/dhcp.html';
         }
       });
     }
@@ -177,7 +193,7 @@ document.addEventListener('click', function(e) {
         body: new FormData(form)
       }).then((x) => {
         if(x.status==200) {
-          window.location.href = '/x/index.html';
+          window.location.href = '/a/index.html';
         }
       });
     }
@@ -188,7 +204,7 @@ document.addEventListener('click', function(e) {
   }
 
   if( e.target.parentNode.className == 'devinfo' ) {
-    window.location.href = '/x/device.html?mac=' + e.target.parentNode.dataset.mac;
+    window.location.href = '/a/device.html?mac=' + e.target.parentNode.dataset.mac;
   }
 
   if( e.target.id == 'bw_btn' ) {

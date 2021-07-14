@@ -15,18 +15,22 @@ class Iptables {
   }
 
   public function add_client() {
-    while( exec("sudo iptables -C FORWARD -s '{$this->ip}' -j ACCEPT; echo $?") ) {
+    while( exec("sudo iptables -C FORWARD -d '{$this->ip}' -j ACCEPT; echo $?") ) {
       exec("sudo iptables -t nat -I PREROUTING -s {$this->ip} -j ACCEPT");
-      exec("sudo iptables -I FORWARD -s {$this->ip} -j ACCEPT");
+      //exec("sudo iptables -I FORWARD -m mac --mac-source {$this->mac} -j ACCEPT");
       exec("sudo iptables -I FORWARD -d {$this->ip} -j ACCEPT");
+      exec("sudo iptables -I FORWARD -s {$this->ip} -j ACCEPT");
+      sleep(1);
     }
   }
 
   public function rem_client() {
-    while( exec("sudo iptables -C FORWARD -s '{$this->ip}' -j ACCEPT; echo $?") == 0 ) {
+    while( exec("sudo iptables -C FORWARD -d '{$this->ip}' -j ACCEPT; echo $?") == 0 ) {
       exec("sudo iptables -t nat -D PREROUTING -s {$this->ip} -j ACCEPT");
-      exec("sudo iptables -D FORWARD -s {$this->ip} -j ACCEPT");
+      //exec("sudo iptables -D FORWARD -m mac --mac-source {$this->mac} -j ACCEPT");
       exec("sudo iptables -D FORWARD -d {$this->ip} -j ACCEPT");
+      exec("sudo iptables -D FORWARD -s {$this->ip} -j ACCEPT");
+      sleep(1);
     }
   }
 
@@ -38,26 +42,14 @@ class Iptables {
     return round(($bytes/1000000));
   }
 
-  function connected() {
-    if( exec("sudo iptables -C FORWARD -s {$this->ip} -j ACCEPT; echo $?") ) {
+  public function connected() {
+    $check1 = exec("sudo iptables -t nat -C PREROUTING -s {$this->ip} -j ACCEPT; echo $?");
+    $check2 = exec("sudo iptables -C FORWARD -d {$this->ip} -j ACCEPT; echo $?");
+
+    if( $check1 && $check1 ) {
       return false;
     }
 
     return true;
-  }
-  function init() {
-    exec("sudo iptables -A FORWARD -s 10.0.0.0/20 -p tcp --dport 53 -j ACCEPT");
-    exec("sudo iptables -A FORWARD -s 10.0.0.0/20 -p udp --dport 53 -j ACCEPT");
-
-    exec("sudo iptables -A FORWARD -s 10.0.0.0/20 -p tcp --dport 80 -d 10.0.0.1 -j ACCEPT");
-    exec("sudo iptables -A FORWARD -s 10.0.0.0/20 -j DROP");
-
-    exec("sudo iptables -t nat -A PREROUTING -s 10.0.0.0/20 -p tcp --dport 80 -j DNAT --to-destination 10.0.0.1");
-    exec("sudo iptables -t nat -A POSTROUTING -j MASQUERADE");
-  }
-
-  function flush() {
-    exec("sudo iptables -F");
-    exec("sudo iptables -t nat -F");
   }
 }

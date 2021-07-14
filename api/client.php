@@ -1,9 +1,10 @@
+#!/usr/bin/php
 <?php
 require 'autoload.php';
 
-$ip = filter_input(INPUT_GET, 'ip', FILTER_VALIDATE_IP);
-$mac = filter_input(INPUT_GET, 'mac', FILTER_VALIDATE_MAC);
-$host = filter_input(INPUT_GET, 'host');
+$ip = $argv[1];
+$mac = $argv[2];
+$host = $argv[3];
 $date = date('Y-m-d H:i:s');
 
 if( $ip && $mac ) {
@@ -22,3 +23,4 @@ if( $ip && $mac ) {
 
   $db->update_device();
 }
+echo "done." . PHP_EOL;

@@ -11,9 +11,7 @@ if( $IP = filter_input(INPUT_GET, 'ip', FILTER_VALIDATE_IP) ) {
 
   $sess->db->mb_used = $sess->iptables->mb_used();
 
-  if( $sess->connected ) {
-    $sess->db->set_mb_used();
-  }
+  $sess->db->set_mb_used();
 
   $total_mb_limit = $sess->db->get_total_mb_limit();
   $total_mb_used = $sess->db->get_total_mb_used();

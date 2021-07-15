@@ -29,7 +29,7 @@ else {
     "ip_addr" => $sess->device->ip,
     "mac_addr" => $sess->device->mac,
     "device_id" => $sess->device->id,
-    "connected" => $sess->connected,
+    "connected" => $sess->iptables->connected(),
     "insert_coin" => $sess->coinslot->slot_state,
     "piso_count" => $sess->piso_count,
     "mb_limit" => $help->format_mb($sess->mb_limit),

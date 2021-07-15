@@ -7,8 +7,14 @@ $mac = $argv[2];
 $host = $argv[3];
 $date = date('Y-m-d H:i:s');
 
-if( $ip && $mac ) {
+if( !filter_var($mac, FILTER_VALIDATE_MAC) ) {
+  $dev = new Device($ip);
+  $mac = $dev->get_mac();
+}
+
+if( filter_var($ip, FILTER_VALIDATE_IP) && filter_var($mac, FILTER_VALIDATE_MAC) ) {
   $db = new Database();
+  $ipt = new Iptables($ip, $mac);
 
   $db->mac_addr = strtoupper($mac);
   $db->ip_addr  = $ip;
@@ -16,11 +22,16 @@ if( $ip && $mac ) {
 
   $db->updated_at = $date;
 
-  file_put_contents('device.log',json_encode([$mac,$ip,$host,$date]) . PHP_EOL, FILE_APPEND);
   if( !$db->get_device_id() ) {
     $db->add_device();
   }
 
   $db->update_device();
+
+  if( $db->get_total_mb_limit() > $db->get_total_mb_used() ) {
+    $ipt->add_client();
+  }
+  else {
+    $ipt->rem_client();
+  }
 }
-echo "done." . PHP_EOL;

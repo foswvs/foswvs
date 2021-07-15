@@ -80,6 +80,6 @@ function device_session() {
       conn.innerText = 'disconnected';
     }
 
-    setTimeout(() => device_session(),2000);
+    setTimeout(() => device_session(),1000);
   });
 }

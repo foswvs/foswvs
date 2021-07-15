@@ -15,7 +15,7 @@ class Iptables {
   }
 
   public function add_client() {
-    while( exec("sudo iptables -C FORWARD -d '{$this->ip}' -j ACCEPT; echo $?") ) {
+    while( shell_exec("sudo iptables -nL FORWARD | grep '{$this->ip}'") == NULL ) {
       exec("sudo iptables -t nat -I PREROUTING -s {$this->ip} -j ACCEPT");
       //exec("sudo iptables -I FORWARD -m mac --mac-source {$this->mac} -j ACCEPT");
       exec("sudo iptables -I FORWARD -d {$this->ip} -j ACCEPT");
@@ -25,7 +25,7 @@ class Iptables {
   }
 
   public function rem_client() {
-    while( exec("sudo iptables -C FORWARD -d '{$this->ip}' -j ACCEPT; echo $?") == 0 ) {
+    while( shell_exec("sudo iptables -nL FORWARD | grep '{$this->ip}'") ) {
       exec("sudo iptables -t nat -D PREROUTING -s {$this->ip} -j ACCEPT");
       //exec("sudo iptables -D FORWARD -m mac --mac-source {$this->mac} -j ACCEPT");
       exec("sudo iptables -D FORWARD -d {$this->ip} -j ACCEPT");
@@ -43,10 +43,7 @@ class Iptables {
   }
 
   public function connected() {
-    $check1 = exec("sudo iptables -t nat -C PREROUTING -s {$this->ip} -j ACCEPT; echo $?");
-    $check2 = exec("sudo iptables -C FORWARD -d {$this->ip} -j ACCEPT; echo $?");
-
-    if( $check1 && $check1 ) {
+    if( shell_exec("sudo iptables -nL FORWARD | grep '{$this->ip}'") == NULL ) {
       return false;
     }
 

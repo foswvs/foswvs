@@ -124,6 +124,7 @@ function displayDHCP(dev) {
 
         row.setAttribute('class', 'devinfo');
         row.setAttribute('data-mac',dev['mac']);
+        row.setAttribute('title', dev['updated_at']);
 
     col_mac.appendChild(txt_mac);
      col_ip.appendChild(txt_ip);
@@ -141,7 +142,7 @@ function displayTxn(txn) {
     txt_mac = document.createTextNode(txn.mac);
     txt_amt = document.createTextNode(txn.amt==0 ? 'FREE' : peso.format(txn.amt));
      txt_mb = document.createTextNode(format_mb(txn.mb));
-     txt_ts = document.createTextNode(txn.ts);
+     txt_ts = document.createTextNode(new Date(Date.parse(txn.ts+' UTC')).toLocaleString());
 
     col_mac.appendChild(txt_mac);
     col_amt.appendChild(txt_amt);
@@ -178,7 +179,7 @@ document.addEventListener('click', function(e) {
         body: new FormData(form)
       }).then((x) => {
         if(x.status==200) {
-          window.location.href = '/a/dhcp.html';
+          window.location.href = '/a/devices.html';
         }
       });
     }

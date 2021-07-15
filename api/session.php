@@ -9,7 +9,7 @@ class Session {
 
   public $mb_used = 0;
   public $mb_limit = 0;
-  public $mb_per_piso = 50;
+  public $mb_per_piso = 100;
 
   public $piso_count = 0;
 
@@ -21,8 +21,6 @@ class Session {
   public $start = 0;
 
   public $initr = true;
-
-  public $connected;
 
   public $COINLOG = __DIR__ . "/coin.log";
 
@@ -39,13 +37,12 @@ class Session {
   public function recognized_device() {
     $this->db = new Database();
 
+    $this->db->ip_addr = $this->device->ip;
     $this->db->mac_addr = $this->device->mac;
 
-    if( !$this->db->get_device_id() ) {
+    if( $this->device->id = $this->db->get_device_id() == 0 ) {
       $this->db->add_device();
     }
-
-    $this->device->id = $this->db->devid;
 
     $this->id = $this->db->get_device_sid();
   }
@@ -53,19 +50,15 @@ class Session {
   public function network_check() {
     $this->iptables = new Iptables($this->device->ip, $this->device->mac);
 
-    $this->connected = $this->iptables->connected();
-
     $this->calc_usage();
   }
 
   public function calc_usage() {
-    if( $this->connected ) {
-      $this->mb_limit = $this->db->get_mb_limit();
-      $this->mb_used = $this->db->get_mb_used();
+    $this->mb_limit = $this->db->get_mb_limit();
+    $this->mb_used = $this->db->get_mb_used();
 
-      $this->total_mb_limit = $this->db->get_total_mb_limit();
-      $this->total_mb_used = $this->db->get_total_mb_used();
-    }
+    $this->total_mb_limit = $this->db->get_total_mb_limit();
+    $this->total_mb_used = $this->db->get_total_mb_used();
   }
 
   public function coinslot_check() {

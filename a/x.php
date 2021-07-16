@@ -13,16 +13,22 @@ if( $net == 'login' ) {
   $_SESSION['hash'] = hash('sha256',filter_input(INPUT_POST, 'password'));
 }
 
-if( $net == 'chpwd' ) {
-  file_put_contents('password.sha256', hash('sha256',filter_input(INPUT_POST, 'password')));
+if( !isset($_SESSION['hash']) ) {
   session_destroy();
-  http_response_code(200);
+  http_response_code(401);
   exit;
 }
 
 if( $_SESSION['hash'] !== $hash ) {
   session_destroy();
   http_response_code(401);
+  exit;
+}
+
+if( $net == 'chpwd' ) {
+  file_put_contents('password.sha256', hash('sha256',filter_input(INPUT_POST, 'password')));
+  session_destroy();
+  http_response_code(200);
   exit;
 }
 

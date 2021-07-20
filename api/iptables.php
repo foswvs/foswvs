@@ -34,6 +34,16 @@ class Iptables {
     }
   }
 
+  public function zero_byte() {
+    $cmd = shell_exec("sudo iptables -nL FORWARD --line|grep '{$this->ip}'|awk '{print $1}'");
+
+    $num = explode("\n", trim($cmd));
+
+    foreach($num as $n) {
+      exec("sudo iptables -Z FORWARD $n");
+    }
+  }
+
   public function mb_used() {
     $data = shell_exec("sudo iptables -xvnL FORWARD | grep {$this->ip} | awk '{print $2}'");
 

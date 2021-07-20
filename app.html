@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<title>Captive Portal</title>
+<link href="/css/normalize.css" rel="stylesheet">
+<link href="/css/skeleton.css" rel="stylesheet">
+<link href="/css/app.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container main">
+  <div class="row">
+    <h1 id="title">CAPTIVE PORTAL</h1>
+  </div>
+  <div class="row">
+    <div class="top-up-info">
+      <p id="waiting">waiting for payment</p>
+      <p id="mb_limit">0MB</p>
+    </div>
+    <div class="button-jar">
+      <button id="insert">Insert Coin</button>
+    </div>
+  </div>
+  <hr>
+  <div class="row device-status">
+    <h4 id="conn">DETECTING DEVICE</h4>
+    <div>Data Usage: <span id="credits">Calculating...</span></div>
+    <div>MAC Address: <span id="mac_addr">Identifying...</span></div>
+    <div>IP Address: <span id="ip_addr">0.0.0.0</span> / Ping: <span id="ping">0ms</span></div>
+    <div>Rates: ₱1 = 50MB; ₱5 = 500MB; ₱10 = 1.4GB</div>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>

@@ -98,7 +98,7 @@ class Session {
       $this->coinslot->count();
 
       if( $this->coinslot->piso_count > 0 ) {
-        $this->mb_limit = $this->coinslot->piso_count * $this->mb_per_piso;
+        $this->mb_limit = $this->calc_data();
         fseek($flog,0);
         fwrite($flog, json_encode(['mac' => $this->device->mac, 'piso' => $this->coinslot->piso_count,'mb_limit' => $this->mb_limit]));
       }
@@ -117,19 +117,44 @@ class Session {
     fclose($flog);
   }
 
+  public function calc_data() {
+    $amt = $this->coinslot->piso_count;
+    $data = 0;
+
+    if( $amt >= 10 ) {
+      $base = floor($amt / 10);
+      $data = $base * 1500;
+      $tens = $base * 10;
+      $amt = $amt - $tens;
+    }
+
+    if( $amt >= 5 ) {
+      $base = floor($amt / 5);
+      $data = $base * 500 + $data;
+      $ones = $base * 5;
+      $amt = $amt - $ones;
+    }
+
+    return ($amt * 50) + $data;
+  }
+
   public function mk_limit() {
     if( $this->mb_limit ) {
-      $this->db->add_session();
-
       $this->db->mb_limit = $this->mb_limit;
+      $this->db->piso_count = $this->coinslot->piso_count;
+
+      $this->db->add_session();
       $this->db->set_mb_limit();
 
-      $this->db->piso_count = $this->coinslot->piso_count;
       $this->db->set_piso_count();
-
       $this->db->set_device_sid();
 
-      $this->iptables->add_client();
+      if( $this->iptables->connected() ) {
+        $this->iptables->zero_byte();
+      }
+      else {
+        $this->iptables->add_client();
+      }
     }
   }
 

@@ -3,27 +3,32 @@ ini_set('display_errors', 1);
 
 require_once __DIR__ . '/api/autoload.php';
 
-$sess = new Session($_SERVER['REMOTE_ADDR']);
+$ip = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);
+$does = filter_input(INPUT_GET,'do');
+
+$sess = new Session($ip);
 $help = new Helper();
 $data = [];
 
-if( isset($_GET['do']) ) {
-  $action = $_GET['do'];
+if( $does == 'get_txn' ) {
+  $sess->db->offset = filter_input(INPUT_GET, 'offset', FILTER_VALIDATE_INT);
+  $sess->db->limit  = filter_input(INPUT_GET, 'limit', FILTER_VALIDATE_INT);
 
-  switch($action) {
-    case "topup":
-      $sess->topup();
-      $data = ['sid' => $sess->id, 'piso_count' => $sess->coinslot->piso_count];
-      break;
-    case "topup_cancel":
-      $sess->coinslot->deactivate();
-      $data = ['sid' => $sess->id];
-      break;
-    default:
-      exit("use: topup/topup_cancel");
-  }
+  if( !$sess->db->offset ) $sess->db->offset = 0;
+  if( !$sess->db->limit )  $sess->db->limit = 10;
+
+  echo json_encode($sess->db->get_device_sessions(), JSON_PRETTY_PRINT);
 }
-else {
+
+if( $does == 'topup' ) {
+  $sess->topup();
+}
+
+if( $does == 'topup_cancel' ) {
+  $sess->coinslot->deactivate();
+}
+
+if( $does == 'session' ) {
   $data = [
     "initr" => $sess->initr,
     "ip_addr" => $sess->device->ip,
@@ -39,6 +44,7 @@ else {
     "ping" => rand(1,20),
     "sid" => $sess->id
    ];
+
+  echo json_encode($data, JSON_PRETTY_PRINT);
 }
 
-echo json_encode($data, JSON_PRETTY_PRINT);

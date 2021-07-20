@@ -5,7 +5,7 @@ const url = window.location,
    search = url.search,
      peso = Intl.NumberFormat('en-US', {style: 'currency', currency: 'PHP'});
 
-const xmbar  = {'exit': '/a/index.html', 'devices':'/a/devices.html', 'txns':'/a/txn.html', 'pwd':'/a/chpwd.html'}
+const xmbar  = {'exit': '/a/index.html', 'devices':'/a/devices.html', 'txn':'/a/txn.html', 'pwd':'/a/chpwd.html'}
 
 const foswvs = {};
 
@@ -94,6 +94,7 @@ if( path == '/a/device.html' ) {
   let mac = search.substr(5);
 
   foswvs.devinfo(mac);
+  getDeviceTxn(mac);
 
   let bw_limit = 1024;
 
@@ -132,17 +133,17 @@ function displayDHCP(dev) {
 }
 
 function displayTxn(txn) {
-  let table = document.getElementById('txns').getElementsByTagName('tbody')[0];
-        row = table.insertRow(-1);
-    col_mac = row.insertCell(0);
-    col_amt = row.insertCell(1);
-     col_mb = row.insertCell(2);
-     col_ts = row.insertCell(3);
+  let table = document.getElementById('txns').getElementsByTagName('tbody')[0],
+        row = table.insertRow(-1),
+    col_mac = row.insertCell(0),
+    col_amt = row.insertCell(1),
+     col_mb = row.insertCell(2),
+     col_ts = row.insertCell(3),
 
-    txt_mac = document.createTextNode(txn.mac);
-    txt_amt = document.createTextNode(txn.amt==0 ? 'FREE' : peso.format(txn.amt));
-     txt_mb = document.createTextNode(format_mb(txn.mb));
-     txt_ts = document.createTextNode(new Date(Date.parse(txn.ts+' UTC')).toLocaleString());
+    txt_mac = document.createTextNode(txn.mac),
+    txt_amt = document.createTextNode(txn.amt==0 ? 'FREE' : peso.format(txn.amt)),
+     txt_mb = document.createTextNode(format_mb(txn.mb)),
+     txt_ts = document.createTextNode(new Date(txn.ts).toLocaleString());
 
     col_mac.appendChild(txt_mac);
     col_amt.appendChild(txt_amt);
@@ -154,6 +155,31 @@ function displayTxn(txn) {
     row.setAttribute('title', `host: ${txn.host} ip: ${txn.ip}`);
 }
 
+function txnHistory(txn) {
+  let table = document.getElementById('txn_history'),
+        row = table.insertRow(-1),
+    col_amt = row.insertCell(0),
+     col_mb = row.insertCell(1),
+     col_ts = row.insertCell(2),
+    txt_amt = document.createTextNode(txn.amt==0 ? 'FREE' : peso.format(txn.amt)),
+     txt_mb = document.createTextNode(format_mb(txn.mb)),
+     txt_ts = document.createTextNode(new Date(txn.ts).toLocaleString());
+
+    col_amt.appendChild(txt_amt);
+     col_mb.appendChild(txt_mb);
+     col_ts.appendChild(txt_ts);
+}
+
+function notxn(){
+  let table = document.getElementById('txn_history'),
+        row = table.insertRow(-1),
+      blank = row.insertCell(0);
+
+      blank.setAttribute('colspan', 3);
+      blank.style.textAlign = 'center';
+      blank.appendChild(document.createTextNode('No Transaction History'));
+}
+
 function format_mb(size) {
   if( !size ) return size + 'MB';
 
@@ -161,6 +187,10 @@ function format_mb(size) {
   let tags = ['MB','GB','TB','PB','EB','ZB','YB'];
 
   return parseFloat(size / Math.pow(1024, base)).toFixed(2) + tags[base];
+}
+
+function getDeviceTxn(mac) {
+  fetch('./x.php?dev=get_txn&mac='+mac).then((x) => x.json()).then((x) => { x.forEach((tx) => { tx.ts ? txnHistory(tx) : notxn(); }); });
 }
 
 document.addEventListener('click', function(e) {

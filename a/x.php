@@ -49,11 +49,9 @@ if( $dev == 'all' ) {
 
 if( $dev == 'add_session' ) {
   $limit = filter_input(INPUT_GET, 'limit', FILTER_VALIDATE_INT);
-    $mac = filter_input(INPUT_GET, 'mac');
+    $mac = filter_input(INPUT_GET, 'mac', FILTER_VALIDATE_MAC);
 
-  if( $limit < 1 ) exit;
-
-  if( empty($mac) ) exit("provide mac address");
+  if( !$limit ) exit;
 
   $db->mac_addr = $mac;
   $db->mb_limit = $limit;
@@ -74,9 +72,7 @@ if( $dev == 'add_session' ) {
 }
 
 if( $dev == 'get_session' ) {
-  $mac = filter_input(INPUT_GET, 'mac');
-
-  if( empty($mac) ) exit("provide mac address");
+  $mac = filter_input(INPUT_GET, 'mac', FILTER_VALIDATE_MAC);
 
   $db->mac_addr = $mac;
 
@@ -94,10 +90,19 @@ if( $dev == 'get_session' ) {
   echo json_encode(['mac' => $device['mac'], 'ip' => $device['ip'], 'host' => $device['host'], 'total_mb_limit' => $total_mb_limit, 'total_mb_used' => $total_mb_used]);
 }
 
-if( $dev == 'clear_mb' ) {
-  $mac = filter_input(INPUT_GET, 'mac');
+if( $dev == 'get_txn' ) {
+  $mac = filter_input(INPUT_GET, 'mac', FILTER_VALIDATE_MAC);
 
-  if( empty($mac) ) exit("provide mac address");
+  $db->mac_addr = $mac;
+
+  $db->get_device_id();
+
+  echo json_encode($db->get_device_sessions(), JSON_PRETTY_PRINT);
+
+}
+
+if( $dev == 'clear_mb' ) {
+  $mac = filter_input(INPUT_GET, 'mac', FILTER_VALIDATE_MAC);
 
   $db->mac_addr = $mac;
 

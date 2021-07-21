@@ -17,20 +17,18 @@ class Iptables {
   public function add_client() {
     while( shell_exec("sudo iptables -nL FORWARD | grep '{$this->ip}'") == NULL ) {
       exec("sudo iptables -t nat -I PREROUTING -s {$this->ip} -j ACCEPT");
-      //exec("sudo iptables -I FORWARD -m mac --mac-source {$this->mac} -j ACCEPT");
       exec("sudo iptables -I FORWARD -d {$this->ip} -j ACCEPT");
       exec("sudo iptables -I FORWARD -s {$this->ip} -j ACCEPT");
-      sleep(1);
+      usleep(1e5);
     }
   }
 
   public function rem_client() {
     while( shell_exec("sudo iptables -nL FORWARD | grep '{$this->ip}'") ) {
       exec("sudo iptables -t nat -D PREROUTING -s {$this->ip} -j ACCEPT");
-      //exec("sudo iptables -D FORWARD -m mac --mac-source {$this->mac} -j ACCEPT");
       exec("sudo iptables -D FORWARD -d {$this->ip} -j ACCEPT");
       exec("sudo iptables -D FORWARD -s {$this->ip} -j ACCEPT");
-      sleep(1);
+      usleep(1e5);
     }
   }
 
@@ -49,7 +47,7 @@ class Iptables {
 
     $bytes = array_sum(explode("\n", trim($data)));
 
-    return round(($bytes/1000000));
+    return round($bytes/1e6);
   }
 
   public function connected() {

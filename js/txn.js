@@ -34,7 +34,7 @@ function format_mb(size) {
 }
 
 function getDeviceTxn() {
-  fetch('/api/index.php?do=get_txn').then((x) => x.json()).then((x) => { x.forEach((tx) => { tx.ts ? txnHistory(tx) : notxn(); }); });
+  fetch('/api/txn.php').then((x) => x.json()).then((x) => { x.forEach((tx) => { tx.ts ? txnHistory(tx) : notxn(); }); });
 }
 
 if( window.location.pathname == '/txn.html' ) {

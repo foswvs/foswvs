@@ -19,7 +19,7 @@ class Database extends SQLite3 {
     $dbf = '/home/pi/foswvs/conf/foswvs.db';
 
     $this->open($dbf);
-    $this->exec("PRAGMA busy_timeout=300");
+    $this->exec("PRAGMA busy_timeout=10000");
     $this->exec("PRAGMA journal_mode=WAL;");
 
     $file = stat($dbf);
@@ -116,7 +116,7 @@ class Database extends SQLite3 {
   }
 
   public function set_mb_used() {
-    $this->exec("UPDATE session SET mb_used={$this->mb_used} WHERE id={$this->sid}");
+    $this->exec("UPDATE session SET mb_used=mb_used+{$this->mb_used} WHERE id={$this->sid}");
   }
 
   public function get_mb_limit() {

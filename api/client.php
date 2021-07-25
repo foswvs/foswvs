@@ -1,6 +1,6 @@
 #!/usr/bin/php
 <?php
-require 'autoload.php';
+require __DIR__ . '/../lib/autoload.php';
 
 $ip = $argv[1];
 $mac = $argv[2];

@@ -1,30 +1,145 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>Captive Portal</title>
-<link href="/app.css" rel="stylesheet">
+<link href="/css/portal.css" rel="stylesheet">
 </head>
-<body style="background:white;">
-
+<body>
 <div class="main">
   <h1 id="title">CAPTIVE PORTAL</h1>
-  <p id="waiting">waiting for payment</p>
-  <p id="mb_limit">0MB</p>
+  <p id="wait">waiting for payment</p>
+  <p id="mb">0MB</p>
   <button id="insert">Insert Coin</button>
   <br><br>
   <hr>
   <h2 id="conn">DETECTING DEVICE</h2>
-  <div>Data Usage: <span id="credits">Calculating...</span></div>
+  <div>Data Usage: <span id="data">Calculating...</span></div>
   <div>MAC Address: <span id="mac_addr">Identifying...</span></div>
-  <div>IP Address: <span id="ip_addr">0.0.0.0</span> / Ping: <span id="ping">0ms</span></div>
+  <div>IP Address: <span id="ip_addr">0.0.0.0</span></div>
   <div><a href="/txn.html">VIEW TRANSACTIONS</a></div>
   <div>Rates: ₱1 = 50MB; ₱5 = 500MB; ₱10 = 1.4GB</div>
 </div>
 
-<script src="/app.js"></script>
+<script>
+const btn = document.getElementById('insert'),
+      mac = document.getElementById('mac_addr'),
+      ip = document.getElementById('ip_addr'),
+      d = document.getElementById('data'),
+      k = document.getElementById('conn'),
+      w = document.getElementById('wait'),
+      m = document.getElementById('mb');
+
+var topup_always_check = 0;
+
+btn.addEventListener('click', function() {
+  var txt = btn.innerText.toLowerCase();
+
+  if( txt == 'connect' ) {
+    btn.innerText='insert coin';
+    fetch('/api/connect.php');
+  }
+
+  if( txt == 'insert coin' ) {
+    btn.innerText='done';
+
+    fetch('/api/topup.php').then((res) => {
+      if(res.status==200 || res.status==401) {
+        btn.innerText='insert coin';
+      }
+
+      if(res.status == 401) {
+        alert('coinslot is busy');
+      }
+    });
+
+    topup_always_check=1;
+    topup_check();
+  }
+
+  if( txt == 'done' ) {
+    btn.innerText='insert coin';
+    fetch('/api/topup_cancel.php');
+  }
+
+  data_usage();
+});
+
+function format_mb(size) {
+  if( !size ) return size + 'MB';
+
+  let base = Math.floor(Math.log(size) / Math.log(1024));
+  let tags = ['MB','GB','TB','PB','EB','ZB','YB'];
+
+  return parseFloat(size / Math.pow(1024, base)).toFixed(2) + tags[base];
+}
+
+function topup_check() {
+  fetch('/api/topup_checker.php').then((res) => res.json()).then((res) => {
+   w.innerText = `waiting for payment (${res.cd})`;
+   m.innerText = format_mb(res.mb);
+
+   if( res.mb ) {
+     m.style.display = 'block';
+   }
+
+   if(topup_always_check) setTimeout(topup_check, 1000);
+  });
+}
+
+function data_usage() {
+  fetch('/api/data_usage.php').then((res) => res.json()).then((res) => {
+    d.innerText = `${format_mb(res.mb_used)}/${format_mb(res.mb_limit)}`;
+    mac.innerText = res.mac;
+    ip.innerText = res.ip;
+
+    if( res.mb_limit > res.mb_used &&  k.innerText.toLowerCase() == 'disconnected' ) {
+      btn.innerText = 'connect';
+    }
+  });
+}
+
+function connection_status() {
+  fetch('/api/connection_status.php').then((res) => res.text()).then((res) => {
+    parseInt(res) ? k.innerText = 'connected' : k.innerText = 'disconnected';
+
+    setTimeout(connection_status, 2000);
+  });
+}
+
+function button_check() {
+  let txt = btn.innerText.toLowerCase();
+
+  if( txt === 'insert coin' ) {
+    btn.style.borderColor = '#11aa11';
+    btn.style.backgroundColor = '#22aa22';
+    m.style.display='none';
+    w.style.display='none';
+    topup_always_check=0;
+  }
+
+  if( txt === 'done' ) {
+    topup_always_check=1;
+    w.style.display='block';
+    btn.style.borderColor = '#aa1111';
+    btn.style.backgroundColor = '#aa2222';
+  }
+
+  if( txt === 'connect' ) {
+    btn.style.borderColor = '#FFB300';
+    btn.style.backgroundColor = '#ECA809';
+    m.style.display='none';
+    w.style.display='none';
+    topup_always_check=0;
+  }
+
+  setTimeout(button_check,100);
+}
+
+button_check(); connection_status(); data_usage();
+</script>
 </body>
 </html>

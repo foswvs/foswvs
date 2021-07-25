@@ -1,0 +1,30 @@
+<?php
+require '../lib/autoload.php';
+
+$IP = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);
+
+$device = new Device($IP);
+$coinslot = new Coinslot();
+
+$wait = 10;
+$start = time();
+
+$mac_addr = $device->mac;
+
+if( $coinslot->sensor_read() == 0 ) {
+  $timer = time() - $start;
+
+  $coinslot->sensor_on();
+
+  while( $coinslot->sensor_read() ) {
+    if( $coinslot->slot_read() ) {
+      $count
+      fseek($fp, 0);
+      fwrite($fp, "$mac|$count");
+    }
+
+    if( $timer > $wait ) {
+      $coinslot->sensor_off();
+    }
+  }
+}

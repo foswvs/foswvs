@@ -1,6 +1,6 @@
 # free and open-source wifi vendo software
 
-`backend http://10.0.0.1/a password: admin`
+> backend `http://10.0.0.1/a` password: `admin`
 
 # installation instructions
  - `git https://github.com/ligrevx/foswvs-php.git foswvs`

@@ -13,3 +13,4 @@
 .device-status h4 {font-family: 'Alfa Slab One';text-transform:uppercase;letter-spacing:4px;}
 .main h1 {font-family: 'Zen Tokyo Zoo', cursive;font-weight:400;font-size:36px;text-align:center;margin-top:20px;}
 .top-up-info {text-align:center;}
+.top-up-info > .info{font-family: Tourney; font-size:48px;text-align:center;}

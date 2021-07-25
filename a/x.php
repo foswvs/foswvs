@@ -1,5 +1,5 @@
 <?php
-require_once '../api/autoload.php';
+require_once '../lib/autoload.php';
 
 $txn = filter_input(INPUT_GET, 'txn');
 $net = filter_input(INPUT_GET, 'net');
@@ -56,19 +56,23 @@ if( $dev == 'add_session' ) {
   $db->mac_addr = $mac;
   $db->mb_limit = $limit;
 
-  $db->get_device_id();
-
-  if(!$db->devid) exit("mac address doesn't exist.");
+  if( !$db->get_device_id() ) exit("mac address doesn't exist.");
 
   $db->add_session();
 
   $db->set_mb_limit();
   $db->set_device_sid();
 
-  $total_mb_limit = $help->format_mb($db->get_total_mb_limit());
-  $total_mb_used = $help->format_mb($db->get_total_mb_used());
+  $total_mb_limit = $db->get_total_mb_limit();
+  $total_mb_used = $db->get_total_mb_used();
 
-  echo json_encode(['devid' => $db->devid, 'sid' => $db->sid, 'total_mb_limit' => $total_mb_limit, 'total_mb_used' => $total_mb_used]);
+  if( $total_mb_limit > $total_mb_used ) {
+    $ipt = new Iptables($db->get_device_ip(), $mac);
+
+    $ipt->add_client();
+  }
+
+  echo json_encode(['devid' => $db->devid, 'sid' => $db->sid, 'total_mb_limit' => $help->format_mb($total_mb_limit), 'total_mb_used' => $help->format_mb($total_mb_used)]);
 }
 
 if( $dev == 'get_session' ) {

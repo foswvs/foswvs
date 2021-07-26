@@ -39,11 +39,13 @@ while( $coinslot->sensor_read() ) {
 
   $mb = $helper->amt_to_mb($count);
 
-  $data = json_encode(['mac' => $device->mac, 'amt' => $count, 'mb' => $mb, 'cd' => $diff]);
+  $log = ['mac' => $device->mac, 'amt' => $count, 'mb' => $mb, 'cd' => $diff];
 
-  fseek($fp,0);
-  fwrite($fp, $data);
-  ftruncate($fp, strlen($data));
+  $json = json_encode($log);
+
+  fseek($fp, 0);
+  fwrite($fp, $json);
+  ftruncate($fp, strlen($json));
 
   if( $timer >= $wait ) {
     $coinslot->sensor_off();
@@ -65,6 +67,10 @@ if( $count ) {
   $db->add_session();
   $db->set_device_sid();
 
-  $ipt = new Iptables($device->ip, $device->mac);
-  $ipt->add_client();
+  while( shell_exec("sudo iptables -nL FORWARD | grep '{$device->ip}'") == NULL ) {
+    exec("sudo iptables -t nat -I PREROUTING -s {$device->ip} -j ACCEPT");
+    exec("sudo iptables -A FORWARD -d {$device->ip} -j ACCEPT");
+    exec("sudo iptables -A FORWARD -s {$device->ip} -j ACCEPT");
+    usleep(1e5);
+  }
 }

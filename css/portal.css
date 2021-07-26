@@ -6,8 +6,8 @@
 body{font-family: arial, san-serif;font-size: 14px;line-height:1.42857143;color:#333333;background-color #fff;}
 button{background:#22aa22;border:1px solid #55bb55;color:#fff;cursor:pointer;font-size:26px;padding:10px 50px;text-transform:uppercase;}
 button:hover{background:#11bb11;}
-hr{border:0;border-top:1px solid #ddd;}
-.main{margin-top:10px;text-align:center;}
+hr{border:0;border-top:1px solid #eee;}
+.main{margin:10px auto 0;text-align:center;max-width:380px;border:1px solid #eee;padding:10px 0 50px;}
 #conn{text-align:center;font-size:26px;font-family: 'Alfa Slab One';text-transform:uppercase;}
 #wait,#waiting{font-family: 'Otomanopee One', sans-serif;font-size:18px;display:none;}
 #insert{font-family: 'Orbitron', sans-serif;}

@@ -5,10 +5,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-<title>Xtra Info</title>
+<title>device information</title>
 <link href="/css/normalize.css" rel="stylesheet">
 <link href="/css/skeleton.css" rel="stylesheet">
-<link href="x.css" rel="stylesheet">
+<link href="/css/a.css" rel="stylesheet">
 <style>tr:hover{cursor:default !important;background:none !important;}</style>
 </head>
 <body>
@@ -19,8 +19,8 @@
       <h5>Add Bandwidth</h5>
       <hr>
       <label>Bandwidth Size (MB)</label>  
-      <input class="u-full-width" id="bw_input" type="text" placeholder="1024">
-      <button class="button" id="bw_btn" type="button" onsubmit="return false;">Add</button>
+      <input class="u-full-width" id="mb_input" type="text" placeholder="1024">
+      <button class="button" id="mb_btn" type="button" onsubmit="return false;">Add</button>
     </div>
 
     <div class="six columns" style="border:1px solid #ccc; padding: 20px; margin-top: 10px;">
@@ -31,17 +31,120 @@
       <tr><th>MAC Address :</th><td id="mac_addr">Identifying</td></tr>
       <tr><th>Hostname :</th><td id="hostname">Identifying</td></tr>
       <tr><th>Total MB Used :</th><td><span id="total_mb_used">Calculating</span></td></tr>
-      <tr><th>Total MB Limit :</th><td><span id="total_mb_limit">Calculating</span> <button class="button" id="clear_mb">reset</button></td></tr>
+      <tr><th>Total MB Limit :</th><td><span id="total_mb_limit">Calculating</span> <button class="button" id="mb_reset">reset</button></td></tr>
       </table>
     </div>
   </div>
   <div class="row">
     <hr>
-    <table class="u-full-width" id="txn_history">
-      <tr><th>Amount</th><th>Data Cap</th><th>Tx Date</th></tr>
+    <table class="u-full-width" id="tx_table">
+      <tr><th>Amount</th><th>Data Cap</th><th>Tx Date</th><th>Sub / Total</th></tr>
     </table>
   </div>
 </div>
-<script src="x.js"></script>
+<script src="/js/a.js"></script>
+<script>
+const mac = search.substr(5),
+  ip_addr = document.getElementById('ip_addr'),
+  mac_addr = document.getElementById('mac_addr'),
+  hostname = document.getElementById('hostname'),
+  mb_input = document.getElementById('mb_input'),
+  mb_reset = document.getElementById('mb_reset'),
+  mb_used  = document.getElementById('total_mb_used'),
+  mb_limit = document.getElementById('total_mb_limit');
+
+var subtotal = 0;
+
+function tx_table(tx) {
+  subtotal = subtotal + tx.amt;
+  let table = document.getElementById('tx_table'),
+        row = table.insertRow(-1),
+    col_amt = row.insertCell(0),
+     col_mb = row.insertCell(1),
+     col_ts = row.insertCell(2),
+     col_tt = row.insertCell(3	),
+    txt_amt = document.createTextNode(tx.amt==0 ? 'FREE' : peso.format(tx.amt)),
+     txt_mb = document.createTextNode(format_mb(tx.mb)),
+     txt_ts = document.createTextNode(new Date(tx.ts).toLocaleString()),
+     txt_tt = document.createTextNode(peso.format(subtotal));
+
+    col_amt.appendChild(txt_amt);
+     col_mb.appendChild(txt_mb);
+     col_ts.appendChild(txt_ts);
+     col_tt.appendChild(txt_tt);
+}
+
+function tx_table_blank(){
+  let table = document.getElementById('tx_table'),
+        row = table.insertRow(-1),
+      blank = row.insertCell(0);
+
+      blank.setAttribute('colspan', 4);
+      blank.style.textAlign = 'center';
+      blank.appendChild(document.createTextNode('No Transaction History'));
+}
+
+function device_info() {
+  fetch('/a/x.php?dev=get_session&mac='+mac)
+    .then((x) => x.json())
+    .then((x) => {
+      mac_addr.innerText = x.mac;
+      ip_addr.innerText  = x.ip;
+      hostname.innerText = x.host;
+
+      mb_used.innerText  = x.total_mb_used;
+      mb_limit.innerText = x.total_mb_limit;
+
+      mb_reset.setAttribute('data-mac', x.mac);
+
+      setTimeout(device_info, 5000);
+    }
+  );
+}
+
+function mb_add(limit) {
+  fetch(`/a/x.php?dev=add_session&mac=${mac}&limit=${limit}`)
+    .then((x) => x.json())
+    .then((x) => {
+      mb_used.innerText = x.total_mb_used;
+      mb_limit.innerText = x.total_mb_limit;
+    }
+  );
+}
+
+function get_tx() {
+  fetch('./x.php?dev=get_txn&mac='+mac).then((x) => x.json()).then((x) => {
+    x.forEach((tx) => {
+      tx.ts ? tx_table(tx) : tx_table_blank();
+    });
+  });
+}
+
+mb_input.addEventListener('keydown', (e) => {
+  let mb = mb_input.value;
+
+  if(e.keyCode != 13 || mb < 1) return;
+
+  mb_add(mb);
+
+  mb_input.value = '';
+});
+
+document.getElementById('mb_btn').addEventListener('click', (e) => {
+  let mb = mb_input.value;
+
+  if( mb < 1 ) return false;
+
+  mb_add(mb);
+
+  mb_input.value = '';
+});
+
+mb_reset.addEventListener('dblclick', (e) => {
+  fetch(`/a/x.php?dev=clear_mb&mac=${e.target.dataset.mac}`);
+});
+
+device_info(); get_tx();
+</script>
 </body>
 </html>

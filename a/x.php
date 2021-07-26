@@ -47,6 +47,10 @@ if( $dev == 'all' ) {
   echo json_encode($db->get_devices(), JSON_PRETTY_PRINT);
 }
 
+if( $dev == 'active' ) {
+  echo json_encode($db->get_active_devices(), JSON_PRETTY_PRINT);
+}
+
 if( $dev == 'add_session' ) {
   $limit = filter_input(INPUT_GET, 'limit', FILTER_VALIDATE_INT);
     $mac = filter_input(INPUT_GET, 'mac', FILTER_VALIDATE_MAC);

@@ -17,8 +17,8 @@ class Iptables {
   public function add_client() {
     while( shell_exec("sudo iptables -nL FORWARD | grep '{$this->ip}'") == NULL ) {
       exec("sudo iptables -t nat -I PREROUTING -s {$this->ip} -j ACCEPT");
-      exec("sudo iptables -I FORWARD -d {$this->ip} -j ACCEPT");
-      exec("sudo iptables -I FORWARD -s {$this->ip} -j ACCEPT");
+      exec("sudo iptables -A FORWARD -d {$this->ip} -j ACCEPT");
+      exec("sudo iptables -A FORWARD -s {$this->ip} -j ACCEPT");
       usleep(1e5);
     }
   }

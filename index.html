@@ -23,9 +23,10 @@
   <div><a href="/txn.html">VIEW TRANSACTIONS</a></div>
   <div>Rates: ₱1 = 50MB; ₱5 = 500MB; ₱10 = 1.4GB</div>
 </div>
-
+<audio id="beep" src="/js/sfx/insert_coin.mp3" preload="auto" loop></audio>
 <script>
-const btn = document.getElementById('insert'),
+const beep = document.getElementById('beep'),
+      btn = document.getElementById('insert'),
       mac = document.getElementById('mac_addr'),
       ip = document.getElementById('ip_addr'),
       d = document.getElementById('data'),
@@ -58,18 +59,18 @@ btn.addEventListener('click', function() {
 
     topup_always_check=1;
     topup_check();
+    beep.play();
   }
 
   if( txt == 'done' ) {
+    beep.pause();
     btn.innerText='insert coin';
     fetch('/api/topup_cancel.php');
   }
-
-  data_usage();
 });
 
 function format_mb(size) {
-  if( !size ) return size + 'MB';
+  if( !size ) return 0;
 
   let base = Math.floor(Math.log(size) / Math.log(1024));
   let tags = ['MB','GB','TB','PB','EB','ZB','YB'];
@@ -81,6 +82,8 @@ function topup_check() {
   fetch('/api/topup_checker.php').then((res) => res.json()).then((res) => {
    w.innerText = `waiting for payment (${res.cd})`;
    m.innerText = format_mb(res.mb);
+
+   console.log(res.i);
 
    if( res.mb ) {
      m.style.display = 'block';
@@ -99,6 +102,8 @@ function data_usage() {
     if( res.mb_limit > res.mb_used &&  k.innerText.toLowerCase() == 'disconnected' ) {
       btn.innerText = 'connect';
     }
+
+    setTimeout(data_usage,30000);
   });
 }
 
@@ -106,7 +111,7 @@ function connection_status() {
   fetch('/api/connection_status.php').then((res) => res.text()).then((res) => {
     parseInt(res) ? k.innerText = 'connected' : k.innerText = 'disconnected';
 
-    setTimeout(connection_status, 2000);
+    setTimeout(connection_status, 10000);
   });
 }
 
@@ -137,6 +142,23 @@ function button_check() {
   }
 
   setTimeout(button_check,100);
+}
+
+function alert(txt) {
+  let d = document.createElement('div');
+  d.style.backgroundColor='red';
+  d.style.textAlign='center';
+  d.style.position='fixed';
+  d.style.padding='5px';
+  d.style.color='white';
+  d.style.bottom='0px';
+  d.style.right='0px';
+  d.style.left='0px';
+  d.innerHTML=txt;
+
+  document.body.appendChild(d);
+
+  setTimeout(()=>{d.remove()},5000);
 }
 
 button_check(); connection_status(); data_usage();

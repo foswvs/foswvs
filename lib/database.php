@@ -116,7 +116,7 @@ class Database extends SQLite3 {
   }
 
   public function set_mb_used() {
-    $this->exec("UPDATE session SET mb_used=mb_used+{$this->mb_used} WHERE id={$this->sid}");
+    $this->exec("UPDATE session SET mb_used=mb_used+{$this->mb_used},updated_at=CURRENT_TIMESTAMP WHERE id={$this->sid}");
   }
 
   public function get_mb_limit() {
@@ -165,6 +165,18 @@ class Database extends SQLite3 {
 
   public function get_device_sessions() {
     $cmd = $this->query("SELECT s.piso_count AS amt,s.mb_limit AS mb,strftime('%Y-%m-%dT%H:%M:%SZ',s.created_at) AS ts FROM devices d LEFT JOIN session s ON d.id=s.device_id WHERE d.id='{$this->devid}' ORDER BY s.id DESC");
+
+    $res = [];
+
+    while( $row = $cmd->fetchArray(SQLITE3_ASSOC) ) {
+      array_push($res, $row);
+    }
+
+    return $res;
+  }
+
+  public function get_active_devices() {
+    $cmd = $this->query("SELECT d.mac_addr AS mac, IFNULL(d.ip_addr,'-NA-') AS ip, IFNULL(d.hostname,'-NA-') AS host,strftime('%Y-%m-%dT%H:%M:%SZ',s.updated_at) AS updated_at FROM session s JOIN devices d ON d.id=s.device_id WHERE s.updated_at > DATETIME(CURRENT_TIMESTAMP,'-3 minutes')");
 
     $res = [];
 

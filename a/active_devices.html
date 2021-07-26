@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-<title>devices</title>
+<title>active devices</title>
 <link href="/css/normalize.css" rel="stylesheet">
 <link href="/css/skeleton.css" rel="stylesheet">
 <link href="/css/a.css" rel="stylesheet">
@@ -16,7 +16,7 @@
   <div class="row">
     <table class="u-full-width" id="devices">
       <thead>
-        <tr><th>IP</th><th>MAC</th><th>Hostname</th><th>Connect TS</th></tr>
+        <tr><th>IP</th><th>MAC</th><th>Hostname</th><th>Last Active</th></tr>
       </thead>
       <tbody>
       </tbody>
@@ -25,9 +25,10 @@
 </div>
 <script src="/js/a.js"></script>
 <script>
+const table = document.getElementById('devices');
 function devices_table(dev) {
-  let table = document.getElementById('devices').getElementsByTagName('tbody')[0],
-        row = table.insertRow(-1),
+  let tbody = table.getElementsByTagName('tbody')[0],
+        row = tbody.insertRow(-1),
     col_mac = row.insertCell(0),
      col_ip = row.insertCell(1),
    col_host = row.insertCell(2),
@@ -36,7 +37,7 @@ function devices_table(dev) {
     txt_mac = document.createTextNode(dev['mac']),
      txt_ip = document.createTextNode(dev['ip']),
    txt_host = document.createTextNode(dev['host']),
-     txt_ts = document.createTextNode(dev['updated_at']);
+     txt_ts = document.createTextNode(utc_to_local(dev['updated_at']));
 
         row.setAttribute('class', 'devinfo');
         row.setAttribute('data-mac',dev['mac']);
@@ -47,13 +48,22 @@ function devices_table(dev) {
     col_opt.appendChild(txt_ts);
 }
 
-function list_devices() {
-  fetch('/a/x.php?dev=all')
+function empty_table() {
+  let tbody = table.getElementsByTagName('tbody')[0];
+
+  Array.from(tbody.rows).forEach((tr) => tbody.deleteRow(tr));
+}
+
+function active_devices() {
+  empty_table();
+
+  fetch('/a/x.php?dev=active')
     .then((x) => x.json())
     .then((x) => {
       x.forEach((d) => {
         devices_table(d);
-      })
+      });
+      setTimeout(active_devices,10000);
     }
   );
 }
@@ -62,7 +72,7 @@ document.body.addEventListener('click',(e) => {
   if( e.target.parentNode.className == 'devinfo' ) {  
     window.location.href = '/a/device.html?mac=' + e.target.parentNode.dataset.mac;
   }
-}); list_devices();
+}); active_devices();
 </script>
 </body>
 </html>

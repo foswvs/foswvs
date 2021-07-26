@@ -8,7 +8,7 @@
 <title>transactions</title>
 <link href="/css/normalize.css" rel="stylesheet">
 <link href="/css/skeleton.css" rel="stylesheet">
-<link href="x.css" rel="stylesheet">
+<link href="/css/a.css" rel="stylesheet">
 </head>
 <body>
 <div class="container" style="margin-top:10px;">
@@ -16,14 +16,68 @@
   <div class="row">
     <table class="u-full-width" id="txns">
       <thead>
-        <tr><th>MAC</th><th>Amount</th><th>Data</th><th>Txn Date</th></tr>
+        <tr><th>MAC</th><th>Amount</th><th>Data</th><th>Txn Date</th><th>Sub / Total</th></tr>
       </thead>
       <tbody>
       </tbody>
     </table>
-    <button class="button" id="moretxns" type="button">load more</button>
+    <button class="button" id="moretx" type="button">load more</button>
   </div>
 </div>
-<script src="x.js"></script>
+<script src="/js/a.js"></script>
+<script>
+var subtotal = 0, limit = 10, offset = 0;
+
+function displayTxn(txn) {
+   subtotal = subtotal + txn.amt;
+
+  let table = document.getElementById('txns').getElementsByTagName('tbody')[0],
+        row = table.insertRow(-1),
+    col_mac = row.insertCell(0),
+    col_amt = row.insertCell(1),
+     col_mb = row.insertCell(2),
+     col_ts = row.insertCell(3),
+     col_tt = row.insertCell(4),
+    txt_mac = document.createTextNode(txn.mac),
+    txt_amt = document.createTextNode(txn.amt==0 ? 'FREE' : peso.format(txn.amt)),
+     txt_mb = document.createTextNode(format_mb(txn.mb)),
+     txt_ts = document.createTextNode(utc_to_local(txn.ts));
+     txt_tt = document.createTextNode(peso.format(subtotal));
+
+    col_mac.appendChild(txt_mac);
+    col_amt.appendChild(txt_amt);
+     col_mb.appendChild(txt_mb);
+     col_ts.appendChild(txt_ts);
+     col_tt.appendChild(txt_tt);
+
+    row.setAttribute('class',  'devinfo');
+    row.setAttribute('data-mac', txn.mac);
+    row.setAttribute('title', `host: ${txn.host} ip: ${txn.ip}`);
+}
+
+function txn() {
+  fetch(`./x.php?txn=get_all&offset=${offset}&limit=${limit}`)
+    .then((x) => x.json())
+    .then((x) => {
+      x.forEach((txn) => {
+        displayTxn(txn);
+      })
+
+      if (x.length == limit)
+        offset += limit;
+    }
+  );
+}
+
+document.body.addEventListener('click',(e) => {
+  if( e.target.parentNode.className == 'devinfo' ) {  
+    window.location.href = '/a/device.html?mac=' + e.target.parentNode.dataset.mac;
+  }
+
+  if( e.target.id === 'moretx' ) {
+    txn();
+  }
+}); txn();
+</script>
 </body>
 </html>

@@ -8,7 +8,7 @@
 <title>admin</title>
 <link href="/css/normalize.css" rel="stylesheet">
 <link href="/css/skeleton.css" rel="stylesheet">
-<link href="x.css" rel="stylesheet">
+<link href="/css/a.css" rel="stylesheet">
 </head>
 <body>
 <div class="container">
@@ -23,6 +23,23 @@
     </div>
   </div>
 </div>
-<script src="x.js"></script>
+<script>
+document.addEventListener('click', function(e) {
+  if( e.target.parentNode.id == 'login' ) {
+    let form = e.target.parentNode;
+
+    if( form.password.value ) {
+      fetch('./x.php?net=login', {
+        method: 'POST',
+        body: new FormData(form)
+      }).then((x) => {
+        if(x.status==200) {
+          window.location.href = '/a/devices.html';
+        }
+      });
+    }
+  }
+})
+</script>
 </body>
 </html>

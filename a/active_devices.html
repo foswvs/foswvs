@@ -48,14 +48,8 @@ function devices_table(dev) {
     col_opt.appendChild(txt_ts);
 }
 
-function empty_table() {
-  let tbody = table.getElementsByTagName('tbody')[0];
-
-  Array.from(tbody.rows).forEach((tr) => tbody.deleteRow(tr));
-}
-
 function active_devices() {
-  empty_table();
+  empty_table('devices');
 
   fetch('/a/x.php?dev=active')
     .then((x) => x.json())

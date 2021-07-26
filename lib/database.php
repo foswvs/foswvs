@@ -58,7 +58,7 @@ class Database extends SQLite3 {
   }
 
   public function update_device() {
-    $this->exec("UPDATE devices SET hostname='{$this->hostname}',ip_addr='{$this->ip_addr}',updated_at='{$this->updated_at}' WHERE id='{$this->devid}'");
+    $this->exec("UPDATE devices SET hostname='{$this->hostname}',ip_addr='{$this->ip_addr}',updated_at=CURRENT_TIMESTAMP WHERE id='{$this->devid}'");
   }
 
   public function get_device_id() {
@@ -176,7 +176,19 @@ class Database extends SQLite3 {
   }
 
   public function get_active_devices() {
-    $cmd = $this->query("SELECT d.mac_addr AS mac, IFNULL(d.ip_addr,'-NA-') AS ip, IFNULL(d.hostname,'-NA-') AS host,strftime('%Y-%m-%dT%H:%M:%SZ',s.updated_at) AS updated_at FROM session s JOIN devices d ON d.id=s.device_id WHERE s.updated_at > DATETIME(CURRENT_TIMESTAMP,'-3 minutes')");
+    $cmd = $this->query("SELECT d.mac_addr AS mac, d.ip_addr AS ip, IFNULL(d.hostname,'-NA-') AS host,strftime('%Y-%m-%dT%H:%M:%SZ',s.updated_at) AS updated_at FROM session s JOIN devices d ON d.id=s.device_id WHERE s.updated_at > DATETIME(CURRENT_TIMESTAMP,'-3 minutes') ORDER BY updated_at DESC");
+
+    $res = [];
+
+    while( $row = $cmd->fetchArray(SQLITE3_ASSOC) ) {
+      array_push($res, $row);
+    }
+
+    return $res;
+  }
+
+  public function get_recent_devices() {
+    $cmd = $this->query("SELECT mac_addr AS mac, IFNULL(ip_addr,'-NA-') AS ip, IFNULL(hostname,'-NA-') AS host,updated_at FROM devices WHERE updated_at > DATETIME(CURRENT_TIMESTAMP,'-4 HOURS') ORDER BY updated_at DESC");
 
     $res = [];
 

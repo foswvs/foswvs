@@ -47,13 +47,16 @@ function devices_table(dev) {
     col_opt.appendChild(txt_ts);
 }
 
-function list_devices() {
-  fetch('/a/x.php?dev=all')
+function recent_devices() {
+  empty_table('devices');
+
+  fetch('/a/x.php?dev=recent')
     .then((x) => x.json())
     .then((x) => {
       x.forEach((d) => {
         devices_table(d);
       })
+      setTimeout(recent_devices,30000);
     }
   );
 }
@@ -62,7 +65,7 @@ document.body.addEventListener('click',(e) => {
   if( e.target.parentNode.className == 'devinfo' ) {  
     window.location.href = '/a/device.html?mac=' + e.target.parentNode.dataset.mac;
   }
-}); list_devices();
+}); recent_devices();
 </script>
 </body>
 </html>

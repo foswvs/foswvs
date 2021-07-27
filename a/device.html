@@ -38,8 +38,8 @@
   <div class="row">
     <hr>
     <table class="u-full-width" id="tx_table">
-      <tr><th>Amount</th><th>Data Cap</th><th>Tx Date</th><th>Sub / Total</th></tr>
-    </table>
+      <tr><th>Date</th><th>Data</th><th>Amt</th><th>Sub / Total</th></tr>
+   </table>
   </div>
 </div>
 <script src="/js/a.js"></script>
@@ -59,10 +59,10 @@ function tx_table(tx) {
   subtotal = subtotal + tx.amt;
   let table = document.getElementById('tx_table'),
         row = table.insertRow(-1),
-    col_amt = row.insertCell(0),
+     col_ts = row.insertCell(0),
      col_mb = row.insertCell(1),
-     col_ts = row.insertCell(2),
-     col_tt = row.insertCell(3	),
+    col_amt = row.insertCell(2),
+     col_tt = row.insertCell(3),
     txt_amt = document.createTextNode(tx.amt==0 ? 'FREE' : peso.format(tx.amt)),
      txt_mb = document.createTextNode(format_mb(tx.mb)),
      txt_ts = document.createTextNode(new Date(tx.ts).toLocaleString()),

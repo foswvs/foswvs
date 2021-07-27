@@ -25,7 +25,7 @@
 </div>
 <script src="/js/a.js"></script>
 <script>
-function devices_table(dev) {
+function devices_table(d) {
   let table = document.getElementById('devices').getElementsByTagName('tbody')[0],
         row = table.insertRow(-1),
     col_mac = row.insertCell(0),
@@ -33,13 +33,13 @@ function devices_table(dev) {
    col_host = row.insertCell(2),
     col_opt = row.insertCell(3),
 
-    txt_mac = document.createTextNode(dev['mac']),
-     txt_ip = document.createTextNode(dev['ip']),
-   txt_host = document.createTextNode(dev['host']),
-     txt_ts = document.createTextNode(dev['updated_at']);
+    txt_mac = document.createTextNode(d.mac),
+     txt_ip = document.createTextNode(d.ip),
+   txt_host = document.createTextNode(d.host),
+     txt_ts = document.createTextNode(utc_to_local(d.updated_at));
 
         row.setAttribute('class', 'devinfo');
-        row.setAttribute('data-mac',dev['mac']);
+        row.setAttribute('data-mac',d.mac);
 
     col_mac.appendChild(txt_mac);
      col_ip.appendChild(txt_ip);

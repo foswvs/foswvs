@@ -3,9 +3,9 @@ const peso = Intl.NumberFormat('en-US', {style: 'currency', currency: 'PHP'});
 function txnHistory(txn) {
   let table = document.getElementById('txn_history'),
         row = table.insertRow(-1),
-    col_amt = row.insertCell(0),
+     col_ts = row.insertCell(0),
      col_mb = row.insertCell(1),
-     col_ts = row.insertCell(2),
+    col_amt = row.insertCell(2),
     txt_amt = document.createTextNode(txn.amt==0 ? 'FREE' : peso.format(txn.amt)),
      txt_mb = document.createTextNode(format_mb(txn.mb)),
      txt_ts = document.createTextNode(new Date(txn.ts).toLocaleString());

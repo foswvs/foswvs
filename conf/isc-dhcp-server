@@ -1,0 +1,6 @@
+# file: /etc/default/isc-dhcp-server
+# Defaults for isc-dhcp-server (sourced by /etc/init.d/isc-dhcp-server)
+DHCPDv4_CONF=/etc/dhcp/dhcpd.conf
+#DHCPDv4_PID=/var/run/dhcpd.pid
+INTERFACESv4="eth1"
+INTERFACESv6=""

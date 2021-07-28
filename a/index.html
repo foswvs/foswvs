@@ -21,6 +21,7 @@
         <a class="button" href="/">EXIT</a>
       </form>
     </div>
+    <p style="text-align:center;margin-top:10px;">CPU Temp: <span id="cpu_temp">0</span>&#176;</p>
   </div>
 </div>
 <script>
@@ -40,6 +41,12 @@ document.addEventListener('click', function(e) {
     }
   }
 })
+
+function cpu_temp() {
+  fetch('/api/cpu_temp.php').then((r) => r.text()).then((r) => { document.getElementById('cpu_temp').innerText=parseFloat(r).toFixed(2); setTimeout(cpu_temp,30000); });
+}
+
+cpu_temp();
 </script>
 </body>
 </html>

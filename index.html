@@ -24,6 +24,8 @@
   <div>Rates: ₱1 = 50MB; ₱5 = 500MB; ₱10 = 1.4GB</div>
 </div>
 <audio id="beep" src="/js/sfx/insert_coin.mp3" preload="auto" loop></audio>
+<audio id="bump" src="/js/sfx/bump.wav" preload="auto"></audio>
+<audio id="coin" src="/js/sfx/coin.wav" preload="auto"></audio>
 <script>
 const beep = document.getElementById('beep'),
       btn = document.getElementById('insert'),
@@ -34,38 +36,52 @@ const beep = document.getElementById('beep'),
       w = document.getElementById('wait'),
       m = document.getElementById('mb');
 
-var topup_always_check = 0;
+var topup_always_check = 0, new_coin=0;
 
 btn.addEventListener('click', function() {
-  var txt = btn.innerText.toLowerCase();
+  const x = new XMLHttpRequest(),
+      txt = btn.innerText.toLowerCase();
 
   if( txt == 'connect' ) {
-    btn.innerText='insert coin';
-    fetch('/api/connect.php');
+    x.addEventListener('readystatechange', () => {
+      if(x.readyState==4) {
+        btn.innerText='insert coin';
+      }
+    });
+
+    x.open('GET','/api/connect.php');
+    x.send();
   }
 
   if( txt == 'insert coin' ) {
     btn.innerText='done';
 
-    fetch('/api/topup.php').then((res) => {
-      if(res.status==200 || res.status==401) {
-        btn.innerText='insert coin';
+    x.addEventListener('readystatechange', () => {
+      if(x.readyState == 1) {
+        topup_always_check=1;
+        beep.play(); topup_check();
       }
 
-      if(res.status == 401) {
-        alert('coinslot is busy');
+      if(x.readyState == 4) {
+        btn.innerText='insert coin';
+        beep.pause();
+
+        if(x.status == 401) {
+          bump.play(); alert('coinslot is busy');
+        }
       }
     });
 
-    topup_always_check=1;
-    topup_check();
-    beep.play();
+    x.open('GET','/api/topup.php');
+    x.send();
   }
 
   if( txt == 'done' ) {
     beep.pause();
     btn.innerText='insert coin';
-    fetch('/api/topup_cancel.php');
+
+    x.open('GET','/api/topup_cancel.php');
+    x.send();
   }
 });
 
@@ -79,40 +95,65 @@ function format_mb(size) {
 }
 
 function topup_check() {
-  fetch('/api/topup_checker.php').then((res) => res.json()).then((res) => {
-   w.innerText = `waiting for payment (${res.cd})`;
-   m.innerText = format_mb(res.mb);
+  const x = new XMLHttpRequest();
 
-   console.log(res.i);
+  x.addEventListener('readystatechange', () => {
+    if( x.readyState == 4 && x.status == 200 ) {
+      let j = JSON.parse(x.responseText);
 
-   if( res.mb ) {
-     m.style.display = 'block';
-   }
+      w.innerText = `waiting for payment (${j.cd})`;
+      w.style.display='block';
+      m.innerText = format_mb(j.mb);
 
-   if(topup_always_check) setTimeout(topup_check, 1000);
+      if( j.mb ) { m.style.display='block'; }
+
+      if(j.amt != new_coin) { coin.play(); new_coin=j.amt;}
+
+      if(topup_always_check) setTimeout(topup_check, 1000);
+    }
   });
+
+  x.open('GET','/api/topup_checker.php')
+  x.send();
 }
 
 function data_usage() {
-  fetch('/api/data_usage.php').then((res) => res.json()).then((res) => {
-    d.innerText = `${format_mb(res.mb_used)}/${format_mb(res.mb_limit)}`;
-    mac.innerText = res.mac;
-    ip.innerText = res.ip;
+  const x = new XMLHttpRequest();
 
-    if( res.mb_limit > res.mb_used &&  k.innerText.toLowerCase() == 'disconnected' ) {
-      btn.innerText = 'connect';
+  x.addEventListener('readystatechange', () => {
+    if( x.readyState == 4 && x.status == 200) {
+      let j = JSON.parse(x.responseText);
+
+      
+      d.innerText = `${format_mb(j.mb_used)}/${format_mb(j.mb_limit)}`;
+      mac.innerText = j.mac;
+      ip.innerText = j.ip;
+
+      if( j.mb_limit > j.mb_used &&  k.innerText.toLowerCase() == 'disconnected' ) {
+        btn.innerText = 'connect';
+      }
+
+      setTimeout(data_usage,30000);
     }
-
-    setTimeout(data_usage,30000);
   });
+
+  x.open('GET','/api/data_usage.php');
+  x.send();
 }
 
 function connection_status() {
-  fetch('/api/connection_status.php').then((res) => res.text()).then((res) => {
-    parseInt(res) ? k.innerText = 'connected' : k.innerText = 'disconnected';
+  const x = new XMLHttpRequest();
 
-    setTimeout(connection_status, 10000);
+  x.addEventListener('readystatechange', () => {
+    if( x.readyState == 4 && x.status == 200 ) {
+      parseInt(x.responseText) ? k.innerText = 'connected' : k.innerText = 'disconnected';
+
+      setTimeout(connection_status, 10000);
+    }
   });
+
+  x.open('GET','/api/connection_status.php');
+  x.send();
 }
 
 function button_check() {
@@ -127,8 +168,6 @@ function button_check() {
   }
 
   if( txt === 'done' ) {
-    topup_always_check=1;
-    w.style.display='block';
     btn.style.borderColor = '#aa1111';
     btn.style.backgroundColor = '#aa2222';
   }

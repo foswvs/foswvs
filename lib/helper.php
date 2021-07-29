@@ -16,7 +16,7 @@ class Helper {
     if( $total_amt >= $ten ) {
       $base = floor($total_amt / $ten);
 
-      $data = $base * 1500;
+      $data = $base * 1024;
 
       $amt_count = $base * $ten;
 

@@ -9,7 +9,9 @@ $db = new Database();
 
 $db->mac_addr = $device->mac;
 
-$db->get_device_id();
+if( $db->get_device_id() == 0 ) {
+  $db->add_device();
+}
 
 $total_mb_limit = $db->get_total_mb_limit();
 

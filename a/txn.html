@@ -21,12 +21,12 @@
       <tbody>
       </tbody>
     </table>
-    <button class="button" id="moretx" type="button">load more</button>
+    <button class="button" id="moretx" type="button">load more (<span id="tx_count"></span>)</button>
   </div>
 </div>
 <script src="/js/a.js"></script>
 <script>
-var subtotal = 0, limit = 10, offset = 0;
+var subtotal = 0, limit = 24, offset = 0, tx_count=0, tx_display=document.getElementById('tx_count');
 
 function displayTxn(txn) {
    subtotal = subtotal + txn.amt;
@@ -53,6 +53,8 @@ function displayTxn(txn) {
     row.setAttribute('class',  'devinfo');
     row.setAttribute('data-mac', txn.mac);
     row.setAttribute('title', `host: ${txn.host} ip: ${txn.ip}`);
+
+    tx_display.innerText=(tx_count+=1);
 }
 
 function txn() {

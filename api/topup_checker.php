@@ -8,6 +8,7 @@ $coinslot = new Coinslot();
 
 if( !$coinslot->sensor_read() ) {
   http_response_code(401);
+  exit;
 }
 
 $file = '/tmp/coinslot';
@@ -17,14 +18,13 @@ $data = file_get_contents($file);
 $data = json_decode($data, true);
 
 if( $data === NULL ) {
-  $data = ['amt' => 0, 'cd' => 0, 'mac' => '', 'mb' => 0, 'i' => 0];
+  http_response_code(401);
+  exit;
 }
-
-$data['i'] = 1;
 
 if( $data['mac'] != $device->mac ) {
   http_response_code(401);
-  $data = ['mac' => $device->mac, 'amt' => 0, 'cd' => 0,'mb' => 0, 'i' => 0];
+  exit;
 }
 
 $data = json_encode($data);

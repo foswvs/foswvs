@@ -5,7 +5,7 @@ const url = window.location,
    search = url.search,
      peso = Intl.NumberFormat('en-US', {style: 'currency', currency: 'PHP'});
 
-const xmbar  = {'exit': '/a/index.html', 'active': '/a/active_devices.html', 'recent': '/a/recent_devices.html', 'txn': '/a/txn.html', 'pwd': '/a/change_password.html'};
+const xmbar  = {'exit': '/a/logout.php', 'active': '/a/active_devices.html', 'recent': '/a/recent_devices.html', 'txn': '/a/txn.html', 'pwd': '/a/change_password.html'};
 
 if( xpane = document.getElementById('xmenubar') ) {
   let ul = document.createElement('ul');

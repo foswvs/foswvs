@@ -58,7 +58,7 @@ btn.addEventListener('click', function() {
   }
 
   if( txt == 'insert coin' ) {
-    btn.innerText='done';
+    btn.innerText='... ... ...';
 
     x.addEventListener('readystatechange', () => {
       if(x.readyState == 1) {
@@ -109,7 +109,10 @@ function topup_check() {
 
         if( j.mb ) { m.style.display='block'; }
 
-        if(j.amt != new_coin) { beep.pause(); coin.play(); new_coin=j.amt; }
+        if(j.amt != new_coin) {
+          beep.pause(); coin.play();
+          data_usage(); new_coin=j.amt;
+        }
         else { if(beep.paused) beep.play(); }
 
         setTimeout(topup_check, 1000);
@@ -118,7 +121,7 @@ function topup_check() {
       if( x.status == 401 ) {
         if( !beep.paused ) { beep.pause(); }
 
-        btn.innerText='insert coin';
+        btn.innerText='insert coin'; data_usage();
       }
     }
   });
@@ -137,8 +140,6 @@ function data_usage() {
       d.innerText = `${format_mb(j.mb_used)}/${format_mb(j.mb_limit)}`;
       mac.innerText = j.mac;
       ip.innerText = j.ip;
-
-      setTimeout(data_usage,30000);
     }
   });
 

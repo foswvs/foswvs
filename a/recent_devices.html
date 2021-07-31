@@ -21,6 +21,7 @@
       <tbody>
       </tbody>
     </table>
+    <a class="button" id="device_count" href="#">0 device</a>
   </div>
 </div>
 <script src="/js/a.js"></script>
@@ -49,12 +50,13 @@ function devices_table(d) {
 
 function recent_devices() {
   empty_table('devices');
-
+  let device_count=0, display_count=document.getElementById('device_count');
   fetch('/a/x.php?dev=recent')
     .then((x) => x.json())
     .then((x) => {
       x.forEach((d) => {
-        devices_table(d);
+        devices_table(d);device_count++;
+        display_count.innerText=`${device_count} devices found in the last 4 hours`;
       })
       setTimeout(recent_devices,30000);
     }

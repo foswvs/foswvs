@@ -1,4 +1,6 @@
 <?php
+set_time_limit(60);
+
 require '../lib/autoload.php';
 
 $IP = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);
@@ -18,7 +20,7 @@ if( $coinslot->sensor_read() ) {
 }
 
 $mb = 0;
-$wait = 30;
+$wait = 60;
 $data = [];
 $count = 0;
 $start = time();

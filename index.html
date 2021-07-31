@@ -21,7 +21,7 @@
   <div>MAC Address: <span id="mac_addr">Identifying...</span></div>
   <div>IP Address: <span id="ip_addr">0.0.0.0</span></div>
   <div><a href="/txn.html">VIEW TRANSACTIONS</a></div>
-  <div>Rates: ₱1 = 50MB; ₱5 = 500MB; ₱10 = 1.0GB</div>
+  <div>Rates: ₱1 = 50MB; ₱5 = 500MB; ₱30 = 4GB</div>
   <p>VALID 'TIL CONSUMED. NO EXPIRY.</p>
   <p><a href="https://dhcp.msu.edu/help/randommac.html">Disable Random MAC Address</a></p>
 </div>
@@ -30,15 +30,17 @@
 <audio id="coin" src="/js/sfx/coin.wav" preload="auto"></audio>
 <script>
 const beep = document.getElementById('beep'),
-      btn = document.getElementById('insert'),
-      mac = document.getElementById('mac_addr'),
-      ip = document.getElementById('ip_addr'),
-      d = document.getElementById('data'),
-      k = document.getElementById('conn'),
-      w = document.getElementById('wait'),
-      m = document.getElementById('mb');
+      bump = document.getElementById('bump'),
+      coin = document.getElementById('coin'),
+       btn = document.getElementById('insert'),
+       mac = document.getElementById('mac_addr'),
+        ip = document.getElementById('ip_addr'),
+         d = document.getElementById('data'),
+         k = document.getElementById('conn'),
+         w = document.getElementById('wait'),
+         m = document.getElementById('mb');
 
-var topup_always_check = 0, new_coin=0;
+var new_coin=0;
 
 btn.addEventListener('click', function() {
   const x = new XMLHttpRequest(),
@@ -60,14 +62,10 @@ btn.addEventListener('click', function() {
 
     x.addEventListener('readystatechange', () => {
       if(x.readyState == 1) {
-        topup_always_check=1;
-        beep.play(); topup_check();
+        setTimeout(topup_check,800);
       }
 
       if(x.readyState == 4) {
-        btn.innerText='insert coin';
-        beep.pause();
-
         if(x.status == 401) {
           bump.play(); alert('coinslot is busy');
         }
@@ -100,22 +98,32 @@ function topup_check() {
   const x = new XMLHttpRequest();
 
   x.addEventListener('readystatechange', () => {
-    if( x.readyState == 4 && x.status == 200 ) {
-      let j = JSON.parse(x.responseText);
+    if( x.readyState == 4 ) {
+      if( x.status == 200 ) {
+        let j = JSON.parse(x.responseText);
 
-      w.innerText = `waiting for payment (${j.cd})`;
-      w.style.display='block';
-      m.innerText = format_mb(j.mb);
+        w.innerText = `waiting for payment (${j.cd})`;
+        m.innerText = format_mb(j.mb);
+        w.style.display='block';
+        btn.innerText='done';
 
-      if( j.mb ) { m.style.display='block'; }
+        if( j.mb ) { m.style.display='block'; }
 
-      if(j.amt != new_coin) { coin.play(); new_coin=j.amt;}
+        if(j.amt != new_coin) { beep.pause(); coin.play(); new_coin=j.amt; }
+        else { if(beep.paused) beep.play(); }
 
-      if(topup_always_check) setTimeout(topup_check, 1000);
+        setTimeout(topup_check, 1000);
+      }
+
+      if( x.status == 401 ) {
+        if( !beep.paused ) { beep.pause(); }
+
+        btn.innerText='insert coin';
+      }
     }
   });
 
-  x.open('GET','/api/topup_checker.php')
+  x.open('GET','/api/topup_checker.php');
   x.send();
 }
 
@@ -125,15 +133,10 @@ function data_usage() {
   x.addEventListener('readystatechange', () => {
     if( x.readyState == 4 && x.status == 200) {
       let j = JSON.parse(x.responseText);
-
       
       d.innerText = `${format_mb(j.mb_used)}/${format_mb(j.mb_limit)}`;
       mac.innerText = j.mac;
       ip.innerText = j.ip;
-
-      if( j.mb_limit > j.mb_used &&  k.innerText.toLowerCase() == 'disconnected' ) {
-        btn.innerText = 'connect';
-      }
 
       setTimeout(data_usage,30000);
     }
@@ -166,7 +169,6 @@ function button_check() {
     btn.style.backgroundColor = '#22aa22';
     m.style.display='none';
     w.style.display='none';
-    topup_always_check=0;
   }
 
   if( txt === 'done' ) {
@@ -179,7 +181,6 @@ function button_check() {
     btn.style.backgroundColor = '#ECA809';
     m.style.display='none';
     w.style.display='none';
-    topup_always_check=0;
   }
 
   setTimeout(button_check,100);
@@ -202,7 +203,7 @@ function alert(txt) {
   setTimeout(()=>{d.remove()},5000);
 }
 
-button_check(); connection_status(); data_usage();
+button_check(); connection_status(); data_usage(); topup_check();
 </script>
 </body>
 </html>

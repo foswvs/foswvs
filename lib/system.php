@@ -1,5 +1,9 @@
 <?php
 class System {
+  public function uptime() {
+    return exec("uptime -p");
+  }
+
   public function cpu_temp() {
     return floatval(file_get_contents('/sys/class/thermal/thermal_zone0/temp'))/1000;
   }

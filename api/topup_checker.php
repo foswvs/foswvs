@@ -6,6 +6,10 @@ $IP = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);
 $device = new Device($IP);
 $coinslot = new Coinslot();
 
+if( !$coinslot->sensor_read() ) {
+  http_response_code(401);
+}
+
 $file = '/tmp/coinslot';
 
 $data = file_get_contents($file);

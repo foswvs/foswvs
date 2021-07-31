@@ -7,7 +7,7 @@
 #mb_limit{font-family: Tourney; font-size:48px;text-align:center;display:none;}
 #waiting{font-family: 'Otomanopee One', sans-serif;font-size:18px;display:none;}
 .button-jar {width:280px;margin:10px auto 0;}
-.button-jar > button {background:#22aa22;border:1px solid #55bb55;color:#fff;cursor:pointer;font-size:26px;padding:10px 50px;text-transform:uppercase;height:auto !important;width:100%;}
+.button-jar > button {background:#22aa22;border:1px solid #55bb55;border-radius:4px;color:#fff;cursor:pointer;font-size:26px;padding:10px 50px;text-transform:uppercase;height:auto !important;width:100%;}
 .button-jar > button:hover{background:#11bb11;}
 .device-status {text-align:center;}
 .device-status h4 {font-family: 'Alfa Slab One';text-transform:uppercase;letter-spacing:4px;}

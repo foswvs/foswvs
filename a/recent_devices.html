@@ -55,8 +55,8 @@ function recent_devices() {
     .then((x) => x.json())
     .then((x) => {
       x.forEach((d) => {
-        devices_table(d);device_count++;
-        display_count.innerText=`${device_count} devices found in the last 4 hours`;
+        devices_table(d);
+        display_count.innerText=`${++device_count} devices found in the last 4 hours`;
       })
       setTimeout(recent_devices,30000);
     }

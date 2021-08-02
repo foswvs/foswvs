@@ -29,9 +29,12 @@ function format_mb(size) {
   if( !size ) return 0;
 
   let base = Math.floor(Math.log(size) / Math.log(1024));
-  let tags = ['MB','GB','TB','PB','EB','ZB','YB'];
+  let unit = ['MB','GB','TB','PB','EB','ZB','YB'];
 
-  return parseFloat(size / Math.pow(1024, base)).toFixed(2) + tags[base];
+  size = size / Math.pow(1024, base);
+  size = Number.isInteger(size) ? size : parseFloat(size).toFixed(2);
+
+  return size + unit[base];
 }
 
 function utc_to_local(ts) {

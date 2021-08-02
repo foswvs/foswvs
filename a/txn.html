@@ -54,7 +54,7 @@ function displayTxn(txn) {
     row.setAttribute('data-mac', txn.mac);
     row.setAttribute('title', `host: ${txn.host} ip: ${txn.ip}`);
 
-    tx_display.innerText=(tx_count+=1);
+    tx_display.innerText=(++tx_count);
 }
 
 function txn() {

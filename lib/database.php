@@ -164,7 +164,7 @@ class Database extends SQLite3 {
   }
 
   public function get_device_sessions() {
-    $cmd = $this->query("SELECT s.piso_count AS amt,s.mb_limit AS mb,strftime('%Y-%m-%dT%H:%M:%SZ',s.created_at) AS ts FROM devices d LEFT JOIN session s ON d.id=s.device_id WHERE d.id='{$this->devid}' ORDER BY s.id DESC");
+    $cmd = $this->query("SELECT s.id,s.piso_count AS amt,s.mb_limit AS mb,strftime('%Y-%m-%dT%H:%M:%SZ',s.created_at) AS ts FROM devices d LEFT JOIN session s ON d.id=s.device_id WHERE d.id='{$this->devid}' ORDER BY s.id DESC");
 
     $res = [];
 

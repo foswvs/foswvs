@@ -3,6 +3,8 @@
 @font-face {font-family: 'Zen Tokyo Zoo';src: url('/fonts/ZenTokyoZoo-Regular.ttf') format('truetype');}
 @font-face {font-family: 'Tourney';src: url('/fonts/Tourney-VariableFont_wdth,wght.ttf') format('truetype');}
 @font-face {font-family: 'Alfa Slab One';src: url('/fonts/AlfaSlabOne-Regular.ttf') format('truetype');}
+@font-face {font-family: 'barcode'; src: url('/fonts/LibreBarcode39Text-Regular.ttf') format('truetype');}
+@font-face {font-family: 'bungee'; src: url('/fonts/BungeeOutline-Regular.ttf') format('truetype');}
 body{font-family: arial, san-serif;font-size: 14px;line-height:1.42857143;color:#333333;background-color #fff;}
 button{background:#22aa22;border:1px solid #55bb55;border-radius:4px;color:#fff;cursor:pointer;font-size:26px;padding:10px 50px;text-transform:uppercase;}
 button:hover{background:#11bb11;}

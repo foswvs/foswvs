@@ -10,7 +10,8 @@
 </head>
 <body>
 <div class="main">
-  <h1 id="title">CAPTIVE PORTAL</h1>
+  <h1 style="font-family:bungee !important;font-size:3.6em;font-weight:400;margin-bottom:0;margin-top:0;">piso wifi</h1>
+  <p style="font-family:barcode;font-size:2em;margin-top:0;">1 5 10</p>
   <p id="wait">waiting for payment</p>
   <p id="mb">0MB</p>
   <button id="insert">Insert Coin</button>
@@ -89,9 +90,12 @@ function format_mb(size) {
   if( !size ) return 0;
 
   let base = Math.floor(Math.log(size) / Math.log(1024));
-  let tags = ['MB','GB','TB','PB','EB','ZB','YB'];
+  let unit = ['MB','GB','TB','PB','EB','ZB','YB'];
 
-  return parseFloat(size / Math.pow(1024, base)).toFixed(2) + tags[base];
+  size = size / Math.pow(1024, base);
+  size = Number.isInteger(size) ? size : parseFloat(size).toFixed(2);
+
+  return size + unit[base];
 }
 
 function topup_check() {

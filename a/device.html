@@ -16,9 +16,9 @@
   <div class="row" id="xmenubar"> </div>
   <div class="row">
     <div class="six columns" style="border:1px solid #ccc; padding: 20px; margin-top:10px;">
-      <h5>Add Bandwidth</h5>
+      <h5>Add Data</h5>
       <hr>
-      <label>Bandwidth Size (MB)</label>  
+      <label>Data Size In MB <span id="label_format_mb" style="font-size:10px;font-weight:400;">&nbsp;</span></label>  
       <input class="u-full-width" id="mb_input" type="text" placeholder="1024">
       <button class="button" id="mb_btn" type="button" onsubmit="return false;">Add</button>
     </div>
@@ -38,8 +38,11 @@
   <div class="row">
     <hr>
     <table class="u-full-width" id="tx_table">
-      <tr><th>Date</th><th>Data</th><th>Amt</th><th>Sub / Total</th></tr>
+      <thead>
+        <tr><th>Date</th><th>Data</th><th>Amt</th><th>Sub / Total</th></tr>
+      </thead>
    </table>
+   <a class="button" href="#" id="tx_count">0 tx</a>
   </div>
 </div>
 <script src="/js/a.js"></script>
@@ -53,35 +56,38 @@ const mac = search.substr(5),
   mb_used  = document.getElementById('total_mb_used'),
   mb_limit = document.getElementById('total_mb_limit');
 
-var subtotal = 0;
+var subtotal = 0, tx_count=0, table = document.getElementById('tx_table'), tbody = document.createElement('tbody');
+
+table.appendChild(tbody);
 
 function tx_table(tx) {
   subtotal = subtotal + tx.amt;
-  let table = document.getElementById('tx_table'),
-        row = table.insertRow(-1),
-     col_ts = row.insertCell(0),
-     col_mb = row.insertCell(1),
-    col_amt = row.insertCell(2),
-     col_tt = row.insertCell(3),
-    txt_amt = document.createTextNode(tx.amt==0 ? 'FREE' : peso.format(tx.amt)),
-     txt_mb = document.createTextNode(format_mb(tx.mb)),
-     txt_ts = document.createTextNode(new Date(tx.ts).toLocaleString()),
-     txt_tt = document.createTextNode(peso.format(subtotal));
 
-    col_amt.appendChild(txt_amt);
-     col_mb.appendChild(txt_mb);
-     col_ts.appendChild(txt_ts);
-     col_tt.appendChild(txt_tt);
+  let row = tbody.insertRow(-1),
+   col_ts = row.insertCell(0),
+   col_mb = row.insertCell(1),
+  col_amt = row.insertCell(2),
+   col_tt = row.insertCell(3),
+  txt_amt = document.createTextNode(tx.amt==0 ? 'FREE' : peso.format(tx.amt)),
+   txt_mb = document.createTextNode(format_mb(tx.mb)),
+   txt_ts = document.createTextNode(new Date(tx.ts).toLocaleString()),
+   txt_tt = document.createTextNode(peso.format(subtotal));
+
+  col_amt.appendChild(txt_amt);
+  col_mb.appendChild(txt_mb);
+  col_ts.appendChild(txt_ts);
+  col_tt.appendChild(txt_tt);
+
+  document.getElementById('tx_count').innerText=`${++tx_count} transactions`;
 }
 
 function tx_table_blank(){
-  let table = document.getElementById('tx_table'),
-        row = table.insertRow(-1),
-      blank = row.insertCell(0);
+  let row = tbody.insertRow(-1),
+    blank = row.insertCell(0);
 
-      blank.setAttribute('colspan', 4);
-      blank.style.textAlign = 'center';
-      blank.appendChild(document.createTextNode('No Transaction History'));
+  blank.setAttribute('colspan', 4);
+  blank.style.textAlign = 'center';
+  blank.appendChild(document.createTextNode('No Transaction History'));
 }
 
 function device_info() {
@@ -97,7 +103,7 @@ function device_info() {
 
       mb_reset.setAttribute('data-mac', x.mac);
 
-      setTimeout(device_info, 5000);
+      setTimeout(device_info,30000); setTimeout(get_tx,200);
     }
   );
 }
@@ -108,11 +114,13 @@ function mb_add(limit) {
     .then((x) => {
       mb_used.innerText = x.total_mb_used;
       mb_limit.innerText = x.total_mb_limit;
+      get_tx();
     }
   );
 }
 
 function get_tx() {
+  empty_table('tx_table'); subtotal=0; tx_count=0;
   fetch('./x.php?dev=get_txn&mac='+mac).then((x) => x.json()).then((x) => {
     x.forEach((tx) => {
       tx.ts ? tx_table(tx) : tx_table_blank();
@@ -120,8 +128,10 @@ function get_tx() {
   });
 }
 
-mb_input.addEventListener('keydown', (e) => {
-  let mb = mb_input.value;
+mb_input.addEventListener('keyup', (e) => {
+  let mb = parseInt(mb_input.value);
+
+  document.getElementById('label_format_mb').innerText='='+format_mb(mb);
 
   if(e.keyCode != 13 || mb < 1) return;
 
@@ -144,7 +154,7 @@ mb_reset.addEventListener('dblclick', (e) => {
   fetch(`/a/x.php?dev=clear_mb&mac=${e.target.dataset.mac}`);
 });
 
-device_info(); get_tx();
+device_info();
 </script>
 </body>
 </html>

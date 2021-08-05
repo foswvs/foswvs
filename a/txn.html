@@ -16,7 +16,7 @@
   <div class="row table-wrap">
     <table class="u-full-width" id="txns">
       <thead>
-        <tr><th>Date</th><th>Mac</th><th>Data</th><th>Amt</th><th>Sub / Total</th></tr>
+        <tr><th>Date</th><th>Total</th><th>Amt</th><th>Data</th><th>MAC</th></tr>
       </thead>
       <tbody>
       </tbody>
@@ -34,10 +34,10 @@ function displayTxn(txn) {
   let table = document.getElementById('txns').getElementsByTagName('tbody')[0],
         row = table.insertRow(-1),
      col_ts = row.insertCell(0),
-    col_mac = row.insertCell(1),
-     col_mb = row.insertCell(2),
-    col_amt = row.insertCell(3),
-     col_tt = row.insertCell(4),
+     col_tt = row.insertCell(1),
+    col_amt = row.insertCell(2),
+     col_mb = row.insertCell(3),
+    col_mac = row.insertCell(4),
     txt_mac = document.createTextNode(txn.mac),
     txt_amt = document.createTextNode(txn.amt==0 ? 'FREE' : peso.format(txn.amt)),
      txt_mb = document.createTextNode(format_mb(txn.mb)),

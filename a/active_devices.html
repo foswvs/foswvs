@@ -16,7 +16,7 @@
   <div class="row table-wrap">
     <table class="u-full-width" id="devices">
       <thead>
-        <tr><th>Active</th><th>IP</th><th>MAC</th><th>Hostname</th></tr>
+        <tr><th>Timestamp</th><th>Hostname</th><th>IP</th><th>MAC</th></tr>
       </thead>
       <tbody>
       </tbody>
@@ -32,9 +32,9 @@ function devices_table(dev) {
   let tbody = table.getElementsByTagName('tbody')[0],
         row = tbody.insertRow(-1),
     col_opt = row.insertCell(0),
-     col_ip = row.insertCell(1),
-    col_mac = row.insertCell(2),
-   col_host = row.insertCell(3),
+   col_host = row.insertCell(1),
+     col_ip = row.insertCell(2),
+    col_mac = row.insertCell(3),
 
     txt_mac = document.createTextNode(dev['mac']),
      txt_ip = document.createTextNode(dev['ip']),

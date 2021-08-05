@@ -26,13 +26,14 @@ if( xpane = document.getElementById('xmenubar') ) {
 }
 
 function format_mb(size) {
-  if( !size ) return 0;
+  size = parseFloat(size);
+  if(!size || size<1) return '0MB';
 
   let base = Math.floor(Math.log(size) / Math.log(1024));
   let unit = ['MB','GB','TB','PB','EB','ZB','YB'];
 
   size = size / Math.pow(1024, base);
-  size = Number.isInteger(size) ? size : parseFloat(size).toFixed(2);
+  size = Number.isInteger(size) ? size : size.toFixed(2);
 
   return size + unit[base];
 }

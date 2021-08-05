@@ -9,7 +9,7 @@ class Iptables {
   public $ip;
   public $mac;
 
-  function __construct($ip_addr, $mac_addr) {
+  function __construct($ip_addr, $mac_addr = NULL) {
     $this->ip = $ip_addr;
     $this->mac = $mac_addr;
   }

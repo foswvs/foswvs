@@ -38,9 +38,9 @@ foreach($data as $d) {
     usleep(1e5);
     $db->set_mb_used();
 
-    printf("UL - ip: %s ; mb_used: %f\n", $ip_src, $mb_used );
+    printf("\nUL - ip: %s ; mb_used: %f", $ip_src, $mb_used );
 
-    sleep(1);
+    usleep(1e5);
   }
 
   if( $ip_dst != '0.0.0.0/0' ) {
@@ -62,11 +62,11 @@ foreach($data as $d) {
     $total_mb_limit = $db->get_total_mb_limit();
     $total_mb_used = $db->get_total_mb_used();
 
-    printf("DL - ip: %s, mb_used: %f\n", $ip_dst, $mb_used );
+    printf("\nDL - ip: %s, mb_used: %f", $ip_dst, $mb_used );
 
     array_push($temp, ['ip_addr' => $ip_dst, 'mb_limit' => $total_mb_limit, 'mb_used' => $total_mb_used]);
 
-    sleep(1);
+    usleep(1e5);
   }
 }
 
@@ -77,15 +77,16 @@ foreach($temp as $d) {
   $mb_limit = $d['mb_limit'];
   $mb_used = $d['mb_used'];
 
-  printf("ip: %s ; mb_limit: %f ; mb_used: %f\n", $ip_addr, $mb_limit, $mb_used );
+  printf("\nip: %s ; total_mb_limit: %f ; total_mb_used: %f", $ip_addr, $mb_limit, $mb_used );
 
   if( $mb_limit <= $mb_used ) {
+    echo "- Disconnected";
+
     while( shell_exec("sudo iptables -nL FORWARD | grep '{$ip_addr}'") ) {
       exec("sudo iptables -t nat -D PREROUTING -s {$ip_addr} -j ACCEPT");
       exec("sudo iptables -D FORWARD -d {$ip_addr} -j ACCEPT");
       exec("sudo iptables -D FORWARD -s {$ip_addr} -j ACCEPT");
       usleep(1e5);
     }
-    printf("Disconnect ip: %s ; mb_limit: %f ; mb_used: %f\n", $d['ip'], $d['mb_limit'], $d['mb_used'] );
   }
 }

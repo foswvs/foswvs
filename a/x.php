@@ -64,23 +64,14 @@ if( $dev == 'add_session' ) {
   $db->mac_addr = $mac;
   $db->mb_limit = $limit;
 
-  if( !$db->get_device_id() ) exit("mac address doesn't exist.");
+  if( !$db->get_device_id() ) exit("device not found.");
 
   $db->add_session();
 
-  $db->set_mb_limit();
-  $db->set_device_sid();
+  $mb_limit = $db->get_total_mb_limit();
+  $mb_used = $db->get_total_mb_used();
 
-  $total_mb_limit = $db->get_total_mb_limit();
-  $total_mb_used = $db->get_total_mb_used();
-
-  if( $total_mb_limit > $total_mb_used ) {
-    $ipt = new Iptables($db->get_device_ip(), $mac);
-
-    $ipt->add_client();
-  }
-
-  echo json_encode(['devid' => $db->devid, 'sid' => $db->sid, 'total_mb_limit' => $help->format_mb($total_mb_limit), 'total_mb_used' => $help->format_mb($total_mb_used)]);
+  echo json_encode(['devid' => $db->devid, 'sid' => $db->sid, 'mb_limit' => $mb_limit, 'mb_used' => $mb_used]);
 }
 
 if( $dev == 'get_session' ) {
@@ -88,18 +79,18 @@ if( $dev == 'get_session' ) {
 
   $db->mac_addr = $mac;
 
-  $db->get_device_id();
-
-  if(!$db->devid) exit("mac address doesn't exist.");
+  if( !$db->get_device_id() ) exit("device not found.");
 
   $db->get_device_sid();
 
   $device = $db->get_device_info();
 
-  $total_mb_used = $help->format_mb($db->get_total_mb_used());
-  $total_mb_limit = $help->format_mb($db->get_total_mb_limit());
+  $mb_used = $db->get_total_mb_used();
+  $mb_limit = $db->get_total_mb_limit();
 
-  echo json_encode(['mac' => $device['mac'], 'ip' => $device['ip'], 'host' => $device['host'], 'total_mb_limit' => $total_mb_limit, 'total_mb_used' => $total_mb_used]);
+  $ipt = new Iptables($db->get_device_ip());
+
+  echo json_encode(['mac' => $device['mac'], 'ip' => $device['ip'], 'host' => $device['host'], 'mb_limit' => $mb_limit, 'mb_used' => $mb_used, 'last_active' => $db->get_last_active(), 'connected' => $ipt->connected()]);
 }
 
 if( $dev == 'get_txn' ) {

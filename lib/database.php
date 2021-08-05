@@ -52,7 +52,7 @@ class Database extends SQLite3 {
   }
 
   public function add_device() {
-    $this->exec("INSERT INTO devices(mac_addr) VALUES('{$this->mac_addr}')");
+    $this->exec("INSERT INTO devices(mac_addr,ip_addr,hostname) VALUES('{$this->mac_addr}','{$this->ip_addr}','{$this->hostname}')");
 
     $this->devid = $this->lastInsertRowID();
   }
@@ -73,6 +73,12 @@ class Database extends SQLite3 {
     $row = $res->fetchArray(SQLITE3_NUM);
 
     return $row[0];
+  }
+
+  public function get_last_active() {
+    $cmd = $this->query("SELECT strftime('%Y-%m-%dT%H:%M:%SZ',updated_at) as last_active FROM session WHERE device_id={$this->devid} ORDER BY updated_at DESC LIMIT 1");
+    $res = $cmd->fetchArray(SQLITE3_NUM);
+    return $res[0];
   }
 
   public function set_device_sid() {
@@ -116,7 +122,7 @@ class Database extends SQLite3 {
   }
 
   public function set_mb_used() {
-    $this->exec("UPDATE session SET mb_used=mb_used+{$this->mb_used},updated_at=CURRENT_TIMESTAMP WHERE id={$this->sid}");
+    $this->exec("UPDATE session SET mb_used=mb_used+{$this->mb_used},updated_at=CURRENT_TIMESTAMP WHERE device_id={$this->devid} AND mb_limit > mb_used LIMIT 1");
   }
 
   public function get_mb_limit() {

@@ -15,7 +15,7 @@
 <div class="container" style="margin-top:10px;">
   <div class="row" id="xmenubar"> </div>
   <div class="row">
-    <div class="six columns" style="border:1px solid #ccc; padding: 20px; margin-top:10px;">
+    <div class="six columns" style="border:1px solid #ccc;border-radius:4px; padding: 20px; margin-top:10px;">
       <h5>Add Data</h5>
       <hr>
       <label>Data Size In MB <span id="label_format_mb" style="font-size:10px;font-weight:400;">&nbsp;</span></label>  
@@ -23,20 +23,24 @@
       <button class="button" id="mb_btn" type="button" onsubmit="return false;">Add</button>
     </div>
 
-    <div class="six columns" style="border:1px solid #ccc; padding: 20px; margin-top: 10px;">
+    <div class="six columns" style="border:1px solid #ccc;border-radius:4px; padding: 20px; margin-top: 10px;">
       <h5>Device Information</h5>
       <hr>
-      <table class="u-full-width">
-      <tr><th>IP Address :</th><td id="ip_addr">Identifying</td></tr>
-      <tr><th>MAC Address :</th><td id="mac_addr">Identifying</td></tr>
-      <tr><th>Hostname :</th><td id="hostname">Identifying</td></tr>
-      <tr><th>Total MB Used :</th><td><span id="total_mb_used">Calculating</span></td></tr>
-      <tr><th>Total MB Limit :</th><td><span id="total_mb_limit">Calculating</span> <button class="button" id="mb_reset">reset</button></td></tr>
-      </table>
+      <div class="row table-wrap">
+        <table class="u-full-width">
+          <tr><th>IP Address :</th><td id="ip_addr">Identifying</td></tr>
+          <tr><th>MAC Address :</th><td id="mac_addr">Identifying</td></tr>
+          <tr><th>Hostname :</th><td id="hostname">Identifying</td></tr>
+          <tr><th>Total MB Free :</th><td id="mb_free">Calculating</td></tr>
+          <tr><th>Total MB Used :</th><td id="mb_used">Calculating</td></tr>
+          <tr><th>Total MB Limit :</th><td><span id="mb_limit">Calculating</span> <button class="button" id="mb_reset">reset</button></td></tr>
+          <tr><th>Last Active :</th><td id="last_active">...</td></tr>
+        </table>
+      </div>
     </div>
   </div>
-  <div class="row">
-    <hr>
+  <hr>
+  <div class="row table-wrap">
     <table class="u-full-width" id="tx_table">
       <thead>
         <tr><th>Date</th><th>Data</th><th>Amt</th><th>Sub / Total</th></tr>
@@ -53,8 +57,10 @@ const mac = search.substr(5),
   hostname = document.getElementById('hostname'),
   mb_input = document.getElementById('mb_input'),
   mb_reset = document.getElementById('mb_reset'),
-  mb_used  = document.getElementById('total_mb_used'),
-  mb_limit = document.getElementById('total_mb_limit');
+  mb_free  = document.getElementById('mb_free'),
+  mb_used  = document.getElementById('mb_used'),
+  mb_limit = document.getElementById('mb_limit'),
+  activets = document.getElementById('last_active');
 
 var subtotal = 0, tx_count=0, table = document.getElementById('tx_table'), tbody = document.createElement('tbody');
 
@@ -95,15 +101,17 @@ function device_info() {
     .then((x) => x.json())
     .then((x) => {
       mac_addr.innerText = x.mac;
-      ip_addr.innerText  = x.ip;
+      ip_addr.innerHTML  = `${x.ip}  ${x.connected ? '&#x2713' : '&#x2717'}`;
       hostname.innerText = x.host;
+      activets.innerText = x.last_active ? utc_to_local(x.last_active) : 'Inactive';
 
-      mb_used.innerText  = x.total_mb_used;
-      mb_limit.innerText = x.total_mb_limit;
+      mb_free.innerText  = format_mb(x.mb_limit-x.mb_used);
+      mb_used.innerText  = format_mb(x.mb_used);
+      mb_limit.innerText = format_mb(x.mb_limit);
 
       mb_reset.setAttribute('data-mac', x.mac);
 
-      setTimeout(device_info,30000); setTimeout(get_tx,200);
+      setTimeout(device_info,18e4); setTimeout(get_tx,200);
     }
   );
 }
@@ -112,8 +120,9 @@ function mb_add(limit) {
   fetch(`/a/x.php?dev=add_session&mac=${mac}&limit=${limit}`)
     .then((x) => x.json())
     .then((x) => {
-      mb_used.innerText = x.total_mb_used;
-      mb_limit.innerText = x.total_mb_limit;
+      mb_free.innerText  = format_mb(x.mb_limit-x.mb_used);
+      mb_used.innerText  = format_mb(x.mb_used);
+      mb_limit.innerText = format_mb(x.mb_limit);
       get_tx();
     }
   );

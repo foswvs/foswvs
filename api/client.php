@@ -14,24 +14,23 @@ if( !filter_var($mac, FILTER_VALIDATE_MAC) ) {
 
 if( filter_var($ip, FILTER_VALIDATE_IP) && filter_var($mac, FILTER_VALIDATE_MAC) ) {
   $db = new Database();
-  $ipt = new Iptables($ip, $mac);
 
   $db->mac_addr = strtoupper($mac);
   $db->ip_addr  = $ip;
   $db->hostname = $host;
 
-  $db->updated_at = $date;
-
   if( !$db->get_device_id() ) {
-    $db->add_device();
+    $db->add_device(); exit;
   }
 
   $db->update_device();
 
   if( $db->get_total_mb_limit() > $db->get_total_mb_used() ) {
-    $ipt->add_client();
-  }
-  else {
-    $ipt->rem_client();
+    while( shell_exec("sudo iptables -nL FORWARD | grep '{$ip}'") == NULL ) {
+      exec("sudo iptables -t nat -I PREROUTING -s {$ip} -j ACCEPT");
+      exec("sudo iptables -A FORWARD -d {$ip} -j ACCEPT");
+      exec("sudo iptables -A FORWARD -s {$ip} -j ACCEPT");
+      usleep(1e5);
+    }
   }
 }

@@ -13,10 +13,10 @@
 <body>
 <div class="container" style="margin-top:10px;">
   <div class="row" id="xmenubar"></div>
-  <div class="row">
+  <div class="row table-wrap">
     <table class="u-full-width" id="devices">
       <thead>
-        <tr><th>MAC</th><th>IP</th><th>Hostname</th><th>Connected</th></tr>
+        <tr><th>Connected</th><th>IP</th><th>MAC</th><th>Hostname</th></tr>
       </thead>
       <tbody>
       </tbody>
@@ -29,10 +29,10 @@
 function devices_table(d) {
   let table = document.getElementById('devices').getElementsByTagName('tbody')[0],
         row = table.insertRow(-1),
-    col_mac = row.insertCell(0),
+    col_opt = row.insertCell(0),
      col_ip = row.insertCell(1),
-   col_host = row.insertCell(2),
-    col_opt = row.insertCell(3),
+    col_mac = row.insertCell(2),
+   col_host = row.insertCell(3),
 
     txt_mac = document.createTextNode(d.mac),
      txt_ip = document.createTextNode(d.ip),
@@ -58,7 +58,7 @@ function recent_devices() {
         devices_table(d);
         display_count.innerText=`${++device_count} devices found in the last 4 hours`;
       })
-      setTimeout(recent_devices,30000);
+      setTimeout(recent_devices,18e4);
     }
   );
 }

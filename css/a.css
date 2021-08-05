@@ -2,5 +2,8 @@ tbody > tr:hover{background:#eee;cursor:pointer;}
 ul{list-style-type:none !important;}
 ul li{display:inline-block;padding-right:1px;}
 ul li a{height:28px !important;line-height:28px !important;padding:0 14px !important;}
+tr:nth-child(even){background-color: #fafafa;}
+td{white-space:nowrap;}
 #mb_reset{height:20px;line-height:20px;padding:0 5px;letter-spacing:0;font-size:9px;font-weight: 400;}
 #xmenubar ul{margin-bottom:0 !important;}
+.table-wrap{overflow-x:auto;}

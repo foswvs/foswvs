@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-<title>Captive Portal</title>
+<title>PisoWiFi</title>
 <link href="/css/portal.css" rel="stylesheet">
 </head>
 <body>
@@ -18,7 +18,7 @@
   <br><br>
   <hr>
   <h2 id="conn">DETECTING DEVICE</h2>
-  <div>Data Usage: <span id="data">Calculating...</span></div>
+  <div>Data Usage: <span id="mb_used">0</span>/<span id="mb_limit">0</span> | <span id="mb_free">0</span></div>
   <div>MAC Address: <span id="mac_addr">Identifying...</span></div>
   <div>IP Address: <span id="ip_addr">0.0.0.0</span></div>
   <div><a href="/txn.html">VIEW TRANSACTIONS</a></div>
@@ -26,9 +26,9 @@
   <p>VALID 'TIL CONSUMED. NO EXPIRY.</p>
   <p><a href="https://dhcp.msu.edu/help/randommac.html">Disable Random MAC Address</a></p>
 </div>
-<audio id="beep" src="/js/sfx/insert_coin.mp3" preload="auto" loop></audio>
-<audio id="bump" src="/js/sfx/bump.wav" preload="auto"></audio>
-<audio id="coin" src="/js/sfx/coin.wav" preload="auto"></audio>
+<audio id="beep" src="/js/sfx/beep.mp3" preload="auto" loop></audio>
+<audio id="bump" src="/js/sfx/bump.wav" preload="auto" loop></audio>
+<audio id="coin" src="/js/sfx/coin.wav" preload="auto" loop></audio>
 <script>
 const beep = document.getElementById('beep'),
       bump = document.getElementById('bump'),
@@ -36,7 +36,9 @@ const beep = document.getElementById('beep'),
        btn = document.getElementById('insert'),
        mac = document.getElementById('mac_addr'),
         ip = document.getElementById('ip_addr'),
-         d = document.getElementById('data'),
+         f = document.getElementById('mb_free'),
+         u = document.getElementById('mb_used'),
+         l = document.getElementById('mb_limit'),
          k = document.getElementById('conn'),
          w = document.getElementById('wait'),
          m = document.getElementById('mb');
@@ -68,7 +70,7 @@ btn.addEventListener('click', function() {
 
       if(x.readyState == 4) {
         if(x.status == 401) {
-          bump.play(); alert('coinslot is busy');
+          bump.play(); setTimeout(()=>bump.pause(),200); alert('coinslot is busy');
         }
       }
     });
@@ -87,13 +89,15 @@ btn.addEventListener('click', function() {
 });
 
 function format_mb(size) {
-  if( !size ) return 0;
+  size = parseFloat(size);
+
+  if(!size || size<1) return '0MB';
 
   let base = Math.floor(Math.log(size) / Math.log(1024));
   let unit = ['MB','GB','TB','PB','EB','ZB','YB'];
 
   size = size / Math.pow(1024, base);
-  size = Number.isInteger(size) ? size : parseFloat(size).toFixed(2);
+  size = Number.isInteger(size) ? size : size.toFixed(2);
 
   return size + unit[base];
 }
@@ -114,7 +118,7 @@ function topup_check() {
         if( j.mb ) { m.style.display='block'; }
 
         if(j.amt != new_coin) {
-          beep.pause(); coin.play();
+          beep.pause(); coin.play(); setTimeout(()=>coin.pause(),600);
           data_usage(); new_coin=j.amt;
         }
         else { if(beep.paused) beep.play(); }
@@ -141,7 +145,9 @@ function data_usage() {
     if( x.readyState == 4 && x.status == 200) {
       let j = JSON.parse(x.responseText);
       
-      d.innerText = `${format_mb(j.mb_used)}/${format_mb(j.mb_limit)}`;
+      f.innerText=format_mb(j.mb_limit-j.mb_used);
+      u.innerText=format_mb(j.mb_used);
+      l.innerText=format_mb(j.mb_limit);
       mac.innerText = j.mac;
       ip.innerText = j.ip;
     }
@@ -205,7 +211,7 @@ function alert(txt) {
 
   document.body.appendChild(d);
 
-  setTimeout(()=>{d.remove()},5000);
+  setTimeout(()=>d.remove(),5000);
 }
 
 button_check(); connection_status(); data_usage(); topup_check();

@@ -1,13 +1,13 @@
 <?php
 class Helper {
-  public function format_mb($size, $precision = 2) {
+  public function format_mb($size) {
 
-    if( !$size ) return $size . 'MB';
+    if( $size < 1 ) return '0MB';
 
-    $base = log($size, 1024);
-    $suffixes = array('MB','GB','TB','PB','EB','ZB','YB');
+    $base = floor(log($size, 1024));
+    $unit = array('MB','GB','TB','PB','EB','ZB','YB');
 
-    return round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
+    return round($size / pow(1024, $base), 2) . $unit[$base];
   }
 
   public function amt_to_mb($amt) {

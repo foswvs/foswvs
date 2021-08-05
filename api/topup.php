@@ -20,7 +20,7 @@ if( $coinslot->sensor_read() ) {
 }
 
 $mb = 0;
-$wait = 60;
+$wait = 50;
 $data = [];
 $count = 0;
 $start = time();
@@ -67,11 +67,12 @@ if( $count ) {
   if( $db->get_device_id() == 0 ) exit;
 
   $db->add_session();
-  $db->set_device_sid();
 
   while( shell_exec("sudo iptables -nL FORWARD | grep '{$device->ip}'") == NULL ) {
     exec("sudo iptables -t nat -I PREROUTING -s {$device->ip} -j ACCEPT");
+    usleep(1e5);
     exec("sudo iptables -A FORWARD -d {$device->ip} -j ACCEPT");
+    usleep(1e5);
     exec("sudo iptables -A FORWARD -s {$device->ip} -j ACCEPT");
     usleep(1e5);
   }

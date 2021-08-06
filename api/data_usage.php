@@ -15,7 +15,6 @@ if( $db->get_device_id() == 0 ) {
   $db->add_device();
 }
 
-$total_mb_used = $db->get_total_mb_used();
-$total_mb_limit = $db->get_total_mb_limit();
+list($mb_limit,$mb_used) = $db->get_data_usage();
 
-echo json_encode(['ip' => $IP, 'mac' => $device->mac, 'mb_limit' => $total_mb_limit, 'mb_used' => $total_mb_used]);
+echo json_encode(['ip' => $IP, 'mac' => $device->mac, 'mb_limit' => $mb_limit, 'mb_used' => $mb_used]);

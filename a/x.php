@@ -85,8 +85,7 @@ if( $dev == 'get_session' ) {
 
   $device = $db->get_device_info();
 
-  $mb_used = $db->get_total_mb_used();
-  $mb_limit = $db->get_total_mb_limit();
+  list($mb_limit,$mb_used) = $db->get_data_usage();
 
   $ipt = new Iptables($db->get_device_ip());
 

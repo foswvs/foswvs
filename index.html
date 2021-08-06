@@ -53,6 +53,10 @@ btn.addEventListener('click', function() {
     x.addEventListener('readystatechange', () => {
       if(x.readyState==4) {
         btn.innerText='insert coin';
+
+        if( x.responseText === 'connected' ) {
+          k.innerText='connected';
+        }
       }
     });
 
@@ -162,7 +166,15 @@ function connection_status() {
 
   x.addEventListener('readystatechange', () => {
     if( x.readyState == 4 && x.status == 200 ) {
-      parseInt(x.responseText) ? k.innerText = 'connected' : k.innerText = 'disconnected';
+      if( parseInt(x.responseText) ==1 ) {
+        k.innerText = 'connected';
+      }
+      else {
+        k.innerText = 'disconnected';
+        if( parseInt(f.innerText) > 0 ) {
+          btn.innerText = 'connect';
+        }
+      }
 
       setTimeout(connection_status, 10000);
     }

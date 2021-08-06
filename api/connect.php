@@ -20,6 +20,7 @@ if( $db->get_device_id() == 0 ) {
 }
 
 if( $db->get_total_mb_limit() > $db->get_total_mb_used() ) {
-  $ipt = new Iptables($device->ip, $device->mac);
+  $ipt = new Iptables($IP);
   $ipt->add_client();
+  echo 'connected';
 }

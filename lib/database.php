@@ -100,6 +100,12 @@ class Database extends SQLite3 {
     return $cmd->fetchArray(SQLITE3_ASSOC);
   }
 
+  public function get_data_usage() {
+    $cmd = $this->query("SELECT SUM(mb_limit) AS total_mb_limit, SUM(mb_used) AS total_mb_used FROM session WHERE device_id={$this->devid}");
+
+    return $cmd->fetchArray(SQLITE3_NUM);
+  }
+
   public function add_session() {
     $this->exec("INSERT INTO session(device_id,piso_count,mb_limit) VALUES({$this->devid},{$this->piso_count},{$this->mb_limit})");
 

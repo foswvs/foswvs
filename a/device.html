@@ -103,7 +103,7 @@ function device_info() {
       mac_addr.innerText = x.mac;
       ip_addr.innerHTML  = `${x.ip}  ${x.connected ? '<span style="color:green;">&#x2713</span>' : '<span style="color:red;">&#x2717</span>'}`;
       hostname.innerText = x.host;
-      activets.innerText = x.last_active ? utc_to_local(x.last_active) : 'Inactive';
+      activets.innerText = x.last_active ? utc_to_local(x.last_active) : '-NA-';
 
       mb_free.innerText  = format_mb(x.mb_limit-x.mb_used);
       mb_used.innerText  = format_mb(x.mb_used);

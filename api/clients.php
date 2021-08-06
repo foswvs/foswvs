@@ -9,11 +9,11 @@ $cmd = shell_exec("sudo iptables -nvxL FORWARD --line-numbers|awk 'NR>2{print $1
 if( empty($cmd) ) exit;
 
 $data = explode("\n", trim($cmd));
-
 $temp = [];
 
 foreach($data as $d) {
   $a = explode("|", trim($d));
+  $ip = NULL;
 
   $rulenum = $a[0];
   $mb_used = $a[1] / 1e6;
@@ -21,72 +21,73 @@ foreach($data as $d) {
   $ip_src = $a[2];
   $ip_dst = $a[3];
 
-  if( $mb_used < 1 ) continue;
 
+  if( !$mb_used ) {
+    echo "\nidle: $mb_used | $ip_src | $ip_dst";
+    continue;
+  }
+
+  /* Upload MB */
   if( $ip_src != '0.0.0.0/0' ) {
-    /* Upload MB */
-    $dev = new Device($ip_src);
-
-    exec("sudo iptables -Z FORWARD {$rulenum}");
-
-    $db->mb_used = $mb_used;
-    $db->mac_addr = $dev->mac;
-
-    $db->get_device_id();
-    usleep(1e5);
-    $db->get_device_sid();
-    usleep(1e5);
-    $db->set_mb_used();
-
-    printf("\nUL - ip: %s ; mb_used: %f", $ip_src, $mb_used );
-
-    usleep(1e5);
+    $ip = $ip_src; exec("sudo iptables -Z FORWARD {$rulenum}");
   }
 
+  /* Download MB */
   if( $ip_dst != '0.0.0.0/0' ) {
-    /* Download MB */
-    $dev = new Device($ip_dst);
-
-    exec("sudo iptables -Z FORWARD {$rulenum}");
-
-    $db->mb_used = $mb_used;
-    $db->mac_addr = $dev->mac;
-
-    $db->get_device_id();
-    usleep(1e5);
-    $db->get_device_sid();
-    usleep(1e5);
-    $db->set_mb_used();
-    usleep(1e5);
-
-    $total_mb_limit = $db->get_total_mb_limit();
-    $total_mb_used = $db->get_total_mb_used();
-
-    printf("\nDL - ip: %s, mb_used: %f", $ip_dst, $mb_used );
-
-    array_push($temp, ['ip_addr' => $ip_dst, 'mb_limit' => $total_mb_limit, 'mb_used' => $total_mb_used]);
-
-    usleep(1e5);
+    $ip = $ip_dst; exec("sudo iptables -Z FORWARD {$rulenum}");
   }
+
+  array_push($temp, ['ip' => $ip, 'mb' => $mb_used]);
 }
 
 if( count($temp) == 0 ) exit;
 
-foreach($temp as $d) {
-  $ip_addr = $d['ip_addr'];
-  $mb_limit = $d['mb_limit'];
-  $mb_used = $d['mb_used'];
+$tmp = [];
+echo "\n";
 
-  printf("\nip: %s ; total_mb_limit: %f ; total_mb_used: %f", $ip_addr, $mb_limit, $mb_used );
+foreach($temp as $d) {
+  $ip = $d['ip'];
+  $mb = $d['mb'];
+
+  $dev = new Device($ip);
+
+  $db->mb_used = $mb;
+  $db->mac_addr = $dev->mac;
+
+  $db->get_device_id();
+  usleep(1e5);
+  $db->set_mb_used();
+  usleep(1e5);
+
+  list($mb_limit,$mb_used) = $db->get_data_usage();
+
+  $arr = ['ip_addr' => $ip, 'mb_rxtx' => $mb, 'mb_limit' => $mb_limit, 'mb_used' => $mb_used];
+
+  print_r($arr);
+
+  array_push($tmp, $arr);
+
+  sleep(1);
+}
+
+foreach($tmp as $d) {
+  $ip_addr = $d['ip_addr'];
+  $mb_rxtx = $d['mb_rxtx'];
+  $mb_used = $d['mb_used'];
+  $mb_limit = $d['mb_limit'];
+
+  printf("\nip: %s ; mb_rxtx: %f; mb_limit: %f; mb_used: %f", $ip_addr, $mb_rxtx, $mb_limit, $mb_used );
 
   if( $mb_limit <= $mb_used ) {
-    echo "- Disconnected";
-
+    sleep(1);
     while( shell_exec("sudo iptables -nL FORWARD | grep '{$ip_addr}'") ) {
       exec("sudo iptables -t nat -D PREROUTING -s {$ip_addr} -j ACCEPT");
       exec("sudo iptables -D FORWARD -d {$ip_addr} -j ACCEPT");
       exec("sudo iptables -D FORWARD -s {$ip_addr} -j ACCEPT");
-      usleep(1e5);
+      sleep(1);
     }
+    echo "- Disconnected";
   }
 }
+
+exit;

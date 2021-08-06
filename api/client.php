@@ -25,7 +25,9 @@ if( filter_var($ip, FILTER_VALIDATE_IP) && filter_var($mac, FILTER_VALIDATE_MAC)
 
   $db->update_device();
 
-  if( $db->get_total_mb_limit() > $db->get_total_mb_used() ) {
+  list($mb_limit, $mb_used) = $db->get_data_usage();
+
+  if( $mb_limit > $mb_used ) {
     while( shell_exec("sudo iptables -nL FORWARD | grep '{$ip}'") == NULL ) {
       exec("sudo iptables -t nat -I PREROUTING -s {$ip} -j ACCEPT");
       exec("sudo iptables -A FORWARD -d {$ip} -j ACCEPT");

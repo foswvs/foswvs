@@ -111,7 +111,7 @@ function device_info() {
 
       mb_reset.setAttribute('data-mac', x.mac);
 
-      setTimeout(device_info,18e4); setTimeout(get_tx,200);
+      setTimeout(get_tx,200);
     }
   );
 }
@@ -120,10 +120,7 @@ function mb_add(limit) {
   fetch(`/a/x.php?dev=add_session&mac=${mac}&limit=${limit}`)
     .then((x) => x.json())
     .then((x) => {
-      mb_free.innerText  = format_mb(x.mb_limit-x.mb_used);
-      mb_used.innerText  = format_mb(x.mb_used);
-      mb_limit.innerText = format_mb(x.mb_limit);
-      get_tx();
+      setTimeout(device_info,300);
     }
   );
 }
@@ -150,7 +147,7 @@ mb_input.addEventListener('keyup', (e) => {
 });
 
 document.getElementById('mb_btn').addEventListener('click', (e) => {
-  let mb = mb_input.value;
+  let mb = parseInt(mb_input.value);
 
   if( mb < 1 ) return false;
 

@@ -18,7 +18,7 @@
   <br><br>
   <hr>
   <h2 id="conn">DETECTING DEVICE</h2>
-  <div>Data Usage: <span id="mb_used">0</span>/<span id="mb_limit">0</span> | <span id="mb_free">0</span></div>
+  <div>Data Usage: <span id="mb_used">0</span>/<span id="mb_limit">0</span><span id="mb_free" style="display:none;">&nbsp;</span></div>
   <div>MAC Address: <span id="mac_addr">Identifying...</span></div>
   <div>IP Address: <span id="ip_addr">0.0.0.0</span></div>
   <div><a href="/txn.html">VIEW TRANSACTIONS</a></div>
@@ -69,7 +69,7 @@ btn.addEventListener('click', function() {
 
     x.addEventListener('readystatechange', () => {
       if(x.readyState == 1) {
-        setTimeout(topup_check,800);
+        setTimeout(topup_check,600);
       }
 
       if(x.readyState == 4) {
@@ -148,10 +148,16 @@ function data_usage() {
   x.addEventListener('readystatechange', () => {
     if( x.readyState == 4 && x.status == 200) {
       let j = JSON.parse(x.responseText);
+      let mb_free = j.mb_limit - j.mb_used;
       
-      f.innerText=format_mb(j.mb_limit-j.mb_used);
       u.innerText=format_mb(j.mb_used);
       l.innerText=format_mb(j.mb_limit);
+
+      if (j.mb_used>1) {
+        f.innerText = `(${format_mb(mb_free)})`;console.log(f.innerText);
+        /*f.style.display = mb_free>1 ? 'inline-block' : 'none';*/
+      }
+
       mac.innerText = j.mac;
       ip.innerText = j.ip;
     }
@@ -226,7 +232,7 @@ function alert(txt) {
   setTimeout(()=>d.remove(),5000);
 }
 
-button_check(); connection_status(); data_usage(); topup_check();
+button_check(); connection_status(); topup_check();
 </script>
 </body>
 </html>

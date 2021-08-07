@@ -32,7 +32,7 @@ if( filter_var($ip, FILTER_VALIDATE_IP) && filter_var($mac, FILTER_VALIDATE_MAC)
       exec("sudo iptables -t nat -I PREROUTING -s {$ip} -j ACCEPT");
       exec("sudo iptables -A FORWARD -d {$ip} -j ACCEPT");
       exec("sudo iptables -A FORWARD -s {$ip} -j ACCEPT");
-      usleep(1e5);
+      sleep(1);
     }
   }
 }

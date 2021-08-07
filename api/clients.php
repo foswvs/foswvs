@@ -21,9 +21,15 @@ foreach($data as $d) {
   $ip_src = $a[2];
   $ip_dst = $a[3];
 
-
-  if( !$mb_used ) {
+  /* non-active user */
+  if( $mb_used == 0 ) {
     echo "\nidle: $mb_used | $ip_src | $ip_dst";
+    continue;
+  }
+
+  /* do not capture <1Mbps */
+  if( $mb_used < 0.125 ) {
+    echo "\nlow usage: $mb_used | $ip_src | $ip_dst";
     continue;
   }
 

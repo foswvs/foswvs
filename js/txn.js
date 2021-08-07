@@ -24,6 +24,7 @@ function notxn(){
       blank = row.insertCell(0);
 
       blank.setAttribute('colspan', 3);
+      blank.style.textAlign = 'center';
       blank.appendChild(document.createTextNode('No Transaction History'));
 }
 

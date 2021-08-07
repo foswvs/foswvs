@@ -68,8 +68,12 @@ if( $dev == 'add_session' ) {
 
   $db->add_session();
 
-  $mb_limit = $db->get_total_mb_limit();
-  $mb_used = $db->get_total_mb_used();
+  list($mb_limit,$mb_used) = $db->get_data_usage();
+
+  if( $mb_limit > $mb_used ) {
+    $ipt = new Iptables($db->get_device_ip());
+    $ipt->add_client();
+  }
 
   echo json_encode(['devid' => $db->devid, 'sid' => $db->sid, 'mb_limit' => $mb_limit, 'mb_used' => $mb_used]);
 }

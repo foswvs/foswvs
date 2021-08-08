@@ -68,8 +68,22 @@ class Database extends SQLite3 {
     return $this->devid = $row['id'];
   }
 
+  public function get_device_id_by_ip() {
+    $res = $this->query("SELECT id FROM devices WHERE ip_addr='{$this->ip_addr}' ORDER BY updated_at DESC LIMIT 1");
+    $row = $res->fetchArray(SQLITE3_NUM);
+
+    return $this->devid = $row[0];
+  }
+
   public function get_device_ip() {
     $res = $this->query("SELECT ip_addr FROM devices WHERE id='{$this->devid}'");
+    $row = $res->fetchArray(SQLITE3_NUM);
+
+    return $row[0];
+  }
+
+  public function get_device_mac() {
+    $res = $this->query("SELECT mac_addr FROM devices WHERE id='{$this->devid}'");
     $row = $res->fetchArray(SQLITE3_NUM);
 
     return $row[0];

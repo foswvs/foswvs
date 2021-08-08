@@ -1,8 +1,11 @@
+# this file should be located at
+# /lib/systemd/system/foswvs.service
+#
 [Unit]
 Description=Free and Open-Source WiFi Vendo Software
 
 [Service]
-ExecStart=/home/pi/foswvs/start.sh
+ExecStart=/home/pi/foswvs/start
 
 [Install]
 WantedBy=multi-user.target

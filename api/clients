@@ -65,7 +65,7 @@ foreach($temp as $d) {
 
   list($mb_limit,$mb_used) = $db->get_data_usage();
 
-  $arr = ['did' => $db->devid, 'mac' => $db->get_device_mac(), 'ip_addr' => $ip, 'mb_rxtx' => $mb, 'mb_limit' => $mb_limit, 'mb_used' => $mb_used];
+  $arr = ['ip_addr' => $ip, 'mb_rxtx' => $mb, 'mb_limit' => $mb_limit, 'mb_used' => $mb_used];
 
   print_r($arr);
 

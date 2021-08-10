@@ -1,0 +1,80 @@
+/* helpers/alignment.css */
+.align {
+  display: grid;
+  place-items: center;
+}
+
+/* helpers/icon.css */
+
+.icon {
+  font-size: 2rem;
+}
+
+/* layout/base.css */
+
+body {
+  color: #888;
+  font-family: sans-serif;
+  line-height: 1.5;
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* modules/headline.css */
+
+h3 {
+  font-size: 1.5rem;
+  margin-top: 1.5em;
+  color: #111;
+  margin-bottom: 1em;
+}
+
+/* modules/paragraph.css */
+
+p {
+  margin-bottom: 1.5em;
+  margin-top: 1.5em;
+  font-size:1em;
+}
+
+/* modules/form.css */
+
+input {
+  font: inherit;
+  outline: 0;
+}
+
+.form__field {
+  position: relative;
+}
+
+.form__field .icon {
+  position: absolute;
+  right: 1em;
+  top: 50%;
+  transform: translateY(-50%)
+}
+
+.form__input {
+  border-radius: 0.25em;
+  border-style: solid;
+  border-width: 2px;
+  font-size: 1.5rem;
+  padding: 0.5em 4em 0.5em 2em;
+}
+
+.form__input:valid {
+  border-color: forestgreen;
+}
+
+.form__input:valid + .icon::after {
+  content: '😃';
+}
+
+.form__input:invalid {
+  border-color: firebrick;
+}
+
+.form__input:invalid + .icon::after {
+  content: '😳';
+}

@@ -16,7 +16,7 @@
   <div class="row table-wrap">
     <table class="u-full-width" id="txns">
       <thead>
-        <tr><th>Date</th><th>Total</th><th>Amt</th><th>Data</th><th>MAC</th></tr>
+        <tr><th>Date</th><th>Total</th><th>Amt</th><th>Data</th><th>MAC</th><th>Hostname</th></tr>
       </thead>
       <tbody>
       </tbody>
@@ -38,12 +38,15 @@ function displayTxn(txn) {
     col_amt = row.insertCell(2),
      col_mb = row.insertCell(3),
     col_mac = row.insertCell(4),
+   col_host = row.insertCell(5),
     txt_mac = document.createTextNode(txn.mac),
     txt_amt = document.createTextNode(txn.amt==0 ? 'FREE' : peso.format(txn.amt)),
      txt_mb = document.createTextNode(format_mb(txn.mb)),
-     txt_ts = document.createTextNode(utc_to_local(txn.ts));
-     txt_tt = document.createTextNode(peso.format(subtotal));
+     txt_ts = document.createTextNode(utc_to_local(txn.ts)),
+     txt_tt = document.createTextNode(peso.format(subtotal)),
+   txt_host = document.createTextNode(txn.host);
 
+   col_host.appendChild(txt_host);
     col_mac.appendChild(txt_mac);
     col_amt.appendChild(txt_amt);
      col_mb.appendChild(txt_mb);
@@ -52,14 +55,14 @@ function displayTxn(txn) {
 
     row.setAttribute('class',  'devinfo');
     row.setAttribute('data-mac', txn.mac);
-    row.setAttribute('title', `host: ${txn.host} ip: ${txn.ip}`);
+    row.setAttribute('title', txn.ip);
 
     tx_display.innerText=(++tx_count);
 }
 
 function txn() {
   fetch(`./x.php?txn=get_all&offset=${offset}&limit=${limit}`)
-    .then((x) => x.json())
+    .then((x) => {return x.ok ? x.json() : window.location.assign('/a')})
     .then((x) => {
       x.forEach((txn) => {
         displayTxn(txn);

@@ -54,7 +54,7 @@ function active_devices() {
   empty_table('devices');
   let device_count=0, display_count=document.getElementById('device_count');
   fetch('/a/x.php?dev=active')
-    .then((x) => x.json())
+    .then((x) => {return x.ok ? x.json() : window.location.assign('/a')})
     .then((x) => {
       x.forEach((d) => {
         devices_table(d);

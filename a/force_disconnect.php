@@ -17,6 +17,7 @@ while( shell_exec("sudo iptables -nL FORWARD | grep '{$ip_addr}'") ) {
   exec("sudo iptables -t nat -D PREROUTING -s {$ip_addr} -j ACCEPT");
   exec("sudo iptables -D FORWARD -d {$ip_addr} -j ACCEPT");
   exec("sudo iptables -D FORWARD -s {$ip_addr} -j ACCEPT");
+  echo "disconnected";
   usleep(1e5);
 }
 

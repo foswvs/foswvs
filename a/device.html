@@ -43,7 +43,7 @@
   <div class="row table-wrap">
     <table class="u-full-width" id="tx_table">
       <thead>
-        <tr><th>Date</th><th>Total</th><th>Amt</th><th>Data</th></tr>
+        <tr><th>Date</th><th>Total</th><th>Amt</th><th>Data</th><th>Used</th></tr>
       </thead>
    </table>
    <a class="button" href="#" id="tx_count">0 tx</a>
@@ -73,16 +73,19 @@ function tx_table(tx) {
    col_ts = row.insertCell(0),
    col_tt = row.insertCell(1),
   col_amt = row.insertCell(2),
-   col_mb = row.insertCell(3),
+  col_mb1 = row.insertCell(3),
+  col_mb2 = row.insertCell(4),
   txt_amt = document.createTextNode(tx.amt==0 ? 'FREE' : peso.format(tx.amt)),
-   txt_mb = document.createTextNode(format_mb(tx.mb)),
+  txt_mb1 = document.createTextNode(format_mb(tx.mb_limit)),
+  txt_mb2 = document.createTextNode(format_mb(tx.mb_used)),
    txt_ts = document.createTextNode(new Date(tx.ts).toLocaleString()),
    txt_tt = document.createTextNode(peso.format(subtotal));
 
   col_amt.appendChild(txt_amt);
-  col_mb.appendChild(txt_mb);
-  col_ts.appendChild(txt_ts);
-  col_tt.appendChild(txt_tt);
+  col_mb1.appendChild(txt_mb1);
+  col_mb2.appendChild(txt_mb2);
+   col_ts.appendChild(txt_ts);
+   col_tt.appendChild(txt_tt);
 
   document.getElementById('tx_count').innerText=`${++tx_count} transactions`;
 }
@@ -91,14 +94,14 @@ function tx_table_blank(){
   let row = tbody.insertRow(-1),
     blank = row.insertCell(0);
 
-  blank.setAttribute('colspan', 4);
+  blank.setAttribute('colspan', 5);
   blank.style.textAlign = 'center';
   blank.appendChild(document.createTextNode('No Transaction History'));
 }
 
 function device_info() {
   fetch('/a/x.php?dev=get_session&mac='+mac)
-    .then((x) => x.json())
+    .then((x) => {return x.ok ? x.json() : window.location.assign('/a')})
     .then((x) => {
       mac_addr.innerText = x.mac;
       ip_addr.innerHTML  = `${x.ip}  ${x.connected ? '<span style="color:green;">&#x2713</span>' : '<span style="color:red;">&#x2717</span>'}`;
@@ -110,6 +113,8 @@ function device_info() {
       mb_limit.innerText = format_mb(x.mb_limit);
 
       mb_reset.setAttribute('data-mac', x.mac);
+
+      if(!x.mb_limit) mb_reset.style.display='none';
 
       setTimeout(get_tx,200);
     }
@@ -156,8 +161,10 @@ document.getElementById('mb_btn').addEventListener('click', (e) => {
   mb_input.value = '';
 });
 
-mb_reset.addEventListener('dblclick', (e) => {
-  fetch(`/a/x.php?dev=clear_mb&mac=${e.target.dataset.mac}`);
+mb_reset.addEventListener('click', (e) => {
+  if(confirm("Select OK to confirm reset mb limit.\nThis will clear device transactions.")) {
+    fetch(`/a/x.php?dev=clear_mb&mac=${e.target.dataset.mac}`);
+  }
 });
 
 device_info();

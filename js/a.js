@@ -27,7 +27,12 @@ if( xpane = document.getElementById('xmenubar') ) {
 
 function format_mb(size) {
   size = parseFloat(size);
-  if(!size || size<1) return '0MB';
+
+  if(!size) return '-NA-';
+
+  if(size<1) {
+    return parseFloat(size*1e3).toFixed(2) + 'KB';
+  }
 
   let base = Math.floor(Math.log(size) / Math.log(1024));
   let unit = ['MB','GB','TB','PB','EB','ZB','YB'];

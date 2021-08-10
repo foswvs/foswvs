@@ -1,5 +1,4 @@
 <?php
-session_start();
-session_destroy();
+setcookie('hash', '', -1, '/a/');
 header('location: /a/index.html');
 exit;

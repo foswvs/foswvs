@@ -3,14 +3,14 @@ var amount = 0, tx_count = 0, mb_limit = 0;
 
 function txnHistory(txn) {
      amount = amount + txn.amt;
-   mb_limit = mb_limit + txn.mb; tx_count++;
+   mb_limit = mb_limit + txn.mb_limit; tx_count++;
   let table = document.getElementById('txn_history'),
         row = table.insertRow(-1),
      col_ts = row.insertCell(0),
      col_mb = row.insertCell(1),
     col_amt = row.insertCell(2),
     txt_amt = document.createTextNode(txn.amt==0 ? 'FREE' : peso.format(txn.amt)),
-     txt_mb = document.createTextNode(format_mb(txn.mb)),
+     txt_mb = document.createTextNode(format_mb(txn.mb_limit)),
      txt_ts = document.createTextNode(new Date(txn.ts).toLocaleString());
 
     col_amt.appendChild(txt_amt);

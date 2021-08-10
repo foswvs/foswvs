@@ -35,8 +35,8 @@ class Database extends SQLite3 {
   }
 
   public function create_table() {
-    $this->exec("CREATE TABLE devices (id INTEGER PRIMARY KEY AUTOINCREMENT, mac_addr BLOB NOT NULL UNIQUE, ip_addr BLOB, hostname BLOB, session_id INTEGER, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP)");
-    $this->exec("CREATE TABLE session (id INTEGER PRIMARY KEY AUTOINCREMENT, device_id INTEGER, piso_count INTEGER DEFAULT 0, mb_limit INTEGER DEFAULT 0, mb_used INTEGER DEFAULT 0, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP)");
+    $this->exec("CREATE TABLE IF NOT EXISTS devices (id INTEGER PRIMARY KEY AUTOINCREMENT, mac_addr TEXT NOT NULL UNIQUE, ip_addr DEFAULT '127.0.0.1', hostname DEFAULT '-NA-', created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP)");
+    $this->exec("CREATE TABLE IF NOT EXISTS session (id INTEGER PRIMARY KEY AUTOINCREMENT, device_id INTEGER, piso_count DEFAULT 0, mb_limit DEFAULT 0, mb_used DEFAULT 0, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP)");
   }
 
   public function get_devices() {
@@ -93,19 +93,6 @@ class Database extends SQLite3 {
     $cmd = $this->query("SELECT strftime('%Y-%m-%dT%H:%M:%SZ',updated_at) as last_active FROM session WHERE device_id={$this->devid} ORDER BY updated_at DESC LIMIT 1");
     $res = $cmd->fetchArray(SQLITE3_NUM);
     return $res[0];
-  }
-
-  public function set_device_sid() {
-    $this->exec("UPDATE devices SET session_id={$this->sid} WHERE id={$this->devid}");
-  }
-
-  public function get_device_sid() {
-    $res = $this->query("SELECT session_id FROM devices WHERE id={$this->devid}");
-    $row = $res->fetchArray(SQLITE3_NUM);
-
-    $this->sid = $row[0] ? $row[0] : 0;
-
-    return $this->sid;
   }
 
   public function get_device_info() {
@@ -190,7 +177,7 @@ class Database extends SQLite3 {
   }
 
   public function get_device_sessions() {
-    $cmd = $this->query("SELECT s.id,s.piso_count AS amt,s.mb_limit AS mb,strftime('%Y-%m-%dT%H:%M:%SZ',s.created_at) AS ts FROM devices d LEFT JOIN session s ON d.id=s.device_id WHERE d.id='{$this->devid}' ORDER BY s.id DESC");
+    $cmd = $this->query("SELECT s.id,s.piso_count AS amt,s.mb_limit,s.mb_used,strftime('%Y-%m-%dT%H:%M:%SZ',s.created_at) AS ts FROM devices d LEFT JOIN session s ON d.id=s.device_id WHERE d.id='{$this->devid}' ORDER BY s.id DESC");
 
     $res = [];
 

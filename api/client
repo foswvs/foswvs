@@ -8,6 +8,10 @@ $host = $argv[3];
 $date = date('Y-m-d H:i:s');
 
 if( !filter_var($mac, FILTER_VALIDATE_MAC) ) {
+  $mac = implode(':',array_map(function($s){return str_pad($s,2,'0',STR_PAD_LEFT);},explode(':',$mac)));
+}
+
+if( !filter_var($mac, FILTER_VALIDATE_MAC) ) {
   $dev = new Device($ip);
   $mac = $dev->mac;
 }
@@ -36,3 +40,5 @@ if( filter_var($ip, FILTER_VALIDATE_IP) && filter_var($mac, FILTER_VALIDATE_MAC)
     }
   }
 }
+
+exit;

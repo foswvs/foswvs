@@ -5,42 +5,24 @@ $txn = filter_input(INPUT_GET, 'txn');
 $net = filter_input(INPUT_GET, 'net');
 $dev = filter_input(INPUT_GET, 'dev');
 
-$hash = trim(file_get_contents('password.sha256'));
-
-session_start();
-
-if( $net == 'login' ) {
-  $_SESSION['hash'] = hash('sha256',filter_input(INPUT_POST, 'password'));
+if( $dev || $txn ) {
+  $db = new Database(); $help = new Helper();
 }
 
-if( !isset($_SESSION['hash']) ) {
-  session_destroy();
+if( !isset($_COOKIE['hash']) ) {
   http_response_code(401);
   exit;
 }
 
-if( $_SESSION['hash'] !== $hash ) {
-  session_destroy();
+if( $_COOKIE['hash'] !== trim(file_get_contents('password.sha256')) ) {
   http_response_code(401);
   exit;
 }
 
 if( $net == 'chpwd' ) {
   file_put_contents('password.sha256', hash('sha256',filter_input(INPUT_POST, 'password')));
-  session_destroy();
-  http_response_code(200);
+  echo 'password changed successfully.';
   exit;
-}
-
-if( $dev || $txn ) {
-  $db = new Database();
-  $help = new Helper();
-}
-
-if( $net == 'dhcp_leases') {
-  $network = new Network();
-
-  echo json_encode($network->dhcp_leases(), JSON_PRETTY_PRINT);
 }
 
 if( $dev == 'all' ) {
@@ -84,8 +66,6 @@ if( $dev == 'get_session' ) {
   $db->mac_addr = $mac;
 
   if( !$db->get_device_id() ) exit("device not found.");
-
-  $db->get_device_sid();
 
   $device = $db->get_device_info();
 

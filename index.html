@@ -43,7 +43,7 @@ const beep = document.getElementById('beep'),
          w = document.getElementById('wait'),
          m = document.getElementById('mb');
 
-var new_coin=0;
+var new_coin=0,mb_free=0;
 
 btn.addEventListener('click', function() {
   const x = new XMLHttpRequest(),
@@ -148,7 +148,7 @@ function data_usage() {
   x.addEventListener('readystatechange', () => {
     if( x.readyState == 4 && x.status == 200) {
       let j = JSON.parse(x.responseText);
-      let mb_free = j.mb_limit - j.mb_used;
+      mb_free = j.mb_limit - j.mb_used;
       
       u.innerText=format_mb(j.mb_used);
       l.innerText=format_mb(j.mb_limit);
@@ -177,7 +177,7 @@ function connection_status() {
       }
       else {
         k.innerText = 'disconnected';
-        if( parseInt(f.innerText) > 0 ) {
+        if( mb_free > 0 ) {
           btn.innerText = 'connect';
         }
       }

@@ -211,4 +211,10 @@ class Database extends SQLite3 {
 
     return $res;
   }
+
+  public function get_device_ip_from_last_connect() {
+    $cmd = $this->query("SELECT ip_addr FROM devices WHERE id='{$this->devid}' AND updated_at > DATETIME(CURRENT_TIMESTAMP,'-12 hours')");
+
+    return $cmd->fetchArray(SQLITE3_NUM)[0];
+  }
 }

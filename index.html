@@ -146,20 +146,26 @@ function data_usage() {
   const x = new XMLHttpRequest();
 
   x.addEventListener('readystatechange', () => {
-    if( x.readyState == 4 && x.status == 200) {
-      let j = JSON.parse(x.responseText);
-      mb_free = j.mb_limit - j.mb_used;
+    if( x.readyState == 4 ) {
+      if(x.status == 200) {
+        let j = JSON.parse(x.responseText);
+        mb_free = j.mb_limit - j.mb_used;
       
-      u.innerText=format_mb(j.mb_used);
-      l.innerText=format_mb(j.mb_limit);
+        u.innerText=format_mb(j.mb_used);
+        l.innerText=format_mb(j.mb_limit);
 
-      if (j.mb_used>1) {
-        f.innerText = `(${format_mb(mb_free)})`;console.log(f.innerText);
-        /*f.style.display = mb_free>1 ? 'inline-block' : 'none';*/
+        if (j.mb_used>1) {
+          f.innerText = `(${format_mb(mb_free)})`;console.log(f.innerText);
+          /*f.style.display = mb_free>1 ? 'inline-block' : 'none';*/
+        }
+
+        mac.innerText = j.mac;
+        ip.innerText = j.ip;
       }
 
-      mac.innerText = j.mac;
-      ip.innerText = j.ip;
+      if( x.status == 401 ) {
+        window.location.assign('/u.html');
+      }
     }
   });
 

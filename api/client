@@ -27,6 +27,12 @@ if( filter_var($ip, FILTER_VALIDATE_IP) && filter_var($mac, FILTER_VALIDATE_MAC)
     $db->add_device(); exit;
   }
 
+  $ip_check = $db->get_device_ip_from_last_connect();
+
+  if( $ip_check && $ip_check != $ip ) {
+    file_put_contents("/var/log/foswvs.log", "{$date} - {$ip} {$mac} ({$host}) reason: changed client id/cloned mac address.\n", FILE_APPEND);
+  }
+
   $db->update_device();
 
   list($mb_limit, $mb_used) = $db->get_data_usage();

@@ -7,10 +7,8 @@ $db = new Database();
 $db->ip_addr = $IP;
 
 if( $db->get_device_id_by_ip() == 0 ) {
-  $d = new Device($IP);
-  $db->mac_addr = $d->mac;
-  $db->hostname = '-NA-';
-  $db->add_device();
+  http_response_code(401);
+  exit;
 }
 
 $MAC = $db->get_device_mac();

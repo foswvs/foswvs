@@ -23,12 +23,14 @@ foreach($data as $d) {
 
   if( $mb_used == 0 ) continue;
 
-  if( $ip_src != '0.0.0.0/0' ) {
-    $ip = $ip_src; exec("sudo iptables -Z FORWARD {$rulenum}");
+  exec("sudo iptables -Z FORWARD {$rulenum}");
+
+  if( strpos($ip_src,'10.0.') === 0 ) {
+    $ip = $ip_src;
   }
 
-  if( $ip_dst != '0.0.0.0/0' ) {
-    $ip = $ip_dst; exec("sudo iptables -Z FORWARD {$rulenum}");
+  if( strpos($ip_dst,'10.0.') === 0 ) {
+    $ip = $ip_dst;
   }
 
   array_push($temp, ['ip' => $ip, 'mb' => $mb_used]);
@@ -43,7 +45,12 @@ foreach($temp as $d) {
   $db->mb_used = $mb;
   $db->ip_addr = $ip;
 
-  $db->get_device_id_by_ip();
+  if( $db->get_device_id_by_ip() == 0 ) {
+    $ipt = new Iptables($ip);
+    $ipt->rem_client();
+    continue;
+  }
+
   usleep(1e5);
   $db->set_mb_used();
   usleep(1e5);
@@ -60,5 +67,4 @@ foreach($temp as $d) {
   sleep(1);
 }
 
-sleep(3);
 exit;

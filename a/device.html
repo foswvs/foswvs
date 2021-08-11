@@ -163,7 +163,7 @@ document.getElementById('mb_btn').addEventListener('click', (e) => {
 
 mb_reset.addEventListener('click', (e) => {
   if(confirm("Select OK to confirm reset mb limit.\nThis will clear device transactions.")) {
-    fetch(`/a/x.php?dev=clear_mb&mac=${e.target.dataset.mac}`);
+    fetch('/a/x.php?dev=clear_mb&mac=' + e.target.dataset.mac).then((r)=>device_info());
   }
 });
 

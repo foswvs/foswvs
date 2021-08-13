@@ -7,11 +7,9 @@
 
 class Iptables {
   public $ip;
-  public $mac;
 
-  function __construct($ip_addr, $mac_addr = NULL) {
+  function __construct($ip_addr) {
     $this->ip = $ip_addr;
-    $this->mac = $mac_addr;
   }
 
   public function add_client() {
@@ -19,7 +17,7 @@ class Iptables {
       exec("sudo iptables -t nat -I PREROUTING -s {$this->ip} -j ACCEPT");
       exec("sudo iptables -A FORWARD -d {$this->ip} -j ACCEPT");
       exec("sudo iptables -A FORWARD -s {$this->ip} -j ACCEPT");
-      usleep(1e5);
+      sleep(1);
     }
   }
 
@@ -28,7 +26,7 @@ class Iptables {
       exec("sudo iptables -t nat -D PREROUTING -s {$this->ip} -j ACCEPT");
       exec("sudo iptables -D FORWARD -d {$this->ip} -j ACCEPT");
       exec("sudo iptables -D FORWARD -s {$this->ip} -j ACCEPT");
-      usleep(1e5);
+      sleep(1);
     }
   }
 

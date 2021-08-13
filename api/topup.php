@@ -64,16 +64,10 @@ if( $count ) {
   $db->mb_limit = $mb;
   $db->piso_count = $count;
 
-  if( $db->get_device_id() == 0 ) exit;
+  if( !$db->get_device_id() ) exit;
 
   $db->add_session();
 
-  while( shell_exec("sudo iptables -nL FORWARD | grep '{$device->ip}'") == NULL ) {
-    exec("sudo iptables -t nat -I PREROUTING -s {$device->ip} -j ACCEPT");
-    usleep(1e5);
-    exec("sudo iptables -A FORWARD -d {$device->ip} -j ACCEPT");
-    usleep(1e5);
-    exec("sudo iptables -A FORWARD -s {$device->ip} -j ACCEPT");
-    usleep(1e5);
-  }
+  $ipt = new Iptables($IP);
+  $ipt->add_client();
 }

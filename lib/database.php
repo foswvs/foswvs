@@ -113,6 +113,10 @@ class Database extends SQLite3 {
     $this->sid = $this->lastInsertRowID();
   }
 
+  public function rem_session() {
+    $this->exec("DELETE FROM session WHERE id={$this->sid}");
+  }
+
   public function set_piso_count() {
     $this->exec("UPDATE session SET piso_count={$this->piso_count} WHERE id={$this->sid}");
   }

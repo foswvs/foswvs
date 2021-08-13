@@ -9,7 +9,7 @@
 <link href="/css/normalize.css" rel="stylesheet">
 <link href="/css/skeleton.css" rel="stylesheet">
 <link href="/css/a.css" rel="stylesheet">
-<style>tr:hover{cursor:default !important;background:none !important;}.paddless{padding:0;}</style>
+<style>#info_table tr:hover{cursor:default !important;background:none !important;}.paddless{padding:0;}</style>
 </head>
 <body>
 <div class="container" style="margin-top:10px;">
@@ -27,7 +27,7 @@
       <h5>Device Information</h5>
       <hr>
       <div class="row table-wrap">
-        <table class="u-full-width">
+        <table class="u-full-width" id="info_table">
           <tr><th>IP Address</th><th class="paddless">:</th><td id="ip_addr">Identifying</td></tr>
           <tr><th>MAC Address</th><th class="paddless">:</th><td id="mac_addr">Identifying</td></tr>
           <tr><th>Hostname</th><th class="paddless">:</th><td id="hostname">Identifying</td></tr>
@@ -75,6 +75,7 @@ function tx_table(tx) {
   col_amt = row.insertCell(2),
   col_mb1 = row.insertCell(3),
   col_mb2 = row.insertCell(4),
+  col_opt = row.insertCell(5),
   txt_amt = document.createTextNode(tx.amt==0 ? 'FREE' : peso.format(tx.amt)),
   txt_mb1 = document.createTextNode(format_mb(tx.mb_limit)),
   txt_mb2 = document.createTextNode(format_mb(tx.mb_used)),
@@ -86,6 +87,9 @@ function tx_table(tx) {
   col_mb2.appendChild(txt_mb2);
    col_ts.appendChild(txt_ts);
    col_tt.appendChild(txt_tt);
+
+  row.setAttribute('data-ts', tx.ts);
+  row.setAttribute('data-sid', tx.id);
 
   document.getElementById('tx_count').innerText=`${++tx_count} transactions`;
 }
@@ -122,12 +126,7 @@ function device_info() {
 }
 
 function mb_add(limit) {
-  fetch(`/a/x.php?dev=add_session&mac=${mac}&limit=${limit}`)
-    .then((x) => x.json())
-    .then((x) => {
-      setTimeout(device_info,300);
-    }
-  );
+  fetch(`/a/x.php?dev=add_session&mac=${mac}&limit=${limit}`).then(() => device_info());
 }
 
 function get_tx() {
@@ -137,6 +136,10 @@ function get_tx() {
       tx.ts ? tx_table(tx) : tx_table_blank();
     });
   });
+}
+
+function del_tx(id) {
+  fetch('./x.php?dev=del_txn&sid=' + parseInt(id)).then(() => device_info());
 }
 
 mb_input.addEventListener('keyup', (e) => {
@@ -164,6 +167,12 @@ document.getElementById('mb_btn').addEventListener('click', (e) => {
 mb_reset.addEventListener('click', (e) => {
   if(confirm("Select OK to confirm reset mb limit.\nThis will clear device transactions.")) {
     fetch('/a/x.php?dev=clear_mb&mac=' + e.target.dataset.mac).then((r)=>device_info());
+  }
+});
+
+tbody.addEventListener('click', (e) => {
+  if( confirm("OK to delete the txn date.\n" + new Date(e.target.parentNode.dataset.ts).toLocaleString()) ) {
+    del_tx(e.target.parentNode.dataset.sid)
   }
 });
 

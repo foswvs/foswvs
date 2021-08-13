@@ -46,7 +46,7 @@ if( $dev == 'add_session' ) {
   $db->mac_addr = $mac;
   $db->mb_limit = $limit;
 
-  if( !$db->get_device_id() ) exit("device not found.");
+  if( !$db->get_device_id() ) exit("unregistered device");
 
   $db->add_session();
 
@@ -65,7 +65,7 @@ if( $dev == 'get_session' ) {
 
   $db->mac_addr = $mac;
 
-  if( !$db->get_device_id() ) exit("device not found.");
+  if( !$db->get_device_id() ) exit("unregistered device");
 
   $device = $db->get_device_info();
 
@@ -81,10 +81,17 @@ if( $dev == 'get_txn' ) {
 
   $db->mac_addr = $mac;
 
-  $db->get_device_id();
+  if( !$db->get_device_id() ) exit("unregistered device");
 
   echo json_encode($db->get_device_sessions(), JSON_PRETTY_PRINT);
 
+}
+
+if( $dev == 'del_txn' ) {
+  $sid = filter_input(INPUT_GET, 'sid', FILTER_VALIDATE_INT);
+
+  $db->sid = $sid;
+  $db->rem_session();
 }
 
 if( $dev == 'clear_mb' ) {
@@ -92,9 +99,7 @@ if( $dev == 'clear_mb' ) {
 
   $db->mac_addr = $mac;
 
-  $db->get_device_id();
-
-  if(!$db->devid) exit("mac address doesn't exist.");
+  if( !$db->get_device_id() ) exit("unregistered device");
 
   $db->clear_mb();
 }

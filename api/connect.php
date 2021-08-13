@@ -6,7 +6,7 @@ $db = new Database();
 
 $db->ip_addr = $IP;
 
-if( $db->get_device_id_by_ip() == 0 ) {
+if( !$db->get_device_id_by_ip() ) {
   http_response_code(401);
   exit;
 }

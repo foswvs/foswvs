@@ -6,6 +6,6 @@ $db = new Database();
 
 $db->ip_addr = $IP;
 
-if( $db->get_device_id_by_ip() == 0 ) exit;
+if( !$db->get_device_id_by_ip() ) exit;
 
 echo json_encode($db->get_device_sessions(), JSON_PRETTY_PRINT);

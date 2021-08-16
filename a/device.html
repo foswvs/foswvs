@@ -34,7 +34,7 @@
           <tr><th>Total MB Free</th><th class="paddless">:</th><td id="mb_free">Calculating</td></tr>
           <tr><th>Total MB Used</th><th class="paddless">:</th><td id="mb_used">Calculating</td></tr>
           <tr><th>Total MB Limit</th><th class="paddless">:</th><td><span id="mb_limit">Calculating</span> <button class="button" id="mb_reset">reset</button></td></tr>
-          <tr><th>Last Active</th><th class="paddless">:</th><td id="last_active">...</td></tr>
+          <tr><th>Last Active</th><th class="paddless">:</th><td id="active_at">...</td></tr>
         </table>
       </div>
     </div>
@@ -43,7 +43,7 @@
   <div class="row table-wrap">
     <table class="u-full-width" id="tx_table">
       <thead>
-        <tr><th>Date</th><th>Total</th><th>Amt</th><th>Data</th><th>Used</th></tr>
+        <tr><th>Start At</th><th>Total</th><th>Amt</th><th>Data</th><th>Used</th><th>End At</th></tr>
       </thead>
    </table>
    <a class="button" href="#" id="tx_count">0 tx</a>
@@ -60,7 +60,7 @@ const mac = search.substr(5),
   mb_free  = document.getElementById('mb_free'),
   mb_used  = document.getElementById('mb_used'),
   mb_limit = document.getElementById('mb_limit'),
-  activets = document.getElementById('last_active');
+  activets = document.getElementById('active_at');
 
 var subtotal = 0, tx_count=0, table = document.getElementById('tx_table'), tbody = document.createElement('tbody');
 
@@ -75,23 +75,25 @@ function tx_table(tx) {
   col_amt = row.insertCell(2),
   col_mb1 = row.insertCell(3),
   col_mb2 = row.insertCell(4),
-  col_opt = row.insertCell(5),
+   col_te = row.insertCell(5),
   txt_amt = document.createTextNode(tx.amt==0 ? 'FREE' : peso.format(tx.amt)),
   txt_mb1 = document.createTextNode(format_mb(tx.mb_limit)),
   txt_mb2 = document.createTextNode(format_mb(tx.mb_used)),
-   txt_ts = document.createTextNode(new Date(tx.ts).toLocaleString()),
+   txt_te = document.createTextNode(tx.te==tx.ts ? '-NA-' : utc_to_local(tx.te)),
+   txt_ts = document.createTextNode(utc_to_local(tx.ts)),
    txt_tt = document.createTextNode(peso.format(subtotal));
 
   col_amt.appendChild(txt_amt);
   col_mb1.appendChild(txt_mb1);
   col_mb2.appendChild(txt_mb2);
+   col_te.appendChild(txt_te);
    col_ts.appendChild(txt_ts);
    col_tt.appendChild(txt_tt);
 
   row.setAttribute('data-ts', tx.ts);
   row.setAttribute('data-sid', tx.id);
 
-  document.getElementById('tx_count').innerText=`${++tx_count} transactions`;
+  document.getElementById('tx_count').innerText=`${++tx_count} transaction${tx_count>1 ? 's' : ''}`;
 }
 
 function tx_table_blank(){
@@ -110,7 +112,7 @@ function device_info() {
       mac_addr.innerText = x.mac;
       ip_addr.innerHTML  = `${x.ip}  ${x.connected ? '<span style="color:green;">&#x2713</span>' : '<span style="color:red;">&#x2717</span>'}`;
       hostname.innerText = x.host;
-      activets.innerText = x.last_active ? utc_to_local(x.last_active) : '-NA-';
+      activets.innerText = x.active_at ? utc_to_local(x.active_at) : '-NA-';
 
       mb_free.innerText  = format_mb(x.mb_limit-x.mb_used);
       mb_used.innerText  = format_mb(x.mb_used);
@@ -130,8 +132,13 @@ function mb_add(limit) {
 }
 
 function get_tx() {
-  empty_table('tx_table'); subtotal=0; tx_count=0;
-  fetch('./x.php?dev=get_txn&mac='+mac).then((x) => x.json()).then((x) => {
+  fetch('./x.php?dev=get_txn&mac='+mac).then((x) => {
+    if(x.ok){
+      empty_table('tx_table');
+      subtotal=0; tx_count=0;
+      return x.json();
+    }
+  }).then((x) => {
     x.forEach((tx) => {
       tx.ts ? tx_table(tx) : tx_table_blank();
     });
@@ -171,7 +178,7 @@ mb_reset.addEventListener('click', (e) => {
 });
 
 tbody.addEventListener('click', (e) => {
-  if( confirm("OK to delete the txn date.\n" + new Date(e.target.parentNode.dataset.ts).toLocaleString()) ) {
+  if( confirm("OK to delete the txn date.\n" + utc_to_local(e.target.parentNode.dataset.ts)) ) {
     del_tx(e.target.parentNode.dataset.sid)
   }
 });

@@ -82,6 +82,12 @@ class Database extends SQLite3 {
     return $row[0];
   }
 
+  public function get_device_ip_connected_before() {
+    $cmd = $this->query("SELECT ip_addr FROM devices WHERE id='{$this->devid}' AND updated_at > DATETIME(CURRENT_TIMESTAMP,'-12 hours')");
+
+    return $cmd->fetchArray(SQLITE3_NUM)[0];
+  }
+
   public function get_device_mac() {
     $res = $this->query("SELECT mac_addr FROM devices WHERE id='{$this->devid}'");
     $row = $res->fetchArray(SQLITE3_NUM);
@@ -89,8 +95,8 @@ class Database extends SQLite3 {
     return $row[0];
   }
 
-  public function get_last_active() {
-    $cmd = $this->query("SELECT strftime('%Y-%m-%dT%H:%M:%SZ',updated_at) as last_active FROM session WHERE device_id={$this->devid} ORDER BY updated_at DESC LIMIT 1");
+  public function get_active_at() {
+    $cmd = $this->query("SELECT strftime('%s',updated_at) * 1000 AS active_at FROM session WHERE device_id={$this->devid} ORDER BY updated_at DESC LIMIT 1");
     $res = $cmd->fetchArray(SQLITE3_NUM);
     return $res[0];
   }
@@ -169,7 +175,7 @@ class Database extends SQLite3 {
   }
 
   public function get_all_txn() {
-    $cmd = $this->query("SELECT s.piso_count AS amt,s.mb_limit AS mb,strftime('%Y-%m-%dT%H:%M:%SZ',s.created_at) AS ts,d.mac_addr AS mac,d.ip_addr AS ip,d.hostname AS host FROM session s LEFT JOIN devices d ON s.device_id=d.id ORDER BY s.id DESC LIMIT {$this->offset},{$this->limit}");
+    $cmd = $this->query("SELECT s.piso_count AS amt,s.mb_limit AS mb,strftime('%s',s.created_at) * 1000 AS ts,d.mac_addr AS mac,d.ip_addr AS ip,d.hostname AS host FROM session s LEFT JOIN devices d ON s.device_id=d.id ORDER BY s.id DESC LIMIT {$this->offset},{$this->limit}");
 
     $res = [];
 
@@ -181,7 +187,7 @@ class Database extends SQLite3 {
   }
 
   public function get_device_sessions() {
-    $cmd = $this->query("SELECT s.id,s.piso_count AS amt,s.mb_limit,s.mb_used,strftime('%Y-%m-%dT%H:%M:%SZ',s.created_at) AS ts FROM devices d LEFT JOIN session s ON d.id=s.device_id WHERE d.id='{$this->devid}' ORDER BY s.id DESC");
+    $cmd = $this->query("SELECT id,piso_count AS amt,mb_limit,mb_used,strftime('%s',created_at) * 1000 AS ts,strftime('%s',updated_at) * 1000 AS te FROM session WHERE device_id={$this->devid} ORDER BY id DESC");
 
     $res = [];
 
@@ -193,7 +199,7 @@ class Database extends SQLite3 {
   }
 
   public function get_active_devices() {
-    $cmd = $this->query("SELECT d.mac_addr AS mac, d.ip_addr AS ip, IFNULL(d.hostname,'-NA-') AS host,strftime('%Y-%m-%dT%H:%M:%SZ',s.updated_at) AS updated_at FROM session s JOIN devices d ON d.id=s.device_id WHERE s.updated_at > DATETIME(CURRENT_TIMESTAMP,'-1 minute') ORDER BY updated_at DESC");
+    $cmd = $this->query("SELECT d.mac_addr AS mac, d.ip_addr AS ip, IFNULL(d.hostname,'-NA-') AS host,strftime('%s',s.updated_at) * 1000 AS updated_at FROM session s JOIN devices d ON d.id=s.device_id WHERE s.updated_at > DATETIME(CURRENT_TIMESTAMP,'-1 minute') ORDER BY updated_at DESC");
 
     $res = [];
 
@@ -205,7 +211,7 @@ class Database extends SQLite3 {
   }
 
   public function get_recent_devices() {
-    $cmd = $this->query("SELECT mac_addr AS mac, IFNULL(ip_addr,'-NA-') AS ip, IFNULL(hostname,'-NA-') AS host,strftime('%Y-%m-%dT%H:%M:%SZ',updated_at) AS updated_at FROM devices WHERE updated_at > DATETIME(CURRENT_TIMESTAMP,'-4 HOURS') ORDER BY updated_at DESC");
+    $cmd = $this->query("SELECT mac_addr AS mac, IFNULL(ip_addr,'-NA-') AS ip, IFNULL(hostname,'-NA-') AS host,strftime('%s',updated_at) * 1000 AS updated_at FROM devices WHERE updated_at > DATETIME(CURRENT_TIMESTAMP,'-4 HOURS') ORDER BY updated_at DESC");
 
     $res = [];
 
@@ -216,9 +222,15 @@ class Database extends SQLite3 {
     return $res;
   }
 
-  public function get_device_ip_from_last_connect() {
-    $cmd = $this->query("SELECT ip_addr FROM devices WHERE id='{$this->devid}' AND updated_at > DATETIME(CURRENT_TIMESTAMP,'-12 hours')");
+  public function get_restricted_devices() {
+    $cmd = $this->query("SELECT mac_addr AS mac,ip_addr AS ip,IFNULL(hostname,'-NA-') AS host,(SELECT strftime('%s',updated_at) * 1000 FROM session WHERE device_id=devices.id ORDER BY updated_at DESC LIMIT 1) AS active_at,(SELECT sum(mb_limit)-sum(mb_used) FROM session WHERE device_id=devices.id) AS mb_free FROM devices WHERE mb_free <= 0 ORDER BY active_at DESC");
 
-    return $cmd->fetchArray(SQLITE3_NUM)[0];
+    $res = [];
+
+    while( $row = $cmd->fetchArray(SQLITE3_ASSOC) ) {
+      array_push($res, $row);
+    }
+
+    return $res;
   }
 }

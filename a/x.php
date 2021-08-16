@@ -33,6 +33,10 @@ if( $dev == 'active' ) {
   echo json_encode($db->get_active_devices(), JSON_PRETTY_PRINT);
 }
 
+if( $dev == 'restricted' ) {
+  echo json_encode($db->get_restricted_devices());
+}
+
 if( $dev == 'recent' ) {
   echo json_encode($db->get_recent_devices(), JSON_PRETTY_PRINT);
 }
@@ -73,7 +77,7 @@ if( $dev == 'get_session' ) {
 
   $ipt = new Iptables($db->get_device_ip());
 
-  echo json_encode(['mac' => $device['mac'], 'ip' => $device['ip'], 'host' => $device['host'], 'mb_limit' => $mb_limit, 'mb_used' => $mb_used, 'last_active' => $db->get_last_active(), 'connected' => $ipt->connected()]);
+  echo json_encode(['mac' => $device['mac'], 'ip' => $device['ip'], 'host' => $device['host'], 'mb_limit' => $mb_limit, 'mb_used' => $mb_used, 'active_at' => $db->get_active_at(), 'connected' => $ipt->connected()]);
 }
 
 if( $dev == 'get_txn' ) {

@@ -1,4 +1,4 @@
-const peso = Intl.NumberFormat('en-US', {style: 'currency', currency: 'PHP'});
+const peso = Intl.NumberFormat('en-PH', {style: 'currency', currency: 'PHP'});
 var amount = 0, tx_count = 0, mb_limit = 0;
 
 function txnHistory(txn) {
@@ -11,7 +11,7 @@ function txnHistory(txn) {
     col_amt = row.insertCell(2),
     txt_amt = document.createTextNode(txn.amt==0 ? 'FREE' : peso.format(txn.amt)),
      txt_mb = document.createTextNode(format_mb(txn.mb_limit)),
-     txt_ts = document.createTextNode(new Date(txn.ts).toLocaleString());
+     txt_ts = document.createTextNode(utc_to_local(txn.ts));
 
     col_amt.appendChild(txt_amt);
      col_mb.appendChild(txt_mb);
@@ -36,6 +36,10 @@ function totaltxn(){
       blank.setAttribute('colspan', 3);
       blank.appendChild(document.createTextNode(`A total of ${tx_count} txn worth ${peso.format(amount)} for ${format_mb(mb_limit)} data allowance.`));
       blank.style.textAlign='center';
+}
+
+function utc_to_local(ts) {
+  return new Date(parseInt(ts)).toLocaleString("en-US", {timeZone: 'Asia/Manila', hour12: true});
 }
 
 function format_mb(size) {

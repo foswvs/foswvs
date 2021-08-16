@@ -3,7 +3,7 @@ const url = window.location,
      href = url.href,
      path = url.pathname,
    search = url.search,
-     peso = Intl.NumberFormat('en-US', {style: 'currency', currency: 'PHP'});
+     peso = Intl.NumberFormat('en-PH', {style: 'currency', currency: 'PHP'});
 
 const xmbar  = {'exit': '/a/logout.php', 'active': '/a/active_devices.html', 'recent': '/a/recent_devices.html', 'txn': '/a/txn.html', 'pwd': '/a/change_password.html'};
 
@@ -26,25 +26,27 @@ if( xpane = document.getElementById('xmenubar') ) {
 }
 
 function format_mb(size) {
-  size = parseFloat(size);
+  let s = parseFloat(size);
 
-  if(!size) return '-NA-';
+  if(!s) return '-NA-';
 
-  if(size<1) {
-    return parseFloat(size*1e3).toFixed(2) + 'KB';
-  }
+  size = Math.abs(s) * 1024 * 1024;
 
   let base = Math.floor(Math.log(size) / Math.log(1024));
-  let unit = ['MB','GB','TB','PB','EB','ZB','YB'];
+  let unit = ['B','KB','MB','GB','TB','PB','EB','ZB','YB'];
 
   size = size / Math.pow(1024, base);
   size = Number.isInteger(size) ? size : size.toFixed(2);
 
-  return size + unit[base];
+  return format_mb_pretty(s, size + unit[base<0 ? 0 : base]);
+}
+
+function format_mb_pretty(s,su) {
+  return s<0 ? '('+su+')' : su;
 }
 
 function utc_to_local(ts) {
-  return new Date(ts).toLocaleString();
+  return new Date(parseInt(ts)).toLocaleString("en-US", {hour12:true, timeZone: 'Asia/Manila'});
 }
 
 function empty_table(t_id) {

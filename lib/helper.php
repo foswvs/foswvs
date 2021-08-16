@@ -12,7 +12,7 @@ class Helper {
 
   public function amt_to_mb($amt) {
     $data = 0;
-    $rates = [1 => 50, 5 => 500, 10 => 1024, 30 => 4096];
+    $rates = [1 => 30, 5 => 350, 10 => 1024, 30 => 4096];
 
     krsort($rates);
 

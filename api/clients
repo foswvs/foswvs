@@ -13,7 +13,7 @@ $temp = [];
 
 foreach($data as $d) {
   $a = explode("|", trim($d));
-  $ip = '255.255.255.255';
+  $ip = '1.1.1.1';
 
   $rulenum = $a[0];
   $mb_used = $a[1] / 1e6;
@@ -33,7 +33,9 @@ foreach($data as $d) {
     $ip = $ip_dst;
   }
 
-  $temp[$ip] = $mb_used + (isset($temp[$ip]) ? $temp[$ip] : 0);
+  if( strpos($ip,'10.0') !== 0 ) continue;
+
+  $temp[$ip] = $mb_used + ($temp[$ip] ?? 0);
 }
 
 if( count($temp) == 0 ) { sleep(10); exit; }

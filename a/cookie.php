@@ -1,5 +1,7 @@
 <?php
+if( !isset($_COOKIE['hash']) ) { http_response_code(403); exit; }
 
-setcookie('hash',md5(1),time() + 60,"/");
-
-var_dump($_COOKIE);
+if( trim(file_get_contents('password.sha256')) !== $_COOKIE['hash'] ) {
+  http_response_code(401);
+  exit;
+}

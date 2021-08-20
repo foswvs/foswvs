@@ -6,7 +6,7 @@ $net = filter_input(INPUT_GET, 'net');
 $dev = filter_input(INPUT_GET, 'dev');
 
 if( $dev || $txn ) {
-  $db = new Database(); $help = new Helper();
+  $db = new Database();
 }
 
 if( !isset($_COOKIE['hash']) ) {
@@ -16,12 +16,6 @@ if( !isset($_COOKIE['hash']) ) {
 
 if( $_COOKIE['hash'] !== trim(file_get_contents('password.sha256')) ) {
   http_response_code(401);
-  exit;
-}
-
-if( $net == 'chpwd' ) {
-  file_put_contents('password.sha256', hash('sha256',filter_input(INPUT_POST, 'password')));
-  echo 'password changed successfully.';
   exit;
 }
 
@@ -50,7 +44,10 @@ if( $dev == 'add_session' ) {
   $db->mac_addr = $mac;
   $db->mb_limit = $limit;
 
-  if( !$db->get_device_id() ) exit("unregistered device");
+  if( !$db->get_device_id() ) {
+    http_response_code(403);
+    exit;
+  }
 
   $db->add_session();
 
@@ -69,7 +66,10 @@ if( $dev == 'get_session' ) {
 
   $db->mac_addr = $mac;
 
-  if( !$db->get_device_id() ) exit("unregistered device");
+  if( !$db->get_device_id() ) {
+    http_response_code(403);
+    exit;
+  }
 
   $device = $db->get_device_info();
 
@@ -85,7 +85,10 @@ if( $dev == 'get_txn' ) {
 
   $db->mac_addr = $mac;
 
-  if( !$db->get_device_id() ) exit("unregistered device");
+  if( !$db->get_device_id() ) {
+    http_response_code(403);
+    exit;
+  }
 
   echo json_encode($db->get_device_sessions(), JSON_PRETTY_PRINT);
 
@@ -103,7 +106,10 @@ if( $dev == 'clear_mb' ) {
 
   $db->mac_addr = $mac;
 
-  if( !$db->get_device_id() ) exit("unregistered device");
+  if( !$db->get_device_id() ) {
+    http_response_code(403);
+    exit;
+  }
 
   $db->clear_mb();
 }

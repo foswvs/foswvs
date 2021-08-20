@@ -107,7 +107,7 @@ function tx_table_blank(){
 
 function device_info() {
   fetch('/a/x.php?dev=get_session&mac='+mac)
-    .then((x) => {return x.ok ? x.json() : window.location.assign('/a')})
+    .then((x) => {return x.ok ? x.json() : window.history.back()})
     .then((x) => {
       mac_addr.innerText = x.mac;
       ip_addr.innerHTML  = `${x.ip}  ${x.connected ? '<span style="color:green;">&#x2713</span>' : '<span style="color:red;">&#x2717</span>'}`;
@@ -183,6 +183,13 @@ tbody.addEventListener('click', (e) => {
   }
 });
 
+ip_addr.addEventListener('dblclick', (e) => {
+  let ip = ip_addr.innerText.split('.').map(i=>parseInt(i)).join('.');
+
+  if(confirm("OK to disconnect the device.")) {
+    fetch('./force_disconnect.php?ip='+ip).then(()=>device_info());
+  }
+});
 device_info();
 </script>
 </body>

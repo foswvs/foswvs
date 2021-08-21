@@ -186,8 +186,8 @@ tbody.addEventListener('click', (e) => {
 ip_addr.addEventListener('dblclick', (e) => {
   let ip = ip_addr.innerText.split('.').map(i=>parseInt(i)).join('.');
 
-  if(confirm("OK to disconnect the device.")) {
-    fetch('./force_disconnect.php?ip='+ip).then(()=>device_info());
+  if(confirm("Confirm OK to block this device.")) {
+    fetch('./block.php?mac='+mac).then(()=>device_info());
   }
 });
 device_info();

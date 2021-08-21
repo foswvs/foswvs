@@ -123,41 +123,12 @@ class Database extends SQLite3 {
     $this->exec("DELETE FROM session WHERE id={$this->sid}");
   }
 
-  public function set_piso_count() {
-    $this->exec("UPDATE session SET piso_count={$this->piso_count} WHERE id={$this->sid}");
-  }
-
-  public function get_piso_count() {
-    $res = $this->query("SELECT piso_count FROM session WHERE id={$this->sid}");
-    $row = $res->fetchArray(SQLITE3_NUM);
-
-    return $row[0] ? $row[0] : 0;
-  }
-
-  public function set_mb_limit() {
-    $this->exec("UPDATE session SET mb_limit={$this->mb_limit} WHERE id={$this->sid}");
-  }
-
   public function set_mb_used() {
     $this->exec("UPDATE session SET mb_used=mb_used+{$this->mb_used},updated_at=CURRENT_TIMESTAMP WHERE device_id={$this->devid} AND mb_limit > mb_used LIMIT 1");
   }
 
-  public function get_mb_limit() {
-    $res = $this->query("SELECT mb_limit FROM session WHERE id={$this->sid}");
-    $row = $res->fetchArray(SQLITE3_NUM);
-
-    return $row[0] ? $row[0] : 0;
-  }
-
   public function get_total_mb_limit() {
     $res = $this->query("SELECT SUM(mb_limit) FROM session WHERE device_id={$this->devid}");
-    $row = $res->fetchArray(SQLITE3_NUM);
-
-    return $row[0] ? $row[0] : 0;
-  }
-
-  public function get_mb_used() {
-    $res = $this->query("SELECT mb_used FROM session WHERE id={$this->sid}");
     $row = $res->fetchArray(SQLITE3_NUM);
 
     return $row[0] ? $row[0] : 0;

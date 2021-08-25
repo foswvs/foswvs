@@ -14,7 +14,7 @@ if( !isset($_COOKIE['hash']) ) {
   exit;
 }
 
-if( $_COOKIE['hash'] !== trim(file_get_contents('password.sha256')) ) {
+if( $_COOKIE['hash'] !== file_get_contents('/tmp/password') ) {
   http_response_code(401);
   exit;
 }

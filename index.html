@@ -10,8 +10,8 @@
 </head>
 <body>
 <div class="main">
-  <h1 style="font-family:bungee !important;font-size:3.6em;font-weight:400;margin-bottom:0;margin-top:0;">piso wifi</h1>
-  <p style="font-family:barcode;font-size:2em;margin-top:0;">1 5 10</p>
+  <h1 id="title">piso wifi</h1>
+  <p id="slogan">1 5 10</p>
   <p id="wait">waiting for payment</p>
   <p id="mb">0MB</p>
   <button id="insert">Insert Coin</button>
@@ -24,7 +24,6 @@
   <div><a href="/txn.html">VIEW TRANSACTIONS</a></div>
   <div>&#x20B1;1.00 = 30MB; &#x20B1;5.00 = 350MB<br>&#x20B1;10.00 = 1GB; &#x20B1;30.00 = 4GB</div>
   <p>VALID 'TIL CONSUMED. NO EXPIRY.</p>
-  <p><a href="https://dhcp.msu.edu/help/randommac.html">Disable Random MAC Address</a></p>
 </div>
 <audio id="beep" src="/js/sfx/beep.mp3" preload="auto" loop></audio>
 <audio id="bump" src="/js/sfx/bump.wav" preload="auto" loop></audio>
@@ -122,8 +121,9 @@ function topup_check() {
         if( j.mb ) { m.style.display='block'; }
 
         if(j.amt != new_coin) {
-          beep.pause(); coin.play(); setTimeout(()=>coin.pause(),600);
+          beep.pause(); coin.play();
           data_usage(); new_coin=j.amt;
+          setTimeout(()=>coin.pause(),600);
         }
         else { if(beep.paused) beep.play(); }
 
@@ -155,7 +155,7 @@ function data_usage() {
         l.innerText=format_mb(j.mb_limit);
 
         if (j.mb_used>1) {
-          f.innerText = `(${format_mb(mb_free)})`;console.log(f.innerText);
+          f.innerText = `(${format_mb(mb_free)})`;
           /*f.style.display = mb_free>1 ? 'inline-block' : 'none';*/
         }
 
@@ -177,15 +177,12 @@ function connection_status() {
   const x = new XMLHttpRequest();
 
   x.addEventListener('readystatechange', () => {
-    if( x.readyState == 4 && x.status == 200 ) {
-      if( parseInt(x.responseText) ==1 ) {
+    if( x.readyState == 4 ) {
+      if( x.status === 200 ) {
         k.innerText = 'connected';
       }
       else {
         k.innerText = 'disconnected';
-        if( mb_free > 0 ) {
-          btn.innerText = 'connect';
-        }
       }
 
       setTimeout(connection_status, 10000);
@@ -209,6 +206,10 @@ function button_check() {
   if( txt === 'done' ) {
     btn.style.borderColor = '#aa1111';
     btn.style.backgroundColor = '#aa2222';
+  }
+
+  if( k.innerText.toLowerCase() === 'disconnected' &&  mb_free > 0 ) {
+    btn.innerText = 'connect';
   }
 
   if( txt === 'connect' ) {
@@ -238,7 +239,7 @@ function alert(txt) {
   setTimeout(()=>d.remove(),5000);
 }
 
-button_check(); connection_status(); topup_check();
+topup_check(); connection_status(); button_check();
 </script>
 </body>
 </html>

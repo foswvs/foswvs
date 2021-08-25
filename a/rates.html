@@ -15,15 +15,34 @@
   <div class="row">
     <div style="max-width:380px;margin:auto;">
       <div class="u-full-width" style="border:1px solid #ccc;padding:20px 20px 0 20px;border-radius:4px;">
-        <label>CHANGE PASSWORD</label>
-        <form action="./change_password.php" method="POST">
-          <input class="u-full-width" name="password" type="password" placeholder="password" pattern=".{5,25}" title="password must be between 5-25 characters" required>
-          <input class="button-primary" type="submit" value="change">
-          <a class="button" href="javascript:history.back();">CANCEL</a>
+        <label>RATES</label>
+        <form action="" method="POST" id="rates">
         </form>
       </div>
     </div>
   </div>
 </div>
+<script>
+fetch('./rates.php').then((r)=>r.json()).then((r)=> {
+  let f = document.getElementById('rates');
+  console.log(f.firstElementChild);
+
+  for(k in r) {
+    let i = document.createElement('input');
+    i.className='u-full-width';
+    i.type='text';
+    i.name=`rates[${k}]`;
+    i.value=r[k];
+    f.appendChild(i);
+  }
+
+  let b = document.createElement('button');
+  b.className='button-primary';
+  b.innerText='update';
+  b.type='submit';
+
+  f.appendChild(b);
+});
+</script>
 </body>
 </html>

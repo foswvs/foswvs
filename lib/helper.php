@@ -12,7 +12,7 @@ class Helper {
 
   public function amt_to_mb($amt) {
     $data = 0;
-    $rates = [1 => 30, 5 => 350, 10 => 1024, 30 => 4096];
+    $rates = json_decode(file_get_contents(__DIR__ . '/../conf/rates.json'), true);
 
     krsort($rates);
 

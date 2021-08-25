@@ -204,4 +204,8 @@ class Database extends SQLite3 {
 
     return $res;
   }
+
+  public function update_session_from_random_mac($MAC) {
+    $this->exec("UPDATE session SET device_id={$this->devid} WHERE id IN (SELECT id FROM session WHERE device_id IN (SELECT id FROM devices WHERE mac_addr='{$MAC}'))");
+  }
 }

@@ -21,7 +21,7 @@ foreach($data as $d) {
   $ip_src = $a[2];
   $ip_dst = $a[3];
 
-  if( $mb_used == 0 ) continue;
+  if( date('H') != 0 && $mb_used == 0 ) continue;
 
   exec("sudo iptables -Z FORWARD {$rulenum}");
 
@@ -38,7 +38,7 @@ foreach($data as $d) {
   $temp[$ip] = $mb_used + ($temp[$ip] ?? 0);
 }
 
-if( count($temp) == 0 ) { sleep(10); exit; }
+if( count($temp) === 0 ) { sleep(10); exit; }
 
 $logfile = '/var/log/foswvs.log';
 
@@ -59,7 +59,9 @@ foreach($temp as $ip=>$mb) {
     continue;
   }
 
-  $db->set_mb_used(); sleep(1);
+  if( $mb != 0 ) {
+    $db->set_mb_used(); sleep(1);
+  }
 
   list($mb_limit,$mb_used) = $db->get_data_usage();
 

@@ -11,7 +11,8 @@ button:hover{background:#11bb11;}
 hr{border:0;border-top:1px solid #eee;}
 .main{margin:10px auto 0;text-align:center;max-width:380px;border:1px solid #eee;padding:10px 0 50px;}
 #conn{text-align:center;font-size:26px;font-family: 'Alfa Slab One';text-transform:uppercase;}
-#wait,#waiting{font-family: 'Otomanopee One', sans-serif;font-size:18px;display:none;}
+#wait{font-family: 'Otomanopee One', sans-serif;font-size:18px;display:none;}
 #insert{font-family: 'Orbitron', sans-serif;}
-#amt,#mb{font-family: Tourney; font-size:48px;text-align:center;display:none;}
-#title{text-align:center;font-family: 'Zen Tokyo Zoo', cursive;font-weight:400;font-size:2.6em;}
+#mb{font-family: Tourney; font-size:48px;text-align:center;display:none;}
+#title{font-family:bungee !important;font-size:3.6em;font-weight:400;margin-bottom:0;margin-top:0;}
+#slogan{font-family:barcode;font-size:2em;margin-top:0;}

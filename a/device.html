@@ -16,12 +16,24 @@
   <div class="row" id="xmenubar"> </div>
   <div class="row">
     <div class="six columns" style="border:1px solid #ccc;border-radius:4px; padding: 20px; margin-top:10px;">
-      <h5>Add Data</h5>
-      <hr>
-      <label>Data Size In MB <span id="label_format_mb" style="font-size:10px;font-weight:400;">&nbsp;</span></label>  
-      <input class="u-full-width" id="mb_input" type="text" placeholder="1024">
-      <button class="button" id="mb_btn" type="button" onsubmit="return false;">Add</button>
-    </div>
+      <div class="row">
+        <h5>Add Data</h5>
+        <hr>
+      </div>
+      <div class="row">
+        <div class="six columns">
+          <label>Amount <span id="label_format_amt" style="font-size:10px;font-weight:400;">&nbsp;</span></label>  
+          <input class="u-full-width" id="amt_input" type="text" placeholder="10">
+        </div>
+        <div class="six columns">
+          <label>MB Size <span id="label_format_mb" style="font-size:10px;font-weight:400;">&nbsp;</span></label>  
+          <input class="u-full-width" id="mb_input" type="text" placeholder="1024">
+        </div>
+      </div>  
+      <div class="row">
+        <button class="button" id="mb_btn" type="button">Add</button>
+      </div>
+  </div>
 
     <div class="six columns" style="border:1px solid #ccc;border-radius:4px; padding: 20px; margin-top: 10px;">
       <h5>Device Information</h5>
@@ -128,7 +140,7 @@ function device_info() {
 }
 
 function mb_add(limit) {
-  fetch(`/a/x.php?dev=add_session&mac=${mac}&limit=${limit}`).then(() => device_info());
+  fetch(`/a/x.php?dev=add_session&mac=${mac}&limit=${limit}`).then(() => {device_info();mb_input.value=''});
 }
 
 function get_tx() {
@@ -157,18 +169,14 @@ mb_input.addEventListener('keyup', (e) => {
   if(e.keyCode != 13 || mb < 1) return;
 
   mb_add(mb);
-
-  mb_input.value = '';
 });
 
 document.getElementById('mb_btn').addEventListener('click', (e) => {
   let mb = parseInt(mb_input.value);
-
-  if( mb < 1 ) return false;
+  
+  if( mb < 1 || !mb ) return;
 
   mb_add(mb);
-
-  mb_input.value = '';
 });
 
 mb_reset.addEventListener('click', (e) => {
@@ -190,6 +198,23 @@ ip_addr.addEventListener('dblclick', (e) => {
     fetch('./block.php?mac='+mac).then(()=>device_info());
   }
 });
+
+document.getElementById('amt_input').addEventListener('keyup', (e) => {
+  let amt = parseInt(e.target.value);
+
+  if( !amt ) return;
+
+  fetch('./amt2mb.php?a='+amt).then((r)=>r.text()).then((r)=>{
+    mb_input.value=r; document.getElementById('label_format_mb').innerText='='+format_mb(r);
+  });
+
+  let mb = parseInt(mb_input.value);
+
+  if(e.keyCode != 13 || mb < 1) return;
+
+  mb_add(mb); e.target.value='';
+});
+
 device_info();
 </script>
 </body>

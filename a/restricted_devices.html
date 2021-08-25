@@ -21,7 +21,7 @@
       <tbody>
       </tbody>
     </table>
-    <a class="button" href="#" id="device_count">0 restricted devices</a>
+    <a class="button" href="#" id="device_count">0 limited devices</a>
   </div>
 </div>
 <script src="/js/a.js"></script>
@@ -59,7 +59,7 @@ function active_devices() {
     .then((x) => {
       empty_table('devices');
       x.forEach((d) => {
-        devices_table(d); display_count.innerText=`${++device_count} restricted devices`;
+        devices_table(d); display_count.innerText=`${++device_count} limited devices`;
       });
       setTimeout(active_devices,3e4);
     }

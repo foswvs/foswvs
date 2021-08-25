@@ -13,7 +13,7 @@ class Iptables {
   }
 
   public function add_client() {
-    while( shell_exec("sudo iptables -nL FORWARD | grep '{$this->ip}'") == NULL ) {
+    while( shell_exec("sudo iptables -nL FORWARD | grep -w '{$this->ip}'") == NULL ) {
       exec("sudo iptables -t nat -I PREROUTING -s {$this->ip} -j ACCEPT");
       exec("sudo iptables -A FORWARD -d {$this->ip} -j ACCEPT");
       exec("sudo iptables -A FORWARD -s {$this->ip} -j ACCEPT");
@@ -22,7 +22,7 @@ class Iptables {
   }
 
   public function rem_client() {
-    while( shell_exec("sudo iptables -nL FORWARD | grep '{$this->ip}'") ) {
+    while( shell_exec("sudo iptables -nL FORWARD | grep -w '{$this->ip}'") ) {
       exec("sudo iptables -t nat -D PREROUTING -s {$this->ip} -j ACCEPT");
       exec("sudo iptables -D FORWARD -d {$this->ip} -j ACCEPT");
       exec("sudo iptables -D FORWARD -s {$this->ip} -j ACCEPT");
@@ -30,26 +30,8 @@ class Iptables {
     }
   }
 
-  public function zero_byte() {
-    $cmd = shell_exec("sudo iptables -nL FORWARD --line|grep '{$this->ip}'|awk '{print $1}'");
-
-    $num = explode("\n", trim($cmd));
-
-    foreach($num as $n) {
-      exec("sudo iptables -Z FORWARD $n");
-    }
-  }
-
-  public function mb_used() {
-    $data = shell_exec("sudo iptables -xvnL FORWARD | grep {$this->ip} | awk '{print $2}'");
-
-    $bytes = array_sum(explode("\n", trim($data)));
-
-    return round($bytes/1e6);
-  }
-
   public function connected() {
-    if( shell_exec("sudo iptables -nL FORWARD | grep '{$this->ip}'") == NULL ) {
+    if( shell_exec("sudo iptables -nL FORWARD | grep -w '{$this->ip}'") == NULL ) {
       return false;
     }
 

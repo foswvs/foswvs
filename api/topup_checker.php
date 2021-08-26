@@ -13,6 +13,11 @@ if( !$coinslot->sensor_read() ) {
 
 $file = '/tmp/coinslot';
 
+if( !file_exists($file) ) {
+  http_response_code(401);
+  exit;
+}
+
 $data = file_get_contents($file);
 
 $data = json_decode($data, true);

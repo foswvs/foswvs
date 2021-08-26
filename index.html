@@ -181,15 +181,18 @@ function connection_status() {
       if( x.status === 200 ) {
         k.innerText = 'connected';
       }
-      else {
+      if( x.status === 403 ) {
         k.innerText = 'disconnected';
+      }
+      if( x.status === 503 ) {
+        k.innerText = 'no internet';
       }
 
       setTimeout(connection_status, 10000);
     }
   });
 
-  x.open('GET','/api/connection_status.php');
+  x.open('GET','/api/network_status.php');
   x.send();
 }
 

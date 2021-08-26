@@ -7,7 +7,14 @@
  Note: Use php version 7 above.
 
 # installation instructions
- - `sudo apt install nginx php-fpm php-sqlite3 isc-dhcp-server`
+STEP 1:
+ - download from https://www.raspberrypi.org/software/operating-systems/
+ - flash `Raspberry Pi OS Lite` on your SDCard; and
+ - in /boot directory add empty file named `ssh`
+ - connect to `ssh pi@raspberrypi` using the password `raspberry` - don't forget to change the default password of your device.
+ 
+STEP 2:
+ - `sudo apt install -y nginx php-fpm php-sqlite3 isc-dhcp-server bind9`
  - `visudo` then add `www-data ALL=NOPASSWD: /usr/bin/iptables`
  - `sudo usermod -aG gpio www-data`
  - `git https://github.com/foswvs/foswvs.git /home/pi/foswvs`

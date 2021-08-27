@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-<title>change password</title>
+<title>rates</title>
 <link href="/css/normalize.css" rel="stylesheet">
 <link href="/css/skeleton.css" rel="stylesheet">
 <link href="/css/a.css" rel="stylesheet">
@@ -15,33 +15,101 @@
   <div class="row">
     <div style="max-width:380px;margin:auto;">
       <div class="u-full-width" style="border:1px solid #ccc;padding:20px 20px 0 20px;border-radius:4px;">
-        <label>RATES</label>
-        <form action="" method="POST" id="rates">
+        <div class="row"><h5>RATES SETTINGS</h5></div>
+        <div class="row">
+          <div class="three columns"><label>Amount</label></div>
+          <div class="three columns"><label>MB Size</label></div>
+          <div class="six columns"><label>Pretty Format</label></div>
+        </div>
+        <form action="rates.php" method="POST" id="rates">
         </form>
       </div>
     </div>
   </div>
 </div>
+<script src="/js/a.js"></script>
 <script>
 fetch('./rates.php').then((r)=>r.json()).then((r)=> {
   let f = document.getElementById('rates');
-  console.log(f.firstElementChild);
 
   for(k in r) {
-    let i = document.createElement('input');
-    i.className='u-full-width';
-    i.type='text';
-    i.name=`rates[${k}]`;
-    i.value=r[k];
-    f.appendChild(i);
+    let row0 = document.createElement('div');
+    let col1 = document.createElement('div');
+    let col2 = document.createElement('div');
+    let col3 = document.createElement('div');
+
+    let ikey = document.createElement('input');
+    let ival = document.createElement('input');
+    let disp = document.createElement('input');
+
+    row0.className='row';
+    col1.className='three columns';
+    col2.className='three columns';
+    col3.className='six columns';
+
+    ikey.className='u-full-width';
+    ikey.type='text';
+    ikey.value=k;
+
+    ival.className='u-full-width';
+    ival.type='text';
+    ival.name=`rates[${k}]`;
+    ival.value=r[k];
+
+    disp.className='u-full-width';
+    disp.disabled=true;
+    disp.type='text';
+    disp.value=peso.format(k) + ' = ' + format_mb(r[k]);
+
+    col1.appendChild(ikey);
+    col2.appendChild(ival);
+    col3.appendChild(disp);
+
+    row0.appendChild(col1);
+    row0.appendChild(col2);
+    row0.appendChild(col3);
+
+    f.appendChild(row0);
+
+    ikey.addEventListener('keyup', () => {
+      let n = parseInt(ikey.value) || 1;
+
+      if( n > 1000 ) n = 1000;
+
+      ival.name=`rates[${n}]`;
+
+      ikey.value = n;
+    });
+
+    ival.addEventListener('keyup', () => {
+      let n = parseInt(ival.value) || 10;
+
+      if( n > 1e8 ) n = 1e8;
+
+      disp.value = peso.format(ikey.value) + ' = ' + format_mb(n);
+
+      ival.name=`rates[${ikey.value}]`;
+      ival.value = n;
+    });
+
+    ikey.addEventListener('click',(e)=>e.target.select());
+    ival.addEventListener('click',(e)=>e.target.select());
   }
 
   let b = document.createElement('button');
-  b.className='button-primary';
+  b.className='button-primary u-full-width';
   b.innerText='update';
+  b.name='submit';
   b.type='submit';
 
+  let c = document.createElement('button');
+  c.className='button u-full-width';
+  c.innerText='cancel';
+  c.type='button';
+  c.addEventListener('click',()=>location.assign('/a/'));
+  
   f.appendChild(b);
+  f.appendChild(c);
 });
 </script>
 </body>

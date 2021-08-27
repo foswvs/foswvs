@@ -1,19 +1,18 @@
 <?php
 class Database extends SQLite3 {
-  public $sid;
-  public $devid;
-  public $ip_addr;
-  public $mac_addr;
-  public $hostname;
-  public $updated_at;
+  private $sid;
+  private $devid;
+  private $ip_addr;
+  private $mac_addr;
+  private $hostname;
 
-  public $offset = 0;
-  public $limit  = 25;
+  private $offset = 0;
+  private $limit  = 25;
 
-  public $mb_limit = 0;
-  public $mb_used  = 0;
+  private $mb_limit = 0;
+  private $mb_used  = 0;
 
-  public $piso_count = 0;
+  private $piso_count = 0;
 
   public function __construct() {
     $dbf = '/home/pi/foswvs/conf/foswvs.db';
@@ -32,6 +31,72 @@ class Database extends SQLite3 {
 
   public function __destruct() {
     $this->close();
+  }
+
+  public function set_mac($s) {
+    if( filter_var($s, FILTER_VALIDATE_MAC) ) {
+      $this->mac_addr = $s;
+    }
+  }
+
+  public function set_ip($s) {
+    if( filter_var($s, FILTER_VALIDATE_IP) ) {
+      $this->ip_addr = $s;
+    }
+  }
+
+  public function set_host($s) {
+    $this->hostname = $s;
+  }
+
+  public function set_limit($n) {
+    if( filter_var($n, FILTER_VALIDATE_INT) ) {
+      $this->limit = $n;
+    }
+  }
+
+  public function set_offset($n) {
+    if( filter_var($n, FILTER_VALIDATE_INT) ) {
+      $this->offset = $n;
+    }
+  }
+
+  public function set_mb_limit($f) {
+    if( filter_var($f, FILTER_VALIDATE_FLOAT) ) {
+      $this->mb_limit = $f;
+    }
+  }
+
+  public function set_mb_used($f) {
+    if( filter_var($f, FILTER_VALIDATE_FLOAT) ) {
+      $this->mb_used = $f;
+    }
+  }
+
+  public function set_amount($f) {
+    if( filter_var($f, FILTER_VALIDATE_FLOAT) ) {
+      $this->piso_count = $f;
+    }
+  }
+
+  public function set_did($n) {
+    if( filter_var($n, FILTER_VALIDATE_INT) ) {
+      $this->devid = $n;
+    }
+  }
+
+  public function set_sid($n) {
+    if( filter_var($n, FILTER_VALIDATE_INT) ) {
+      $this->sid = $n;
+    }
+  }
+
+  public function get_did() {
+    return $this->devid;
+  }
+
+  public function get_sid() {
+    return $this->sid;
   }
 
   public function create_table() {
@@ -123,7 +188,7 @@ class Database extends SQLite3 {
     $this->exec("DELETE FROM session WHERE id={$this->sid}");
   }
 
-  public function set_mb_used() {
+  public function update_mb_used() {
     $this->exec("UPDATE session SET mb_used=mb_used+{$this->mb_used},updated_at=CURRENT_TIMESTAMP WHERE device_id={$this->devid} AND mb_limit > mb_used LIMIT 1");
   }
 

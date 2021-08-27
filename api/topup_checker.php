@@ -2,8 +2,8 @@
 require '../lib/autoload.php';
 
 $IP = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);
+$MAC = Network::device_mac($IP);
 
-$device = new Device($IP);
 $coinslot = new Coinslot();
 
 if( !$coinslot->sensor_read() ) {
@@ -18,20 +18,17 @@ if( !file_exists($file) ) {
   exit;
 }
 
-$data = file_get_contents($file);
+$str = file_get_contents($file);
+$obj = json_decode($str);
 
-$data = json_decode($data, true);
-
-if( $data === NULL ) {
+if( $obj === NULL ) {
   http_response_code(401);
   exit;
 }
 
-if( $data['mac'] != $device->mac ) {
+if( $obj->mac != $MAC ) {
   http_response_code(401);
   exit;
 }
 
-$data = json_encode($data);
-
-echo $data;
+echo $str;

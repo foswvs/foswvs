@@ -14,7 +14,7 @@ if(!$mac) { http_response_code(403); exit; }
 
 $db = new Database();
 
-$db->mac_addr = $mac;
+$db->set_mac($mac);
 
 if( !$db->get_device_id() ) {
   http_response_code(403);
@@ -23,6 +23,6 @@ if( !$db->get_device_id() ) {
 
 [$mb_limit, $mb_used] = $db->get_data_usage();
 
-$db->mb_used = $mb_limit - $mb_used;
+$db->set_mb_used($mb_limit-$mb_used);
 
-$db->set_mb_used();
+$db->update_mb_used();

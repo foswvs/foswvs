@@ -41,8 +41,8 @@ if( $dev == 'add_session' ) {
 
   if( !$limit ) exit;
 
-  $db->mac_addr = $mac;
-  $db->mb_limit = $limit;
+  $db->set_mac($mac);
+  $db->set_mb_limit($limit);
 
   if( !$db->get_device_id() ) {
     http_response_code(403);
@@ -58,13 +58,13 @@ if( $dev == 'add_session' ) {
     $ipt->add_client();
   }
 
-  echo json_encode(['devid' => $db->devid, 'sid' => $db->sid, 'mb_limit' => $mb_limit, 'mb_used' => $mb_used]);
+  echo json_encode(['devid' => $db->get_did(), 'sid' => $db->get_sid(), 'mb_limit' => $mb_limit, 'mb_used' => $mb_used]);
 }
 
 if( $dev == 'get_session' ) {
   $mac = filter_input(INPUT_GET, 'mac', FILTER_VALIDATE_MAC);
 
-  $db->mac_addr = $mac;
+  $db->set_mac($mac);
 
   if( !$db->get_device_id() ) {
     http_response_code(403);
@@ -83,7 +83,7 @@ if( $dev == 'get_session' ) {
 if( $dev == 'get_txn' ) {
   $mac = filter_input(INPUT_GET, 'mac', FILTER_VALIDATE_MAC);
 
-  $db->mac_addr = $mac;
+  $db->set_mac($mac);
 
   if( !$db->get_device_id() ) {
     http_response_code(403);
@@ -97,14 +97,14 @@ if( $dev == 'get_txn' ) {
 if( $dev == 'del_txn' ) {
   $sid = filter_input(INPUT_GET, 'sid', FILTER_VALIDATE_INT);
 
-  $db->sid = $sid;
+  $db->set_sid($sid);
   $db->rem_session();
 }
 
 if( $dev == 'clear_mb' ) {
   $mac = filter_input(INPUT_GET, 'mac', FILTER_VALIDATE_MAC);
 
-  $db->mac_addr = $mac;
+  $db->set_mac($mac);
 
   if( !$db->get_device_id() ) {
     http_response_code(403);
@@ -115,11 +115,11 @@ if( $dev == 'clear_mb' ) {
 }
 
 if( $txn == 'get_all' ) {
-  $db->offset = filter_input(INPUT_GET, 'offset', FILTER_VALIDATE_INT);
-  $db->limit  = filter_input(INPUT_GET, 'limit', FILTER_VALIDATE_INT);
+  $o = filter_input(INPUT_GET, 'offset', FILTER_VALIDATE_INT) ?: 0;
+  $l = filter_input(INPUT_GET, 'limit', FILTER_VALIDATE_INT) ?: 10;
 
-  if( !$db->offset ) $db->offset = 0;
-  if( !$db->limit )  $db->limit = 10;
+  $db->set_offset($o);
+  $db->set_limit($l);
 
   echo json_encode($db->get_all_txn(), JSON_PRETTY_PRINT);
 }

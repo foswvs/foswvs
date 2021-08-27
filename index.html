@@ -17,7 +17,7 @@
   <button id="insert">Insert Coin</button>
   <br><br>
   <hr>
-  <h2 id="conn">DETECTING DEVICE</h2>
+  <h2 id="conn" style="font-size:14px;">CHECKING NETWORK STATUS</h2>
   <div>Data Usage: <span id="mb_used">0</span>/<span id="mb_limit">0</span><span id="mb_free" style="display:none;">&nbsp;</span></div>
   <div>MAC Address: <span id="mac_addr">Identifying...</span></div>
   <div>IP Address: <span id="ip_addr">0.0.0.0</span></div>
@@ -28,6 +28,7 @@
 <audio id="beep" src="/js/sfx/beep.mp3" preload="auto" loop></audio>
 <audio id="bump" src="/js/sfx/bump.wav" preload="auto" loop></audio>
 <audio id="coin" src="/js/sfx/coin.wav" preload="auto" loop></audio>
+<audio id="yeeh" src="/js/sfx/yeeh.mp3" preload="auto" loop></audio>
 <script>
 const beep = document.getElementById('beep'),
       bump = document.getElementById('bump'),
@@ -42,7 +43,7 @@ const beep = document.getElementById('beep'),
          w = document.getElementById('wait'),
          m = document.getElementById('mb');
 
-var new_coin=0,mb_free=0;
+var new_coin=0, mb_free=0;
 
 btn.addEventListener('click', function() {
   const x = new XMLHttpRequest(),
@@ -72,8 +73,15 @@ btn.addEventListener('click', function() {
       }
 
       if(x.readyState == 4) {
+        if(x.status == 200) {
+          if(k.innerText.toLowerCase() === 'connected') {
+            yeeh.play(); setTimeout(()=>yeeh.pause(),1000);
+          }
+        }
+
         if(x.status == 401) {
-          bump.play(); setTimeout(()=>bump.pause(),200); alert('coinslot is busy');
+          bump.play(); setTimeout(()=>bump.pause(),1000);
+          alert('coinslot is busy');
         }
       }
     });
@@ -123,7 +131,7 @@ function topup_check() {
         if(j.amt != new_coin) {
           beep.pause(); coin.play();
           data_usage(); new_coin=j.amt;
-          setTimeout(()=>coin.pause(),600);
+          setTimeout(()=>coin.pause(),1000);
         }
         else { if(beep.paused) beep.play(); }
 
@@ -178,6 +186,7 @@ function connection_status() {
 
   x.addEventListener('readystatechange', () => {
     if( x.readyState == 4 ) {
+      k.style.fontSize='28px';
       if( x.status === 200 ) {
         k.innerText = 'connected';
       }
@@ -239,7 +248,7 @@ function alert(txt) {
 
   document.body.appendChild(d);
 
-  setTimeout(()=>d.remove(),5000);
+  setTimeout(()=>d.remove(),3000);
 }
 
 topup_check(); connection_status(); button_check();

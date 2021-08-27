@@ -4,12 +4,12 @@ set_time_limit(60);
 require '../lib/autoload.php';
 
 $IP = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);
+$MAC = Network::device_mac($IP);
 
-$device = new Device($IP);
 $coinslot = new Coinslot();
 $helper = new Helper();
 
-if( !$device->mac ) {
+if( !filter_var($MAC, FILTER_VALIDATE_MAC) ) {
   http_response_code(401);
   exit;
 }
@@ -41,7 +41,7 @@ while( $coinslot->sensor_read() ) {
 
   $mb = $helper->amt_to_mb($count);
 
-  $log = ['mac' => $device->mac, 'amt' => $count, 'mb' => $mb, 'cd' => $diff];
+  $log = ['mac' => $MAC, 'amt' => $count, 'mb' => $mb, 'cd' => $diff];
 
   $json = json_encode($log);
 
@@ -56,18 +56,24 @@ while( $coinslot->sensor_read() ) {
 
 fclose($fp);
 
-if( $count ) {
-  $db = new Database();
-
-  $db->mac_addr = $device->mac;
-
-  $db->mb_limit = $mb;
-  $db->piso_count = $count;
-
-  if( !$db->get_device_id() ) exit;
-
-  $db->add_session();
-
-  $ipt = new Iptables($IP);
-  $ipt->add_client();
+if( $count === 0 ) {
+  http_response_code(204);
+  exit;
 }
+
+$db = new Database();
+
+$db->set_mb_limit($mb);
+$db->set_amount($count);
+$db->set_mac($MAC);
+
+if( !$db->get_device_id() ) {
+  http_response_code(401);
+  exit;
+}
+
+$db->add_session();
+
+$ipt = new Iptables($IP);
+$ipt->add_client();
+

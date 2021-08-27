@@ -47,8 +47,8 @@ $fp = fopen($logfile, (@filesize($logfile)>1e6 ? 'w' : 'a'));
 foreach($temp as $ip=>$mb) {
   $dt = date('Y-m-d H:i:s');
 
-  $db->mb_used = $mb;
-  $db->ip_addr = $ip;
+  $db->set_mb_used($mb);
+  $db->set_ip($ip);
 
   fwrite($fp, "$dt - get_device_id_by_ip_$ip $mb\n");
 
@@ -60,7 +60,7 @@ foreach($temp as $ip=>$mb) {
   }
 
   if( $mb != 0 ) {
-    $db->set_mb_used(); usleep(25e4);
+    $db->update_mb_used(); usleep(25e4);
   }
 
   list($mb_limit,$mb_used) = $db->get_data_usage();

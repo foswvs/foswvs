@@ -13,16 +13,24 @@
 <body>
 <div class="container" style="margin-top:10px;">
   <div class="row" id="xmenubar"></div>
-  <div class="row table-wrap">
-    <table class="u-full-width" id="devices">
-      <thead>
-        <tr><th>Timestamp</th><th>Hostname</th><th>IP</th><th>MAC</th></tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
-    <a class="button" href="#" id="device_count">0 active devices</a>
-    <a class="button" href="./restricted_devices.html" id="device_count">limited devices</a>
+  <div class="row">
+    <div class="table-wrap">
+      <table class="u-full-width" id="devices">
+        <thead>
+          <tr><th>Timestamp</th><th>Hostname</th><th>IP</th><th>MAC</th></tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="three columns">
+    <a class="button u-full-width" href="#" id="device_count">0 active devices</a>
+    </div>
+    <div class="three columns">
+      <a class="button u-full-width" href="./restricted_devices.html" id="device_count">limited devices</a>
+    </div>
   </div>
 </div>
 <script src="/js/a.js"></script>

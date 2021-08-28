@@ -10,20 +10,20 @@ class Helper {
     return round($size / pow(1024, $base), 2) . $unit[$base];
   }
 
-  public function amt_to_mb($amt) {
-    $data = 0;
+  public function amount_mb($peso) {
+    $size = 0;
     $rates = json_decode(file_get_contents(__DIR__ . '/../conf/rates.json'), true);
 
     krsort($rates);
 
-    foreach($rates as $r_amt=>$r_data) {
-      if( $amt >= $r_amt ) {
-        $base = floor($amt / $r_amt);
-        $data = $base * $r_data + $data;
-        $amt = $amt - ($base * $r_amt);
+    foreach($rates as $amt=>$val) {
+      if( $peso >= $amt ) {
+        $base = floor($peso / $amt);
+        $size = $base * $val + $size;
+        $peso = $peso - ($base * $amt);
       }
     }
 
-    return $data;
+    return $size;
   }
 }

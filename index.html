@@ -75,12 +75,12 @@ btn.addEventListener('click', function() {
       if(x.readyState == 4) {
         if(x.status == 200) {
           if(k.innerText.toLowerCase() === 'connected') {
-            yeeh.play(); setTimeout(()=>yeeh.pause(),1000);
+            yeeh.play(); setTimeout(()=>yeeh.pause(),600);
           }
         }
 
         if(x.status == 401) {
-          bump.play(); setTimeout(()=>bump.pause(),1000);
+          bump.play(); setTimeout(()=>bump.pause(),600);
           alert('coinslot is busy');
         }
       }
@@ -131,7 +131,7 @@ function topup_check() {
         if(j.amt != new_coin) {
           beep.pause(); coin.play();
           data_usage(); new_coin=j.amt;
-          setTimeout(()=>coin.pause(),1000);
+          setTimeout(()=>coin.pause(),600);
         }
         else { if(beep.paused) beep.play(); }
 

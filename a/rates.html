@@ -48,18 +48,18 @@ fetch('./rates.php').then((r)=>r.json()).then((r)=> {
     col3.className='six columns';
 
     ikey.className='u-full-width';
-    ikey.type='text';
-    ikey.value=k;
+    ikey.type ='text';
+    ikey.value =k;
 
     ival.className='u-full-width';
-    ival.type='text';
-    ival.name=`rates[${k}]`;
-    ival.value=r[k];
+    ival.type ='text';
+    ival.name =`rates[${k}]`;
+    ival.value =r[k];
 
     disp.className='u-full-width';
-    disp.disabled=true;
-    disp.type='text';
-    disp.value=peso.format(k) + ' = ' + format_mb(r[k]);
+    disp.disabled =true;
+    disp.type ='text';
+    disp.value =peso.format(k) + ' = ' + format_mb(r[k]);
 
     col1.appendChild(ikey);
     col2.appendChild(ival);
@@ -76,7 +76,7 @@ fetch('./rates.php').then((r)=>r.json()).then((r)=> {
 
       if( n > 1000 ) n = 1000;
 
-      ival.name=`rates[${n}]`;
+      ival.name =`rates[${n}]`;
 
       ikey.value = n;
     });
@@ -88,7 +88,7 @@ fetch('./rates.php').then((r)=>r.json()).then((r)=> {
 
       disp.value = peso.format(ikey.value) + ' = ' + format_mb(n);
 
-      ival.name=`rates[${ikey.value}]`;
+      ival.name =`rates[${ikey.value}]`;
       ival.value = n;
     });
 
@@ -99,14 +99,14 @@ fetch('./rates.php').then((r)=>r.json()).then((r)=> {
   let b = document.createElement('button');
   b.className='button-primary u-full-width';
   b.innerText='update';
-  b.name='submit';
-  b.type='submit';
+  b.name ='submit';
+  b.type ='submit';
 
   let c = document.createElement('button');
   c.className='button u-full-width';
   c.innerText='cancel';
-  c.type='button';
-  c.addEventListener('click',()=>location.assign('/a/'));
+  c.type ='button';
+  c.addEventListener('click',()=>location.assign('/a/settings.html'));
   
   f.appendChild(b);
   f.appendChild(c);

@@ -7,7 +7,6 @@ $IP = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);
 $MAC = Network::device_mac($IP);
 
 $coinslot = new Coinslot();
-$helper = new Helper();
 
 if( !filter_var($MAC, FILTER_VALIDATE_MAC) ) {
   http_response_code(401);
@@ -39,7 +38,7 @@ while( $coinslot->sensor_read() ) {
 
   $diff = $wait - $timer;
 
-  $mb = $helper->amt_to_mb($count);
+  $mb = Helper::amount_mb($count);
 
   $log = ['mac' => $MAC, 'amt' => $count, 'mb' => $mb, 'cd' => $diff];
 

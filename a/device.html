@@ -23,7 +23,7 @@
       <div class="row">
         <div class="six columns">
           <label>Amount <span id="label_format_amt" style="font-size:10px;font-weight:400;">&nbsp;</span></label>  
-          <input class="u-full-width" id="amt_input" type="text" placeholder="10">
+          <input class="u-full-width" id="money_in" type="text" placeholder="10">
         </div>
         <div class="six columns">
           <label>MB Size <span id="label_format_mb" style="font-size:10px;font-weight:400;">&nbsp;</span></label>  
@@ -67,6 +67,7 @@ const mac = search.substr(5),
   ip_addr = document.getElementById('ip_addr'),
   mac_addr = document.getElementById('mac_addr'),
   hostname = document.getElementById('hostname'),
+  money_in = document.getElementById('money_in'),
   mb_input = document.getElementById('mb_input'),
   mb_reset = document.getElementById('mb_reset'),
   mb_free  = document.getElementById('mb_free'),
@@ -122,7 +123,7 @@ function device_info() {
     .then((x) => {return x.ok ? x.json() : window.history.back()})
     .then((x) => {
       mac_addr.innerText = x.mac;
-      ip_addr.innerHTML  = `${x.ip}  ${x.connected ? '<span style="color:green;">&#x2713</span>' : '<span style="color:red;">&#x2717</span>'}`;
+      ip_addr.innerHTML  = `${x.ip}  ${x.connected ? '<span style\="color:green;">&#x2713</span>' : '<span style\="color:red;">&#x2717</span>' }`;
       hostname.innerText = x.host;
       activets.innerText = x.active_at ? utc_to_local(x.active_at) : '-NA-';
 
@@ -140,7 +141,7 @@ function device_info() {
 }
 
 function mb_add(limit) {
-  fetch(`/a/x.php?dev=add_session&mac=${mac}&limit=${limit}`).then(() => {device_info();mb_input.value=''});
+  fetch(`/a/x.php?dev=add_session&mac=${mac}&limit=${limit}`).then(() => device_info());
 }
 
 function get_tx() {
@@ -158,23 +159,45 @@ function get_tx() {
 }
 
 function del_tx(id) {
-  fetch('./x.php?dev=del_txn&sid=' + parseInt(id)).then(() => device_info());
+  fetch('./x.php?dev=del_txn&sid\=' + parseInt(id)).then(() => device_info());
 }
 
+money_in.addEventListener('keyup', (e) => {
+  let n = parseInt(e.target.value) || 0;
+
+  if( n > 5e3 ) n = 5e3;
+
+  e.target.value = n;
+
+  fetch('./amount_mb.php?n='+n).then((r)=>r.text()).then((x)=>{
+    mb_input.value =x; document.getElementById('label_format_mb').innerText='='+format_mb(x);
+  });
+
+  let mb = parseInt(mb_input.value) || 0;
+
+  if( e.keyCode != 13 || mb < 1) return;
+
+  mb_add(mb); e.target.value = 0;
+});
+
 mb_input.addEventListener('keyup', (e) => {
-  let mb = parseInt(mb_input.value);
+  let n = parseInt(e.target.value) || 0;
 
-  document.getElementById('label_format_mb').innerText='='+format_mb(mb);
+  if( n > 1e8 ) n = 1e8;
 
-  if(e.keyCode != 13 || mb < 1) return;
+  e.target.value = n;
 
-  mb_add(mb);
+  document.getElementById('label_format_mb').innerText='='+format_mb(n);
+
+  if( e.keyCode != 13 ) return;
+
+  mb_add(n); e.target.value = 0;
 });
 
 document.getElementById('mb_btn').addEventListener('click', (e) => {
-  let mb = parseInt(mb_input.value);
+  let mb = parseInt(mb_input.value) || 0;
   
-  if( mb < 1 || !mb ) return;
+  if( mb < 1 ) return;
 
   mb_add(mb);
 });
@@ -197,22 +220,6 @@ ip_addr.addEventListener('dblclick', (e) => {
   if(confirm("Confirm OK to block this device.")) {
     fetch('./block.php?mac='+mac).then(()=>device_info());
   }
-});
-
-document.getElementById('amt_input').addEventListener('keyup', (e) => {
-  let amt = parseInt(e.target.value);
-
-  if( !amt ) return;
-
-  fetch('./amt2mb.php?a='+amt).then((r)=>r.text()).then((r)=>{
-    mb_input.value=r; document.getElementById('label_format_mb').innerText='='+format_mb(r);
-  });
-
-  let mb = parseInt(mb_input.value);
-
-  if(e.keyCode != 13 || mb < 1) return;
-
-  mb_add(mb); e.target.value='';
 });
 
 device_info();

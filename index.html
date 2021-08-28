@@ -46,16 +46,20 @@ const beep = document.getElementById('beep'),
 var new_coin=0, mb_free=0;
 
 btn.addEventListener('click', function() {
-  const x = new XMLHttpRequest(),
-      txt = btn.innerText.toLowerCase();
+  const b = btn.innerText.toLowerCase(),
+        x = new XMLHttpRequest();
 
-  if( txt == 'connect' ) {
+  if( b == 'connect' ) {
     x.addEventListener('readystatechange', () => {
       if(x.readyState==4) {
         btn.innerText='insert coin';
 
-        if( x.responseText === 'connected' ) {
+        if( x.status === 200 ) {
           k.innerText='connected';
+        }
+
+        if( x.status === 403 ) {
+          mb_free=0; alert('no data available');
         }
       }
     });
@@ -64,24 +68,27 @@ btn.addEventListener('click', function() {
     x.send();
   }
 
-  if( txt == 'insert coin' ) {
+  if( b == 'insert coin' ) {
     btn.innerText='... ... ...';
 
     x.addEventListener('readystatechange', () => {
       if(x.readyState == 1) {
-        setTimeout(topup_check,600);
+        setTimeout(topup_check,1000);
       }
 
       if(x.readyState == 4) {
         if(x.status == 200) {
-          if(k.innerText.toLowerCase() === 'connected') {
-            yeeh.play(); setTimeout(()=>yeeh.pause(),600);
-          }
+          btn.innerText = 'insert coin'; data_usage();
         }
 
         if(x.status == 401) {
-          bump.play(); setTimeout(()=>bump.pause(),600);
-          alert('coinslot is busy');
+          bump.play(); alert('coinslot is busy');
+          setTimeout(()=>bump.pause(),bump.duration*1e3);
+        }
+
+        if(x.status == 403) {
+          bump.play(); alert('too many attempt');
+          setTimeout(()=>bump.pause(),bump.duration*1e3);
         }
       }
     });
@@ -90,28 +97,13 @@ btn.addEventListener('click', function() {
     x.send();
   }
 
-  if( txt == 'done' ) {
-    beep.pause();
-    btn.innerText='insert coin';
-
+  if( b == 'done' ) {
     x.open('GET','/api/topup_cancel.php');
+    btn.innerText='insert coin';
+    beep.pause();
     x.send();
   }
 });
-
-function format_mb(size) {
-  size = parseFloat(size);
-
-  if(!size || size<1) return '0MB';
-
-  let base = Math.floor(Math.log(size) / Math.log(1024));
-  let unit = ['MB','GB','TB','PB','EB','ZB','YB'];
-
-  size = size / Math.pow(1024, base);
-  size = Number.isInteger(size) ? size : size.toFixed(2);
-
-  return size + unit[base];
-}
 
 function topup_check() {
   const x = new XMLHttpRequest();
@@ -129,19 +121,15 @@ function topup_check() {
         if( j.mb ) { m.style.display='block'; }
 
         if(j.amt != new_coin) {
-          beep.pause(); coin.play();
-          data_usage(); new_coin=j.amt;
-          setTimeout(()=>coin.pause(),600);
-        }
-        else { if(beep.paused) beep.play(); }
+          new_coin=j.amt; beep.pause(); coin.play();
+          setTimeout(()=> coin.pause(), coin.duration*1e3);
+        } else { if(beep.paused) beep.play(); }
 
         setTimeout(topup_check, 1000);
       }
 
       if( x.status == 401 ) {
-        if( !beep.paused ) { beep.pause(); }
-
-        btn.innerText='insert coin'; data_usage();
+        beep.pause(); btn.innerText='insert coin';
       }
     }
   });
@@ -158,7 +146,7 @@ function data_usage() {
       if(x.status == 200) {
         let j = JSON.parse(x.responseText);
         mb_free = j.mb_limit - j.mb_used;
-      
+
         u.innerText=format_mb(j.mb_used);
         l.innerText=format_mb(j.mb_limit);
 
@@ -182,19 +170,32 @@ function data_usage() {
 }
 
 function connection_status() {
-  const x = new XMLHttpRequest();
+  const x = new XMLHttpRequest(),
+        s = k.innerText.toLowerCase();
 
   x.addEventListener('readystatechange', () => {
     if( x.readyState == 4 ) {
       k.style.fontSize='28px';
+
       if( x.status === 200 ) {
-        k.innerText = 'connected';
+        if( s !== 'connected' ) {
+          if( s != 'checking network status' ) {
+            yeeh.play();setTimeout(()=>yeeh.pause(),yeeh.duration*1e3);
+          }
+          k.innerText = 'connected'; data_usage();
+        }
       }
+
       if( x.status === 403 ) {
-        k.innerText = 'disconnected';
+        if( s !== 'disconnected' ) {
+          k.innerText = 'disconnected'; data_usage();
+        }
       }
+
       if( x.status === 503 ) {
-        k.innerText = 'no internet';
+        if( s !== 'no internet' ) {
+          k.innerText = 'no internet'; data_usage();
+        }
       }
 
       setTimeout(connection_status, 10000);
@@ -206,32 +207,51 @@ function connection_status() {
 }
 
 function button_check() {
-  let txt = btn.innerText.toLowerCase();
+  let b = btn.innerText.toLowerCase(),
+      s = k.innerText.toLowerCase();
 
-  if( txt === 'insert coin' ) {
+  if( b === 'insert coin' ) {
     btn.style.borderColor = '#11aa11';
     btn.style.backgroundColor = '#22aa22';
     m.style.display='none';
     w.style.display='none';
   }
 
-  if( txt === 'done' ) {
+  if( b === 'done' ) {
     btn.style.borderColor = '#aa1111';
     btn.style.backgroundColor = '#aa2222';
   }
 
-  if( k.innerText.toLowerCase() === 'disconnected' &&  mb_free > 0 ) {
+  if( s === 'disconnected' &&  mb_free > 0 ) {
     btn.innerText = 'connect';
   }
 
-  if( txt === 'connect' ) {
+  if( b === 'connect' ) {
     btn.style.borderColor = '#FFB300';
     btn.style.backgroundColor = '#ECA809';
     m.style.display='none';
     w.style.display='none';
+
+    if( mb_free < 1 ) {
+      btn.innerText = 'insert coin';
+    }
   }
 
   setTimeout(button_check,100);
+}
+
+function format_mb(size) {
+  size = parseFloat(size) || 0;
+
+  if( size<1 ) return '0MB';
+
+  let base = Math.floor(Math.log(size) / Math.log(1024));
+  let unit = ['MB','GB','TB','PB','EB','ZB','YB'];
+
+  size = size / Math.pow(1024, base);
+  size = Number.isInteger(size) ? size : size.toFixed(2);
+
+  return size + unit[base];
 }
 
 function alert(txt) {

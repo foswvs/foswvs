@@ -5,6 +5,4 @@ if( !$n ) { http_response_code(204); exit; }
 
 require '../lib/helper.php';
 
-$h = new Helper();
-
-echo $h->amount_mb($n);
+echo Helper::amount_mb($n);

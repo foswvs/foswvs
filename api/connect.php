@@ -13,8 +13,10 @@ if( !$db->get_device_id_by_ip() ) {
 
 list($mb_limit,$mb_used) = $db->get_data_usage();
 
-if( $mb_limit > $mb_used ) {
-  $ipt = new Iptables($IP);
-  $ipt->add_client();
-  echo 'connected';
+if( $mb_limit <= $mb_used ) {
+  http_response_code(403);
+  exit;
 }
+
+$ipt = new Iptables($IP);
+$ipt->add_client();

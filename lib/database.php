@@ -24,7 +24,7 @@ class Database extends SQLite3 {
     $file = stat($dbf);
 
     if( $file['size'] <= 4096 ) {
-      chmod($dbf, 0777);
+      chmod($dbf, 0666);
       $this->create_table();
     }
   }

@@ -7,23 +7,100 @@
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>PisoWiFi</title>
 <style>
-@font-face {font-family: 'font1'; src: url('/fonts/OtomanopeeOne-Regular.ttf') format('truetype');}
-@font-face {font-family: 'font2'; src: url('/fonts/Orbitron-VariableFont_wght.ttf') format('truetype');}
-@font-face {font-family: 'font3'; src: url('/fonts/Tourney-VariableFont_wdth,wght.ttf') format('truetype');}
-@font-face {font-family: 'font4'; src: url('/fonts/AlfaSlabOne-Regular.ttf') format('truetype');}
-@font-face {font-family: 'font5'; src: url('/fonts/LibreBarcode39Text-Regular.ttf') format('truetype');}
-@font-face {font-family: 'font6'; src: url('/fonts/BungeeOutline-Regular.ttf') format('truetype');}
-body{font-family: Arial, sans-serif;font-size: 14px;line-height:1.42857143;color:#333333;background-color #fff;}
-button{background:#22aa22;border:1px solid #55bb55;border-radius:4px;color:#fff;cursor:pointer;font-size:26px;padding:10px 50px;text-transform:uppercase;}
-button:hover{background:#11bb11;}
-hr{border:0;border-top:1px solid #eee;}
-.main{margin:10px auto 0;text-align:center;max-width:380px;border:1px solid #eee;padding:10px 0 50px;}
-#stat{text-align:center;font-size:26px;font-family: font4;text-transform:uppercase;}
-#wait{font-family: font1, sans-serif;font-size:18px;display:none;}
-#insert{font-family: font2, sans-serif;}
-#mb{font-family: font3; font-size:48px;text-align:center;display:none;}
-#title{font-family:font6 !important;font-size:3.6em;font-weight:400;margin:0;}
-#slogan{font-family:font5;font-size:2em;margin-top:0;}
+@font-face {
+  font-family: 'font1';
+  src: url('/fonts/OtomanopeeOne-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'font2';
+  src: url('/fonts/Orbitron-VariableFont_wght.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'font3';
+  src: url('/fonts/Tourney-VariableFont_wdth,wght.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'font4';
+  src: url('/fonts/AlfaSlabOne-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'font5';
+  src: url('/fonts/LibreBarcode39Text-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'font6';
+  src: url('/fonts/BungeeOutline-Regular.ttf') format('truetype');
+}
+
+body {
+  background-color #fff;
+  color:#333333;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height:1.42857143;
+}
+
+hr {
+  border:0;
+  border-top:1px solid #eee;
+}
+
+#btn {
+  background:#22aa22;
+  border:1px solid #55bb55;
+  border-radius:4px;
+  color:#fff;
+  cursor:pointer;
+  font-family: font2, sans-serif;
+  font-size:26px;
+  padding:10px 50px;
+  text-transform:uppercase;
+}
+
+#btn:hover {
+  background:#11bb11;
+}
+
+#mb{
+  display:none;
+  font-family: font3;
+  font-size:48px;
+  text-align:center;
+}
+
+#stat {
+  font-family: font4;
+  font-size:26px;
+  text-align:center;
+  text-transform:uppercase;
+}
+
+#slogan{
+  font-family:font5;
+  font-size:2em;
+  margin-top:0;
+}
+
+#title{
+  font-family:font6 !important;
+  font-size:3.6em;
+  font-weight:400;
+  margin:0;
+}
+
+#wait {
+  display:none;
+  font-family: font1, sans-serif;
+  font-size:18px;
+}
+
+.main {
+  border:1px solid #eee;
+  margin:10px auto 0;
+  max-width:380px;
+  padding:10px 0 50px;
+  text-align:center;
+}
 </style>
 </head>
 <body>
@@ -32,7 +109,7 @@ hr{border:0;border-top:1px solid #eee;}
   <p id="slogan">1 5 10</p>
   <p id="wait">waiting for payment</p>
   <p id="mb">0MB</p>
-  <button id="insert">Insert Coin</button>
+  <button id="btn">Insert Coin</button>
   <br><br>
   <hr>
   <h2 id="stat" style="font-size:14px;">CHECKING NETWORK STATUS</h2>
@@ -51,7 +128,7 @@ hr{border:0;border-top:1px solid #eee;}
 const beep = document.getElementById('beep'),
       bump = document.getElementById('bump'),
       coin = document.getElementById('coin'),
-       btn = document.getElementById('insert'),
+       btn = document.getElementById('btn'),
        mac = document.getElementById('mac_addr'),
         ip = document.getElementById('ip_addr'),
          f = document.getElementById('mb_free'),
@@ -61,7 +138,7 @@ const beep = document.getElementById('beep'),
          w = document.getElementById('wait'),
          m = document.getElementById('mb');
 
-var new_coin=0, mb_free=0;
+var new_coin = 0, mb_free = 0;
 
 btn.addEventListener('click', function() {
   const b = btn.innerText.toLowerCase(),
@@ -197,28 +274,39 @@ function network_status() {
 
   x.addEventListener('readystatechange', () => {
     if( x.readyState == 4 ) {
-      s.style.fontSize='28px';
 
       if( x.status === 200 ) {
         if( z !== 'connected' ) {
           if( z != 'checking network status' ) {
             yeeh.play();setTimeout(()=>yeeh.pause(),yeeh.duration*1e3);
           }
-          s.innerText = 'connected'; data_usage();
+          s.innerText = 'connected';
         }
       }
 
       if( x.status === 403 ) {
         if( z !== 'disconnected' ) {
-          s.innerText = 'disconnected'; data_usage();
+          s.innerText = 'disconnected';
         }
+      }
+
+      if( x.status === 500 ) {
+        s.innerText = 'server error';
       }
 
       if( x.status === 503 ) {
         if( z !== 'no internet' ) {
-          s.innerText = 'no internet'; data_usage();
+          s.innerText = 'no internet';
         }
       }
+
+      let k = s.innerText.toLowerCase();
+
+      if( k !== 'checking network status' ) {
+        s.style.fontSize='28px';
+      }
+
+      if( k != z) data_usage();
 
       setTimeout(network_status, 10000);
     }

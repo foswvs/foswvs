@@ -6,7 +6,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>PisoWiFi</title>
-<link href="/css/portal.css" rel="stylesheet">
+<style>
+@font-face {font-family: 'font1'; src: url('/fonts/OtomanopeeOne-Regular.ttf') format('truetype');}
+@font-face {font-family: 'font2'; src: url('/fonts/Orbitron-VariableFont_wght.ttf') format('truetype');}
+@font-face {font-family: 'font3'; src: url('/fonts/Tourney-VariableFont_wdth,wght.ttf') format('truetype');}
+@font-face {font-family: 'font4'; src: url('/fonts/AlfaSlabOne-Regular.ttf') format('truetype');}
+@font-face {font-family: 'font5'; src: url('/fonts/LibreBarcode39Text-Regular.ttf') format('truetype');}
+@font-face {font-family: 'font6'; src: url('/fonts/BungeeOutline-Regular.ttf') format('truetype');}
+body{font-family: Arial, sans-serif;font-size: 14px;line-height:1.42857143;color:#333333;background-color #fff;}
+button{background:#22aa22;border:1px solid #55bb55;border-radius:4px;color:#fff;cursor:pointer;font-size:26px;padding:10px 50px;text-transform:uppercase;}
+button:hover{background:#11bb11;}
+hr{border:0;border-top:1px solid #eee;}
+.main{margin:10px auto 0;text-align:center;max-width:380px;border:1px solid #eee;padding:10px 0 50px;}
+#stat{text-align:center;font-size:26px;font-family: font4;text-transform:uppercase;}
+#wait{font-family: font1, sans-serif;font-size:18px;display:none;}
+#insert{font-family: font2, sans-serif;}
+#mb{font-family: font3; font-size:48px;text-align:center;display:none;}
+#title{font-family:font6 !important;font-size:3.6em;font-weight:400;margin:0;}
+#slogan{font-family:font5;font-size:2em;margin-top:0;}
+</style>
 </head>
 <body>
 <div class="main">
@@ -17,7 +35,7 @@
   <button id="insert">Insert Coin</button>
   <br><br>
   <hr>
-  <h2 id="conn" style="font-size:14px;">CHECKING NETWORK STATUS</h2>
+  <h2 id="stat" style="font-size:14px;">CHECKING NETWORK STATUS</h2>
   <div>Data Usage: <span id="mb_used">0</span>/<span id="mb_limit">0</span><span id="mb_free" style="display:none;">&nbsp;</span></div>
   <div>MAC Address: <span id="mac_addr">Identifying...</span></div>
   <div>IP Address: <span id="ip_addr">0.0.0.0</span></div>
@@ -39,7 +57,7 @@ const beep = document.getElementById('beep'),
          f = document.getElementById('mb_free'),
          u = document.getElementById('mb_used'),
          l = document.getElementById('mb_limit'),
-         k = document.getElementById('conn'),
+         s = document.getElementById('stat'),
          w = document.getElementById('wait'),
          m = document.getElementById('mb');
 
@@ -55,7 +73,7 @@ btn.addEventListener('click', function() {
         btn.innerText='insert coin';
 
         if( x.status === 200 ) {
-          k.innerText='connected';
+          s.innerText='connected';
         }
 
         if( x.status === 403 ) {
@@ -131,6 +149,10 @@ function topup_check() {
       if( x.status == 401 ) {
         beep.pause(); btn.innerText='insert coin';
       }
+
+      if( x.status == 500 ) {
+        window.location.assign('/x.html');
+      }
     }
   });
 
@@ -152,7 +174,7 @@ function data_usage() {
 
         if (j.mb_used>1) {
           f.innerText = `(${format_mb(mb_free)})`;
-          /*f.style.display = mb_free>1 ? 'inline-block' : 'none';*/
+          f.style.display = mb_free>1 ? 'inline' : 'none';
         }
 
         mac.innerText = j.mac;
@@ -169,36 +191,36 @@ function data_usage() {
   x.send();
 }
 
-function connection_status() {
+function network_status() {
   const x = new XMLHttpRequest(),
-        s = k.innerText.toLowerCase();
+        z = s.innerText.toLowerCase();
 
   x.addEventListener('readystatechange', () => {
     if( x.readyState == 4 ) {
-      k.style.fontSize='28px';
+      s.style.fontSize='28px';
 
       if( x.status === 200 ) {
-        if( s !== 'connected' ) {
-          if( s != 'checking network status' ) {
+        if( z !== 'connected' ) {
+          if( z != 'checking network status' ) {
             yeeh.play();setTimeout(()=>yeeh.pause(),yeeh.duration*1e3);
           }
-          k.innerText = 'connected'; data_usage();
+          s.innerText = 'connected'; data_usage();
         }
       }
 
       if( x.status === 403 ) {
-        if( s !== 'disconnected' ) {
-          k.innerText = 'disconnected'; data_usage();
+        if( z !== 'disconnected' ) {
+          s.innerText = 'disconnected'; data_usage();
         }
       }
 
       if( x.status === 503 ) {
-        if( s !== 'no internet' ) {
-          k.innerText = 'no internet'; data_usage();
+        if( z !== 'no internet' ) {
+          s.innerText = 'no internet'; data_usage();
         }
       }
 
-      setTimeout(connection_status, 10000);
+      setTimeout(network_status, 10000);
     }
   });
 
@@ -208,7 +230,7 @@ function connection_status() {
 
 function button_check() {
   let b = btn.innerText.toLowerCase(),
-      s = k.innerText.toLowerCase();
+      z = s.innerText.toLowerCase();
 
   if( b === 'insert coin' ) {
     btn.style.borderColor = '#11aa11';
@@ -222,7 +244,7 @@ function button_check() {
     btn.style.backgroundColor = '#aa2222';
   }
 
-  if( s === 'disconnected' &&  mb_free > 0 ) {
+  if( z === 'disconnected' &&  mb_free > 0 ) {
     btn.innerText = 'connect';
   }
 
@@ -271,7 +293,7 @@ function alert(txt) {
   setTimeout(()=>d.remove(),3000);
 }
 
-topup_check(); connection_status(); button_check();
+topup_check(); network_status(); button_check();
 </script>
 </body>
 </html>

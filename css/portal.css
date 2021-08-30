@@ -10,7 +10,7 @@ button{background:#22aa22;border:1px solid #55bb55;border-radius:4px;color:#fff;
 button:hover{background:#11bb11;}
 hr{border:0;border-top:1px solid #eee;}
 .main{margin:10px auto 0;text-align:center;max-width:380px;border:1px solid #eee;padding:10px 0 50px;}
-#conn{text-align:center;font-size:26px;font-family: 'Alfa Slab One';text-transform:uppercase;}
+#stat{text-align:center;font-size:26px;font-family: 'Alfa Slab One';text-transform:uppercase;}
 #wait{font-family: 'Otomanopee One', sans-serif;font-size:18px;display:none;}
 #insert{font-family: 'Orbitron', sans-serif;}
 #mb{font-family: Tourney; font-size:48px;text-align:center;display:none;}

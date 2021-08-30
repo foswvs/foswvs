@@ -40,20 +40,13 @@ foreach($data as $d) {
 
 if( count($temp) === 0 ) { sleep(10); exit; }
 
-$logfile = '/var/log/foswvs.log';
-
-$fp = fopen($logfile, (@filesize($logfile)>1e6 ? 'w' : 'a'));
-
 foreach($temp as $ip=>$mb) {
   $dt = date('Y-m-d H:i:s');
 
   $db->set_mb_used($mb);
   $db->set_ip($ip);
 
-  fwrite($fp, "$dt - get_device_id_by_ip_$ip $mb\n");
-
   if( !$db->get_device_id_by_ip() ) {
-    fwrite($fp, "$dt - unregistered device $ip\n");
     $ipt = new Iptables($ip);
     $ipt->rem_client();
     continue;
@@ -71,6 +64,4 @@ foreach($temp as $ip=>$mb) {
   }
 }
 
-fclose($fp);
-
-if( count($temp) < 4 ) { sleep(1); exit; }
+if( count($temp) < 4 ) sleep(1);

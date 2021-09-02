@@ -5,23 +5,68 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-<title>change password</title>
+<title>devices</title>
 <link href="/css/normalize.css" rel="stylesheet">
 <link href="/css/skeleton.css" rel="stylesheet">
 <link href="/css/a.css" rel="stylesheet">
 </head>
 <body>
-<div class="container" style="margin-top:5%">
+<div class="container" style="margin-top:10px;">
   <div class="row">
-    <div style="max-width:380px;margin:auto;">
-      <div class="u-full-width" style="border:1px solid #ccc;padding:20px 20px 0 20px;border-radius:4px;">
-        <a class="button u-full-width" href="/a/">admin portal</a>
-        <a class="button u-full-width" href="/a/password.html">update password</a>
-        <a class="button u-full-width" href="/a/rates.html">update rates</a>
-        <a class="button u-full-width" href="/a/plugins.html">plugins</a>
-      </div>
-    </div>
+    <div class="columns"><a class="button u-full-width" href="/a/view.html">admin portal</a></div>
+  </div>
+  <div class="row table-wrap">
+    <table class="u-full-width" id="devices">
+      <thead>
+        <tr><th>Name</th><th>Description</th><th>URL</th></tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
   </div>
 </div>
+<script>
+function list_plugins() {
+  fetch('https://raw.githubusercontent.com/foswvs/plugins/main/latest.json')
+    .then((r)=>r.json())
+    .then((d)=> {
+      d.forEach((o)=>get_plugin(o));
+    });
+}
+
+function get_plugin(o) {
+  fetch(o.url).then((r)=>r.json())
+    .then((d) => {
+      view_table(d,o.cmd);
+    });
+}
+
+function install_plugin() {
+  // todo
+  console.log(this.dataset.cmd);
+}
+
+function view_table(d,cmd) {
+  let table = document.getElementById('devices').getElementsByTagName('tbody')[0],
+        row = table.insertRow(-1),
+       col1 = row.insertCell(0),
+       col2 = row.insertCell(1),
+       col3 = row.insertCell(2),
+
+       txt1 = document.createTextNode(d.name),
+       txt2 = document.createTextNode(d.description),
+       txt3 = document.createTextNode(d.html_url);
+
+  row.dataset.cmd = cmd;
+
+  row.addEventListener('click', install_plugin);
+
+  col1.appendChild(txt1);
+  col2.appendChild(txt2);
+  col3.appendChild(txt3);
+}
+
+list_plugins();
+</script>
 </body>
 </html>

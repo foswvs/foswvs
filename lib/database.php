@@ -105,7 +105,7 @@ class Database extends SQLite3 {
   }
 
   public function get_devices() {
-    $cmd = $this->query("SELECT mac_addr AS mac, IFNULL(ip_addr,'-NA-') AS ip, IFNULL(hostname,'-NA-') AS host,updated_at FROM devices WHERE mac_addr!='' ORDER BY updated_at DESC");
+    $cmd = $this->query("SELECT mac_addr AS mac, IFNULL(ip_addr,'-NA-') AS ip, IFNULL(hostname,'-NA-') AS host,strftime('%s', updated_at) * 1000 AS updated_at FROM devices WHERE mac_addr!='' ORDER BY updated_at DESC");
 
     $res = [];
 

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-<title>active devices</title>
+<title>devices</title>
 <link href="/css/normalize.css" rel="stylesheet">
 <link href="/css/skeleton.css" rel="stylesheet">
 <link href="/css/a.css" rel="stylesheet">
@@ -15,47 +15,34 @@
   <div class="row">
     <div class="columns"><a class="button u-full-width" href="/a/view.html">admin portal</a></div>
   </div>
-  <div class="row">
-    <div class="table-wrap">
-      <table class="u-full-width" id="devices">
-        <thead>
-          <tr><th>Timestamp</th><th>Hostname</th><th>IP</th><th>MAC</th></tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="row">
-    <div class="six columns">
-      <div class="six columns">
-        <a class="button u-full-width" href="#" id="device_count">0 active devices</a>
-      </div>
-      <div class="five columns">
-        <a class="button u-full-width" href="./restricted_devices.html" id="device_count">limited devices</a>
-      </div>
-    </div>
+  <div class="row table-wrap">
+    <table class="u-full-width" id="devices">
+      <thead>
+        <tr><th>Timestamp</th><th>Hostname</th><th>IP</th><th>MAC</th></tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <a class="button" id="device_count" href="#">0 device</a>
   </div>
 </div>
 <script src="/js/a.js"></script>
 <script>
-const table = document.getElementById('devices');
-
-function devices_table(dev) {
-  let tbody = table.getElementsByTagName('tbody')[0],
-        row = tbody.insertRow(-1),
+function devices_table(d) {
+  let table = document.getElementById('devices').getElementsByTagName('tbody')[0],
+        row = table.insertRow(-1),
     col_opt = row.insertCell(0),
    col_host = row.insertCell(1),
      col_ip = row.insertCell(2),
     col_mac = row.insertCell(3),
 
-    txt_mac = document.createTextNode(dev['mac']),
-     txt_ip = document.createTextNode(dev['ip']),
-   txt_host = document.createTextNode(dev['host']),
-     txt_ts = document.createTextNode(utc_to_local(dev['updated_at']));
+    txt_mac = document.createTextNode(d.mac),
+     txt_ip = document.createTextNode(d.ip),
+   txt_host = document.createTextNode(d.host),
+     txt_ts = document.createTextNode(utc_to_local(d.updated_at));
 
         row.setAttribute('class', 'devinfo');
-        row.setAttribute('data-mac',dev['mac']);
+        row.setAttribute('data-mac',d.mac);
 
     col_mac.appendChild(txt_mac);
      col_ip.appendChild(txt_ip);
@@ -63,17 +50,17 @@ function devices_table(dev) {
     col_opt.appendChild(txt_ts);
 }
 
-function active_devices() {
+function recent_devices() {
   empty_table('devices');
   let device_count=0, display_count=document.getElementById('device_count');
-  fetch('/a/x.php?dev=active')
+  fetch('/a/x.php?dev=all')
     .then((x) => {return x.ok ? x.json() : window.location.assign('/a')})
     .then((x) => {
       x.forEach((d) => {
         devices_table(d);
-        display_count.innerText=`${++device_count} active devices`;
-      });
-      setTimeout(active_devices,3e4);
+        display_count.innerText=`${++device_count} devices found in the last 4 hours`;
+      })
+      setTimeout(recent_devices,18e4);
     }
   );
 }
@@ -82,7 +69,7 @@ document.body.addEventListener('click',(e) => {
   if( e.target.parentNode.className == 'devinfo' ) {  
     window.location.href = '/a/device.html?mac=' + e.target.parentNode.dataset.mac;
   }
-}); active_devices();
+}); recent_devices();
 </script>
 </body>
 </html>

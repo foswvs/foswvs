@@ -100,7 +100,7 @@ class Database extends SQLite3 {
   }
 
   public function create_table() {
-    $this->exec("CREATE TABLE IF NOT EXISTS devices (id INTEGER PRIMARY KEY AUTOINCREMENT, mac_addr TEXT NOT NULL UNIQUE, ip_addr DEFAULT '127.0.0.1', hostname DEFAULT '-NA-', created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP)");
+    $this->exec("CREATE TABLE IF NOT EXISTS devices (id INTEGER PRIMARY KEY AUTOINCREMENT, mac_addr TEXT NOT NULL UNIQUE, ip_addr DEFAULT '127.0.0.1', hostname DEFAULT '-NA-', topup_count DEFAULT 0, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP, topup_at DEFAULT CURRENT_TIMESTAMP);");
     $this->exec("CREATE TABLE IF NOT EXISTS session (id INTEGER PRIMARY KEY AUTOINCREMENT, device_id INTEGER, piso_count DEFAULT 0, mb_limit DEFAULT 0, mb_used DEFAULT 0, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP)");
   }
 
@@ -123,7 +123,7 @@ class Database extends SQLite3 {
   }
 
   public function update_device() {
-    $this->exec("UPDATE devices SET hostname='{$this->hostname}',ip_addr='{$this->ip_addr}',updated_at=CURRENT_TIMESTAMP WHERE id='{$this->devid}'");
+    $this->exec("UPDATE devices SET hostname='{$this->hostname}',ip_addr='{$this->ip_addr}',topup_count=0,updated_at=CURRENT_TIMESTAMP WHERE id='{$this->devid}'");
   }
 
   public function get_device_id() {
@@ -272,5 +272,15 @@ class Database extends SQLite3 {
 
   public function update_session_from_random_mac($MAC) {
     $this->exec("UPDATE session SET device_id={$this->devid} WHERE id IN (SELECT id FROM session WHERE device_id IN (SELECT id FROM devices WHERE mac_addr='{$MAC}'))");
+  }
+
+  public function get_topup_count() {
+    $q = $this->query("SELECT topup_count FROM devices WHERE id={$this->devid}");
+
+    return $q->fetchArray(SQLITE3_NUM)[0];
+  }
+
+  public function set_topup_count() {
+    $this->exec("UPDATE devices SET topup_count=topup_count+1, topup_at=CURRENT_TIMESTAMP WHERE id={$this->devid}");
   }
 }

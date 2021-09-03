@@ -19,5 +19,5 @@ if( hash('sha256', filter_input(INPUT_POST,'password')) === $hash ) {
 
 if( isset($_COOKIE['hash']) && $_COOKIE['hash'] === $hash ) $login = true;
 
-header('location: /a/' . ($login ? 'active_devices.html' : 'login.html'));
+header('location: /a/' . ($login ? 'view.html' : 'login.html'));
 exit;

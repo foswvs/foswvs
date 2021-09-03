@@ -1,6 +1,7 @@
 # free and open-source wifi vendo software
 
-> backend `http://10.0.0.1/a/`
+> preview https://foswvs.github.io/preview/
+> backend http://10.0.0.1/a/
 
  This software may run on any distros, but i recommend using rpi device and flashing `Raspberry Pi OS Lite`.
 

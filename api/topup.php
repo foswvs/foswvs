@@ -6,6 +6,19 @@ require '../lib/autoload.php';
 $IP = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);
 $MAC = Network::device_mac($IP);
 
+$db = new Database();
+$db->set_mac($MAC);
+
+if( !$db->get_device_id() ) {
+  http_response_code(401);
+  exit;
+}
+
+if( $db->get_topup_count() > 5 ) {
+  http_response_code(403);
+  exit;
+}
+
 $coinslot = new Coinslot();
 
 if( !filter_var($MAC, FILTER_VALIDATE_MAC) ) {
@@ -56,23 +69,15 @@ while( $coinslot->sensor_read() ) {
 fclose($fp);
 
 if( $count === 0 ) {
+  $db->set_topup_count();
   http_response_code(204);
   exit;
 }
 
-$db = new Database();
-
-$db->set_mb_limit($mb);
 $db->set_amount($count);
-$db->set_mac($MAC);
-
-if( !$db->get_device_id() ) {
-  http_response_code(401);
-  exit;
-}
+$db->set_mb_limit($mb);
 
 $db->add_session();
 
 $ipt = new Iptables($IP);
 $ipt->add_client();
-

@@ -43,7 +43,10 @@ function get_plugin(o) {
 
 function install_plugin() {
   // todo
-  console.log(this.dataset.cmd);
+  if( confirm('Confirm OK to install '+this.dataset.plugin) ) {
+    console.log(this.dataset.cmd);
+    alert('plugin functionality is not ready. you can install it manually.');
+  }
 }
 
 function view_table(d,cmd) {
@@ -58,12 +61,30 @@ function view_table(d,cmd) {
        txt3 = document.createTextNode(d.html_url);
 
   row.dataset.cmd = cmd;
+  row.dataset.plugin = d.name;
 
   row.addEventListener('click', install_plugin);
 
   col1.appendChild(txt1);
   col2.appendChild(txt2);
   col3.appendChild(txt3);
+}
+
+function alert(txt) {
+  let d = document.createElement('div');
+  d.style.backgroundColor='red';
+  d.style.textAlign='center';
+  d.style.position='fixed';
+  d.style.padding='5px';
+  d.style.color='white';
+  d.style.bottom='0px';
+  d.style.right='0px';
+  d.style.left='0px';
+  d.innerHTML=txt;
+
+  document.body.appendChild(d);
+
+  setTimeout(()=>d.remove(),3000);
 }
 
 list_plugins();

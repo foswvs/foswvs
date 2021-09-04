@@ -70,7 +70,7 @@ fclose($fp);
 
 if( $count === 0 ) {
   $db->set_topup_count();
-  http_response_code(204);
+  http_response_code(402);
   exit;
 }
 

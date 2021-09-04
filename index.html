@@ -138,7 +138,7 @@ const beep = document.getElementById('beep'),
          w = document.getElementById('wait'),
          m = document.getElementById('mb');
 
-var new_coin = 0, mb_free = 0, button_clicks = 0;
+var new_coin = 0, mb_free = 0;
 
 btn.addEventListener('click', function() {
   const b = btn.innerText.toLowerCase(),
@@ -173,18 +173,17 @@ btn.addEventListener('click', function() {
 
       if(x.readyState == 4) {
         if(x.status == 200) {
+          s.innerText = 'connected';
           btn.innerText = 'insert coin'; data_usage();
-        }
-
-        if(x.status == 204) {
-          if( ++button_clicks > 2 ) {
-            alert('click bombing may result in blocking your device');
-          }
         }
 
         if(x.status == 401) {
           bump.play(); alert('coinslot is busy');
           setTimeout(()=>bump.pause(),bump.duration*1e3);
+        }
+
+        if(x.status == 402) {
+          alert('payment required');
         }
 
         if(x.status == 403) {
@@ -297,12 +296,12 @@ function network_status() {
       }
 
       if( x.status === 500 ) {
-        s.innerText = 'server error';
+        window.location.assign('/x.html');
       }
 
-      if( x.status === 503 ) {
-        if( z !== 'no internet' ) {
-          s.innerText = 'no internet';
+      if( x.status === 599 ) {
+        if( z !== 'connect timeout' ) {
+          s.innerText = 'connect timeout';
         }
       }
 

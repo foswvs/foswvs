@@ -11,6 +11,6 @@ if( !$ipt->connected() ) {
 }
 
 if( !@file_get_contents('http://ipinfo.io/ip') ) {
-  http_response_code(503);
+  http_response_code(599);
   exit;
 }

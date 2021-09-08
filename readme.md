@@ -19,7 +19,6 @@ STEP 2:
  - `visudo` then add `www-data ALL=NOPASSWD: /usr/bin/iptables`
  - `sudo usermod -aG gpio www-data`
  - `git https://github.com/foswvs/foswvs.git /home/pi/foswvs`
- - `cd /home/pi/foswvs`
- - `sudo cp foswvs.service /lib/systemd/system/foswvs.service`
+ - `sudo cp /home/pi/foswvs/foswvs.service /lib/systemd/system/foswvs.service`
  - `sudo systemctl enable foswvs.service`
  - `sudo reboot`

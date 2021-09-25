@@ -9,27 +9,38 @@ class Coinslot {
   private $coin = 0;
 
   public function __construct() {
-    if( !file_exists($this->gpio . 'gpio02') && !file_exists($this->gpio . 'gpio17') ) {
-      $this->pins();
-      $this->slot_in();
-      $this->sensor_out();
+    if( !file_exists($this->gpio . 'gpio2') ) {
+      $this->export_gpio2();
+    }
+
+    if( file_exists($this->gpio . 'gpio17') ) {
+      $this->export_gpio17();
     }
   }
 
-  public function pins() {
+  public function export_gpio2() {
     $fp = fopen($this->gpio . 'export', 'w');
     fwrite($fp, "2");
-    fwrite($fp, "17");
     fclose($fp);
+
+    $this->cslot();
   }
 
-  public function slot_in() {
+  public function export_gpio17() {
+    $fp = fopen($this->gpio . 'export', 'w');
+    fwrite($fp, "17");
+    fclose($fp);
+
+    $this->sensor();
+  }
+
+  public function cslot() {
     $fp = fopen($this->gpio . 'gpio2/direction','w');
     fwrite($fp, 'in');
     fclose($fp);
   }
 
-  public function sensor_out() {
+  public function sensor() {
     $fp = fopen($this->gpio . 'gpio17/direction','w');
     fwrite($fp, 'out');
     fclose($fp);

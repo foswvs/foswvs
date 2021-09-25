@@ -16,9 +16,10 @@ STEP 1:
  
 STEP 2:
  - `sudo apt install -y nginx php-fpm php-sqlite3 isc-dhcp-server bind9 git`
- - `visudo` then add `www-data ALL=NOPASSWD: /usr/bin/iptables`
+ - `visudo` then add `www-data ALL=NOPASSWD: /usr/sbin/iptables`
  - `sudo usermod -aG gpio www-data`
  - `git clone https://github.com/foswvs/foswvs.git /home/pi/foswvs`
+ - `sudo chown -R www-data:www-data /home/pi/foswvs`
  - `sudo cp /home/pi/foswvs/foswvs.service /lib/systemd/system/foswvs.service`
  - `sudo systemctl enable foswvs.service`
  - `sudo reboot`

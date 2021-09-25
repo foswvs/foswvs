@@ -1,12 +1,8 @@
 # file: /etc/network/interfaces auto lo
-# eth0 is brought up at boot
 auto eth0
-
-iface eth0 inet dhcp
-#dns-nameservers 8.8.8.8
-
-# eth1 is brought up whenever the network hardware is detected
 allow-hotplug eth1
 
-iface eth1 inet static
-address 10.0.0.1/20
+iface eth1 inet dhcp
+
+iface eth0 inet static
+  address 10.0.0.1/20

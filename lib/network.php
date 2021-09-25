@@ -26,7 +26,7 @@ class Network {
     return $ips;
   }
 
-  public function device_mac($ip) {
+  public static function device_mac($ip) {
     $cmd = exec("arp -an {$ip} | grep -o '..:..:..:..:..:..'");
 
     return strtoupper($cmd);

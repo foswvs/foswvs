@@ -20,27 +20,21 @@ class Coinslot {
 
   public function export_gpio2() {
     $fp = fopen($this->gpio . 'export', 'w');
-    fwrite($fp, "2");
+    fwrite($fp, '2');
     fclose($fp);
-
-    $this->cslot();
   }
 
   public function export_gpio17() {
     $fp = fopen($this->gpio . 'export', 'w');
-    fwrite($fp, "17");
+    fwrite($fp, '17');
     fclose($fp);
 
-    $this->sensor();
+    sleep(1);
+
+    $this->gpio17_direction();
   }
 
-  public function cslot() {
-    $fp = fopen($this->gpio . 'gpio2/direction','w');
-    fwrite($fp, 'in');
-    fclose($fp);
-  }
-
-  public function sensor() {
+  public function gpio17_direction() {
     $fp = fopen($this->gpio . 'gpio17/direction','w');
     fwrite($fp, 'out');
     fclose($fp);

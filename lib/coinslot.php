@@ -13,7 +13,7 @@ class Coinslot {
       $this->export_gpio2();
     }
 
-    if( file_exists($this->gpio . 'gpio17') ) {
+    if( !file_exists($this->gpio . 'gpio17') ) {
       $this->export_gpio17();
     }
   }

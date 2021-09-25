@@ -1,5 +1,6 @@
 <?php
 require_once '../lib/autoload.php';
+$password = '../conf/password.sha256';
 
 $txn = filter_input(INPUT_GET, 'txn');
 $net = filter_input(INPUT_GET, 'net');
@@ -14,7 +15,7 @@ if( !isset($_COOKIE['hash']) ) {
   exit;
 }
 
-if( $_COOKIE['hash'] !== file_get_contents('password.sha256') ) {
+if( $_COOKIE['hash'] !== file_get_contents($password) ) {
   http_response_code(401);
   exit;
 }

@@ -1,17 +1,18 @@
 <?php
 /* setup admin password while currently not in use */
-if( !file_exists('/tmp/coinslot') ) {
+$login = false; $password = '../conf/password.sha256';
+
+if( !file_exists($password) ) {
   $temp = hash('sha256', time());
 
   setcookie('hash', $temp, time() + 3600, '/a/');
-  file_put_contents('password.sha256', $temp);
+  file_put_contents($password, $temp);
 
-  header('location: /a/change_password.html');
+  header('location: /a/password.html');
   exit;
 }
 
-$hash = trim(file_get_contents('password.sha256'));
-$login = false;
+$hash = file_get_contents($password);
 
 if( hash('sha256', filter_input(INPUT_POST,'password')) === $hash ) {
   setcookie('hash', $hash, time() + 36000, '/a/'); $login = true;

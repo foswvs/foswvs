@@ -15,7 +15,7 @@ if( !$db->get_device_id() ) {
 }
 
 if( $db->get_topup_count() > 5 ) {
-  http_response_code(403);
+  http_response_code(429);
   exit;
 }
 

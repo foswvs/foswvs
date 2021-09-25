@@ -6,29 +6,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>login</title>
-<link href="/css/normalize.css" rel="stylesheet">
-<link href="/css/skeleton.css" rel="stylesheet">
-<link href="/css/a.css" rel="stylesheet">
+<link href="/css/pico.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container" style="margin-top:5%">
-  <div class="row">
-    <div style="max-width:380px;margin:auto;">
-      <div class="u-full-width" style="border:1px solid #ccc;padding:20px 20px 0 20px;border-radius:4px;">
-        <label>Admin Portal</label>
-        <form action="login.php" method="POST" onsubmit="login()">
-          <input class="u-full-width" id="password" name="" type="password" placeholder="password" pattern=".{5,25}" title="password must be between 5-25 characters" required>
-          <input class="button-primary u-full-width" type="submit" value="login">
-        </form>
-      </div>
-      <div style="font-size:0.9em;text-align:center;background:#eee;border:1px solid #bbb;border-radius:4px;margin-top:10px;padding:5px 0;">
-        <div>CPU Temp: <span id="cpu_temp">0</span>&#176;</div>
-        <div><span id="uptime">0</span></div>
-      </div>
-    </div>
+<main class="container">
+  <div class="grid">
+    <form action="login.php" method="POST" style="border:1px solid #ccc;padding:20px 20px 0 20px;border-radius:4px;">
+      <label for="password">
+        Login
+        <input class="u-full-width" id="password" name="password" type="password" placeholder="password" pattern=".{5,25}" title="password must be between 5-25 characters" required>
+      </label>
+
+      <input class="button-primary u-full-width" type="submit" value="login">
+      <button class="secondary" onclick="location.assign('/')">cancel</button>
+    </form>
   </div>
-</div>
-<script src="/js/sha256.js"></script>
+
+  <article style="font-size:0.9em;text-align:center;background:#eee;border:1px solid #bbb;border-radius:4px;margin-top:10px;padding:5px 0;">
+    <div>CPU Temp: <span id="cpu_temp">0</span>&#176;</div>
+    <div><span id="uptime">0</span></div>
+  </article>
+</main>
 <script>
 function cpu_temp() {
   fetch('/api/cpu_temp.php').then((r) => r.text()).then((r) => { document.getElementById('cpu_temp').innerText=parseFloat(r).toFixed(2); setTimeout(cpu_temp,30000); });
@@ -37,10 +35,6 @@ function uptime() {
   fetch('/api/uptime.php').then((r) => r.text()).then((r) => document.getElementById('uptime').innerText=r);
 }
 cpu_temp(); uptime();
-function login() {
-  const p = sha256(document.getElementById('password').value);
-  document.cookie=`hash=${p}; max-age=43200`;
-}
 </script>
 </body>
 </html>

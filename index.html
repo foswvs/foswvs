@@ -187,6 +187,10 @@ btn.addEventListener('click', function() {
         }
 
         if(x.status == 403) {
+          alert('forbidden');
+        }
+
+        if(x.status == 429) {
           bump.play(); alert('too many attempt');
           setTimeout(()=>bump.pause(),bump.duration*1e3);
         }
@@ -301,7 +305,7 @@ function network_status() {
 
       if( x.status === 599 ) {
         if( z !== 'connect timeout' ) {
-          s.innerText = 'connect timeout';
+          s.innerText = 'offline';
         }
       }
 

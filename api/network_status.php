@@ -10,6 +10,8 @@ if( !$ipt->connected() ) {
   exit;
 }
 
+exit; // let's skip, not necessary. remove this line if wanted
+
 if( @file_get_contents('http://www.google.com/generate_204') === false ) {
   http_response_code(599);
   exit;

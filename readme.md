@@ -19,7 +19,9 @@ STEP 2:
  - `visudo` then add `www-data ALL=NOPASSWD: /usr/sbin/iptables`
  - `sudo usermod -aG gpio www-data`
  - `git clone https://github.com/foswvs/foswvs.git /home/pi/foswvs`
+ - `rm /home/pi/foswvs/conf/password.sha256`
  - `sudo chown -R www-data:www-data /home/pi/foswvs`
  - `sudo cp /home/pi/foswvs/foswvs.service /lib/systemd/system/foswvs.service`
  - `sudo systemctl enable foswvs.service`
  - `sudo reboot`
+

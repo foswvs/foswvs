@@ -9,7 +9,7 @@
 <link href="/css/pico.min.css" rel="stylesheet">
 </head>
 <body>
-<main class="container">
+<main class="container" style="padding: 0">
   <article>
     <form action="login.php" method="POST">
       <label for="password">
@@ -17,16 +17,18 @@
         <input class="u-full-width" id="password" name="password" type="password" placeholder="password" pattern=".{5,25}" title="password must be between 5-25 characters" required>
       </label>
 
-      <input class="button-primary u-full-width" type="submit" value="login">
-      <button class="secondary" onclick="location.assign('/')">cancel</button>
+      <input type="submit" value="login">
+      <button class="secondary" onclick="sw_theme();" type="button">theme</button>
+      <button class="outline secondary" onclick="location.assign('/')" type="button">cancel</button>
     </form>
   </article>
 
-  <article style="font-size:0.9em;text-align:center;background:#eee;border:1px solid #bbb;border-radius:4px;margin-top:10px;padding:5px 0;">
+  <article style="font-size:0.9em;text-align:center;padding:15px 0;">
     <div>CPU Temp: <span id="cpu_temp">0</span>&#176;</div>
     <div><span id="uptime">0</span></div>
   </article>
 </main>
+<script src="/js/theme.js"></script>
 <script>
 function cpu_temp() {
   fetch('/api/cpu_temp.php').then((r) => r.text()).then((r) => { document.getElementById('cpu_temp').innerText=parseFloat(r).toFixed(2); setTimeout(cpu_temp,30000); });

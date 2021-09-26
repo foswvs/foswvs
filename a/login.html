@@ -10,8 +10,8 @@
 </head>
 <body>
 <main class="container">
-  <div class="grid">
-    <form action="login.php" method="POST" style="border:1px solid #ccc;padding:20px 20px 0 20px;border-radius:4px;">
+  <article>
+    <form action="login.php" method="POST">
       <label for="password">
         Login
         <input class="u-full-width" id="password" name="password" type="password" placeholder="password" pattern=".{5,25}" title="password must be between 5-25 characters" required>
@@ -20,7 +20,7 @@
       <input class="button-primary u-full-width" type="submit" value="login">
       <button class="secondary" onclick="location.assign('/')">cancel</button>
     </form>
-  </div>
+  </article>
 
   <article style="font-size:0.9em;text-align:center;background:#eee;border:1px solid #bbb;border-radius:4px;margin-top:10px;padding:5px 0;">
     <div>CPU Temp: <span id="cpu_temp">0</span>&#176;</div>

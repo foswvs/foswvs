@@ -6,37 +6,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>active devices</title>
-<link href="/css/normalize.css" rel="stylesheet">
-<link href="/css/skeleton.css" rel="stylesheet">
-<link href="/css/a.css" rel="stylesheet">
+<link href="/css/pico.min.css" rel="stylesheet">
+<style>td,th{white-space:nowrap;}</style>
 </head>
 <body>
-<div class="container" style="margin-top:10px;">
-  <div class="row">
-    <div class="columns"><a class="button u-full-width" href="/a/view.html">admin portal</a></div>
-  </div>
-  <div class="row">
-    <div class="table-wrap">
-      <table class="u-full-width" id="devices">
-        <thead>
-          <tr><th>Timestamp</th><th>Hostname</th><th>IP</th><th>MAC</th></tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="row">
-    <div class="six columns">
-      <div class="six columns">
-        <a class="button u-full-width" href="#" id="device_count">0 active devices</a>
-      </div>
-      <div class="five columns">
-        <a class="button u-full-width" href="./restricted_devices.html" id="device_count">limited devices</a>
-      </div>
-    </div>
-  </div>
-</div>
+<main class="container">
+  <button onclick="location.assign('view.html');">admin portal</button>
+  <figure>
+  <table id="devices" role="grid">
+    <thead>
+      <tr><th>Timestamp</th><th>Hostname</th><th>IP</th><th>MAC</th></tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  </figure>
+  <button class="outline" id="device_count">...</button>
+  <button class="secondary" onclick="location.assign('restricted_devices.html');">restricted devices</button>
+  <button onclick="location.assign('view.html');">admin portal</button>
+</main>
 <script src="/js/a.js"></script>
 <script>
 const table = document.getElementById('devices');

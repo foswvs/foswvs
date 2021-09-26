@@ -1,6 +1,6 @@
 <?php
 class Helper {
-  public function format_mb($size) {
+  public static function format_mb($size) {
 
     if( $size < 1 ) return '0MB';
 
@@ -10,7 +10,7 @@ class Helper {
     return round($size / pow(1024, $base), 2) . $unit[$base];
   }
 
-  public function amount_mb($peso) {
+  public static function amount_mb($peso) {
     $size = 0;
     $rates = json_decode(file_get_contents(__DIR__ . '/../conf/rates.json'), true);
 

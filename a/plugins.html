@@ -5,32 +5,31 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-<title>devices</title>
-<link href="/css/normalize.css" rel="stylesheet">
-<link href="/css/skeleton.css" rel="stylesheet">
-<link href="/css/a.css" rel="stylesheet">
+<title>plugins</title>
+<link href="/css/pico.min.css" rel="stylesheet">
+<style>td,th{white-space:nowrap;}</style>
 </head>
 <body>
-<div class="container" style="margin-top:10px;">
-  <div class="row">
-    <div class="columns"><a class="button u-full-width" href="/a/view.html">admin portal</a></div>
-  </div>
-  <div class="row table-wrap">
-    <table class="u-full-width" id="devices">
+<main class="container">
+  <figure>
+    <table id="devices">
       <thead>
         <tr><th>Name</th><th>Description</th><th>URL</th></tr>
       </thead>
       <tbody>
       </tbody>
     </table>
-  </div>
-</div>
+  </figure>
+  <progress indeterminate="true"></progress>
+  <button onclick="location.assign('view.html')">admin portal</button>
+</main>
 <script>
 function list_plugins() {
   fetch('https://raw.githubusercontent.com/foswvs/plugins/main/latest.json')
     .then((r)=>r.json())
     .then((d)=> {
       d.forEach((o)=>get_plugin(o));
+      document.getElementsByTagName('progress')[0].remove();
     });
 }
 

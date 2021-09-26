@@ -6,26 +6,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>admin portal</title>
-<link href="/css/normalize.css" rel="stylesheet">
-<link href="/css/skeleton.css" rel="stylesheet">
-<link href="/css/a.css" rel="stylesheet">
+<link href="/css/pico.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container" style="margin-top:5%">
-  <div class="row">
-    <div style="max-width:380px;margin:auto;">
-      <div class="u-full-width" style="border:1px solid #ccc;padding:20px 20px 0 20px;border-radius:4px;">
-        <a class="button u-full-width" href="/a/txn.html">transactions</a>
-        <a class="button u-full-width" href="/a/list_devices.html">list devices</a>
-        <a class="button u-full-width" href="/a/active_devices.html">active devices</a>
-    <!--<a class="button u-full-width" href="/a/recent_devices.html">recently connected</a>-->
-        <a class="button u-full-width" href="/a/password.html">update password</a>
-        <a class="button u-full-width" href="/a/rates.html">update rates</a>
-        <a class="button u-full-width" href="/a/plugins.html">plugins</a>
-        <a class="button u-full-width" href="/a/logout.php">logout</a>
-      </div>
-    </div>
-  </div>
-</div>
+<main class="container">
+  <button onclick="location.assign('txn.html');">transactions</button>
+  <button onclick="location.assign('list_devices.html');">list devices</button>
+  <button onclick="location.assign('active_devices.html');">active devices</button>
+  <button onclick="location.assign('password.html');">update password</button>
+  <button onclick="location.assign('rates.html');">update rates</button>
+  <button onclick="location.assign('plugins.html');">plugins</button>
+  <button onclick="location.assign('logout.php');">logout</button>
+</main>
 </body>
 </html>

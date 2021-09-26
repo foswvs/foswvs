@@ -6,26 +6,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>active devices</title>
-<link href="/css/normalize.css" rel="stylesheet">
-<link href="/css/skeleton.css" rel="stylesheet">
-<link href="/css/a.css" rel="stylesheet">
+<link href="/css/pico.min.css" rel="stylesheet">
+<style>td,th{white-space:nowrap;}</style>
 </head>
 <body>
-<div class="container" style="margin-top:10px;">
-  <div class="row">
-    <div class="columns"><a class="button u-full-width" href="/a/view.html">admin portal</a></div>
-  </div>
-  <div class="row table-wrap">
-    <table class="u-full-width" id="devices">
-      <thead>
-        <tr><th>Timestamp</th><th>Hostname</th><th>IP</th><th>MAC</th><th>MB Free</th></tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
-    <a class="button" href="#" id="device_count">0 limited devices</a>
-  </div>
-</div>
+<main class="container">
+  <button onclick="location.assign('view.html');">admin portal</button>
+  <figure>
+  <table id="devices" role="grid">
+    <thead>
+      <tr><th>Timestamp</th><th>Hostname</th><th>IP</th><th>MAC</th><th>...</th></tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  </figure>
+  <button class="outline" id="device_count">...</button>
+  <button onclick="location.assign('view.html');">admin portal</button>
+</main>
 <script src="/js/a.js"></script>
 <script>
 const table = document.getElementById('devices');
@@ -61,7 +59,7 @@ function active_devices() {
     .then((x) => {
       empty_table('devices');
       x.forEach((d) => {
-        devices_table(d); display_count.innerText=`${++device_count} limited devices`;
+        devices_table(d); display_count.innerText=`${++device_count} devices`;
       });
       setTimeout(active_devices,3e4);
     }

@@ -6,29 +6,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>transactions</title>
-<link href="/css/normalize.css" rel="stylesheet">
-<link href="/css/skeleton.css" rel="stylesheet">
-<link href="/css/a.css" rel="stylesheet">
+<link href="/css/pico.min.css" rel="stylesheet">
+<style>td,th{white-space:nowrap;}</style>
 </head>
 <body>
-<div class="container" style="margin-top:10px;">
-  <div class="row">
-    <div class="columns"><a class="button u-full-width" href="/a/view.html">admin portal</a></div>
-  </div>
-  <div class="row table-wrap">
-    <table class="u-full-width" id="txns">
-      <thead>
-        <tr><th>Date</th><th>Total</th><th>Amt</th><th>Data</th><th>MAC</th><th>Hostname</th></tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
-    <button class="button" id="moretx" type="button">load more (<span id="tx_count"></span>)</button>
-  </div>
-</div>
+<main class="container">
+  <button onclick="location.assign('view.html');">admin portal</button>
+  <figure>
+  <table id="txns" role="grid">
+    <thead>
+      <tr><th>Date</th><th>Total</th><th>Amt</th><th>Data</th><th>MAC</th><th>Hostname</th></tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+  </figure>
+  <button class="secondary" id="moretx">load more (<span id="tx_count"></span>)</button>
+  <button onclick="location.assign('view.html');">admin portal</button>
+</main>
 <script src="/js/a.js"></script>
 <script>
-var subtotal = 0, limit = 24, offset = 0, tx_count=0, tx_display=document.getElementById('tx_count');
+var subtotal = 0, limit = 25, offset = 0, tx_count=0, tx_display=document.getElementById('tx_count');
 
 function displayTxn(txn) {
    subtotal = subtotal + txn.amt;

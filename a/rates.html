@@ -6,110 +6,92 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>rates</title>
-<link href="/css/normalize.css" rel="stylesheet">
-<link href="/css/skeleton.css" rel="stylesheet">
-<link href="/css/a.css" rel="stylesheet">
+<link href="/css/pico.min.css" rel="stylesheet">
+<style>td,th{white-space:nowrap;}</style>
 </head>
 <body>
-<div class="container" style="margin-top:5%">
-  <div class="row">
-    <div style="max-width:380px;margin:auto;">
-      <div class="u-full-width" style="border:1px solid #ccc;padding:20px 20px 0 20px;border-radius:4px;">
-        <div class="row"><h5>RATES SETTINGS</h5></div>
-        <div class="row">
-          <div class="three columns"><label>Amount</label></div>
-          <div class="three columns"><label>MB Size</label></div>
-          <div class="six columns"><label>Pretty Format</label></div>
-        </div>
-        <form action="rates.php" method="POST" id="rates">
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+<main class="container">
+  <form action="rates.php" method="POST">
+    <figure>
+      <table id="rates">
+        <thead>
+          <tr><th>Amount</th><th>MB Size</th><th>Amount/Unit</th></tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </figure>
+  </form>
+</main>
 <script src="/js/a.js"></script>
 <script>
 fetch('./rates.php').then((r)=>r.json()).then((r)=> {
-  let f = document.getElementById('rates');
+  let tb = document.getElementById('rates').getElementsByTagName('tbody')[0];
 
   for(k in r) {
-    let row0 = document.createElement('div');
-    let col1 = document.createElement('div');
-    let col2 = document.createElement('div');
-    let col3 = document.createElement('div');
+    let tr = tb.insertRow(-1),
+        c0 = tr.insertCell(0),
+        c1 = tr.insertCell(1),
+        c2 = tr.insertCell(2);
 
-    let ikey = document.createElement('input');
-    let ival = document.createElement('input');
-    let disp = document.createElement('input');
+    let r_amt = document.createElement('input');
+    let r_val = document.createElement('input');
+    let r_dis = document.createElement('input');
 
-    row0.className='row';
-    col1.className='three columns';
-    col2.className='three columns';
-    col3.className='six columns';
+    r_amt.type ='text';
+    r_amt.value = k;
 
-    ikey.className='u-full-width';
-    ikey.type ='text';
-    ikey.value =k;
+    r_val.type ='text';
+    r_val.name =`rates[${k}]`;
+    r_val.value = r[k];
 
-    ival.className='u-full-width';
-    ival.type ='text';
-    ival.name =`rates[${k}]`;
-    ival.value =r[k];
+    r_dis.disabled = true;
+    r_dis.type = 'text';
+    r_dis.value = peso.format(k) + ' / ' + format_mb(r[k]);
 
-    disp.className='u-full-width';
-    disp.disabled =true;
-    disp.type ='text';
-    disp.value =peso.format(k) + ' = ' + format_mb(r[k]);
+    c0.appendChild(r_amt);
+    c1.appendChild(r_val);
+    c2.appendChild(r_dis);
 
-    col1.appendChild(ikey);
-    col2.appendChild(ival);
-    col3.appendChild(disp);
-
-    row0.appendChild(col1);
-    row0.appendChild(col2);
-    row0.appendChild(col3);
-
-    f.appendChild(row0);
-
-    ikey.addEventListener('keyup', () => {
-      let n = parseInt(ikey.value) || 1;
+    r_amt.addEventListener('keyup', () => {
+      let n = parseInt(r_amt.value) || 1;
 
       if( n > 1000 ) n = 1000;
 
-      ival.name =`rates[${n}]`;
+      r_val.name =`rates[${n}]`;
 
-      ikey.value = n;
+      r_amt.value = n;
     });
 
-    ival.addEventListener('keyup', () => {
-      let n = parseInt(ival.value) || 10;
+    r_val.addEventListener('keyup', () => {
+      let n = parseInt(r_val.value) || 10;
 
       if( n > 1e8 ) n = 1e8;
 
-      disp.value = peso.format(ikey.value) + ' = ' + format_mb(n);
+      r_dis.value = peso.format(r_amt.value) + ' = ' + format_mb(n);
 
-      ival.name =`rates[${ikey.value}]`;
-      ival.value = n;
+      r_val.name =`rates[${r_amt.value}]`;
+      r_val.value = n;
     });
 
-    ikey.addEventListener('click',(e)=>e.target.select());
-    ival.addEventListener('click',(e)=>e.target.select());
+    r_amt.addEventListener('click',(e)=>e.target.select());
+    r_val.addEventListener('click',(e)=>e.target.select());
   }
 
   let b = document.createElement('button');
-  b.className='button-primary u-full-width';
   b.innerText='update';
   b.name ='submit';
   b.type ='submit';
 
   let c = document.createElement('button');
-  c.className='button u-full-width';
+  c.className='secondary';
   c.innerText='cancel';
   c.type ='button';
   c.addEventListener('click',()=>location.assign('/a/view.html'));
-  
-  f.appendChild(b);
-  f.appendChild(c);
+
+  let f = document.getElementsByTagName('form')[0];
+
+  f.appendChild(b); f.appendChild(c);
 });
 </script>
 </body>

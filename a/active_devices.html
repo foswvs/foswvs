@@ -38,13 +38,14 @@ function devices_table(dev) {
      col_ip = row.insertCell(2),
     col_mac = row.insertCell(3),
 
-    txt_mac = document.createTextNode(dev['mac']),
-     txt_ip = document.createTextNode(dev['ip']),
-   txt_host = document.createTextNode(dev['host']),
-     txt_ts = document.createTextNode(utc_to_local(dev['updated_at']));
+    txt_mac = document.createTextNode(dev.mac),
+     txt_ip = document.createTextNode(dev.ip),
+   txt_host = document.createTextNode(dev.host),
+     txt_ts = document.createTextNode(utc_to_local(dev.updated_at));
 
-        row.setAttribute('class', 'devinfo');
-        row.setAttribute('data-mac',dev['mac']);
+        row.className = 'devinfo';
+        row.dataset.mac = dev.mac;
+        row.style.cursor = 'pointer';
 
     col_mac.appendChild(txt_mac);
      col_ip.appendChild(txt_ip);

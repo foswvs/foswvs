@@ -44,8 +44,9 @@ function devices_table(d) {
     txt_mbf = document.createTextNode(format_mb(d.mb_free)),
      txt_ts = document.createTextNode(utc_to_local(d.active_at));
 
-        row.setAttribute('class', 'devinfo');
-        row.setAttribute('data-mac',d.mac);
+        row.className = 'devinfo';
+        row.dataset.mac = d.mac;
+        row.style.cursor = 'pointer';
 
     col_mbf.appendChild(txt_mbf);
     col_mac.appendChild(txt_mac);

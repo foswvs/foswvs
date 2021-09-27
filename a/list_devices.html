@@ -40,8 +40,9 @@ function devices_table(d) {
    txt_host = document.createTextNode(d.host),
      txt_ts = document.createTextNode(utc_to_local(d.updated_at));
 
-        row.setAttribute('class', 'devinfo');
-        row.setAttribute('data-mac',d.mac);
+        row.className = 'devinfo';
+        row.dataset.mac = d.mac;
+        row.style.cursor = 'pointer';
 
     col_mac.appendChild(txt_mac);
      col_ip.appendChild(txt_ip);

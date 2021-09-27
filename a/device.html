@@ -6,63 +6,59 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>device information</title>
-<link href="/css/normalize.css" rel="stylesheet">
-<link href="/css/skeleton.css" rel="stylesheet">
-<link href="/css/a.css" rel="stylesheet">
-<style>#info_table tr:hover{cursor:default !important;background:none !important;}.paddless{padding:0;}</style>
+<link href="/css/pico.min.css" rel="stylesheet">
+<style>#info_table tr:hover{cursor:default !important;background:none !important;}th,td{white-space:nowrap;}.paddless{padding:0;}</style>
 </head>
 <body>
-<div class="container" style="margin-top:10px;">
-  <div class="row">
-    <div class="columns"><a class="button u-full-width" href="/a/view.html">admin portal</a></div>
-  </div>
-  <div class="row">
-    <div class="six columns" style="border:1px solid #ccc;border-radius:4px; padding: 20px; margin-top:10px;">
-      <div class="row">
-        <h5>Add Data</h5>
-        <hr>
-      </div>
-      <div class="row">
-        <div class="six columns">
-          <label>Amount <span id="label_format_amt" style="font-size:10px;font-weight:400;">&nbsp;</span></label>  
-          <input class="u-full-width" id="money_in" type="text" placeholder="10">
-        </div>
-        <div class="six columns">
-          <label>MB Size <span id="label_format_mb" style="font-size:10px;font-weight:400;">&nbsp;</span></label>  
-          <input class="u-full-width" id="mb_input" type="text" placeholder="1024">
-        </div>
-      </div>  
-      <div class="row">
-        <button class="button" id="mb_btn" type="button">Add</button>
-      </div>
-  </div>
+<main class="container">
+  <button onclick="location.assign('view.html')">admin portal</button>
 
-    <div class="six columns" style="border:1px solid #ccc;border-radius:4px; padding: 20px; margin-top: 10px;">
+  <div class="grid">
+    <article>
       <h5>Device Information</h5>
       <hr>
-      <div class="row table-wrap">
+      <figure>
         <table class="u-full-width" id="info_table">
           <tr><th>IP Address</th><th class="paddless">:</th><td id="ip_addr">Identifying</td></tr>
           <tr><th>MAC Address</th><th class="paddless">:</th><td id="mac_addr">Identifying</td></tr>
           <tr><th>Hostname</th><th class="paddless">:</th><td id="hostname">Identifying</td></tr>
           <tr><th>Total MB Free</th><th class="paddless">:</th><td id="mb_free">Calculating</td></tr>
           <tr><th>Total MB Used</th><th class="paddless">:</th><td id="mb_used">Calculating</td></tr>
-          <tr><th>Total MB Limit</th><th class="paddless">:</th><td><span id="mb_limit">Calculating</span> <button class="button" id="mb_reset">reset</button></td></tr>
+          <tr><th>Total MB Limit</th><th class="paddless">:</th><td><span id="mb_limit">Calculating</span></td></tr>
           <tr><th>Last Active</th><th class="paddless">:</th><td id="active_at">...</td></tr>
         </table>
-      </div>
-    </div>
+      </figure>
+    </article>
+
+    <article>
+      <h5>Add Data</h5>
+      <hr>
+      <fieldset>
+        <label for="money_in">Amount <span id="label_format_amt" style="font-size:10px;font-weight:400;">&nbsp;</span>  
+          <input class="u-full-width" id="money_in" type="text" placeholder="10">
+        </label>
+        <label for="mb_input">MB Size <span id="label_format_mb" style="font-size:10px;font-weight:400;">&nbsp;</span> 
+          <input class="u-full-width" id="mb_input" type="text" placeholder="1024">
+        </label>
+      </fieldset>
+  
+      <button class="button" id="mb_btn" type="button">Add</button>
+    </article>
   </div>
+
   <hr>
-  <div class="row table-wrap">
-    <table class="u-full-width" id="tx_table">
+
+  <figure>
+    <table id="tx_table">
       <thead>
         <tr><th>Start At</th><th>Total</th><th>Amt</th><th>Data</th><th>Used</th><th>End At</th></tr>
       </thead>
-   </table>
-   <a class="button" href="#" id="tx_count">0 tx</a>
-  </div>
-</div>
+    </table>
+  </figure>
+  <button class="outline secondary" id="tx_count">0 tx</button>
+  <button class="secondary" id="mb_reset">delete all</button>
+
+</main>
 <script src="/js/a.js"></script>
 <script>
 const mac = search.substr(5),
@@ -105,8 +101,8 @@ function tx_table(tx) {
    col_ts.appendChild(txt_ts);
    col_tt.appendChild(txt_tt);
 
-  row.setAttribute('data-ts', tx.ts);
-  row.setAttribute('data-sid', tx.id);
+  row.dataset.ts = tx.ts;
+  row.dataset.sid = tx.id;
 
   document.getElementById('tx_count').innerText=`${++tx_count} transaction${tx_count>1 ? 's' : ''}`;
 }
@@ -115,9 +111,11 @@ function tx_table_blank(){
   let row = tbody.insertRow(-1),
     blank = row.insertCell(0);
 
-  blank.setAttribute('colspan', 5);
+  blank.colSpan = 6;
   blank.style.textAlign = 'center';
   blank.appendChild(document.createTextNode('No Transaction History'));
+
+  row.style.cursor = 'none';
 }
 
 function device_info() {
@@ -133,7 +131,7 @@ function device_info() {
       mb_used.innerText  = format_mb(x.mb_used);
       mb_limit.innerText = format_mb(x.mb_limit);
 
-      mb_reset.setAttribute('data-mac', x.mac);
+      mb_reset.dataset.mac = x.mac;
 
       if(!x.mb_limit) mb_reset.style.display='none';
 
@@ -154,10 +152,8 @@ function get_tx() {
       return x.json();
     }
   }).then((x) => {
-    x.forEach((tx) => {
-      tx.ts ? tx_table(tx) : tx_table_blank();
-    });
-  });
+    x.forEach((tx)=>tx_table(tx));
+  }).then(()=>{if(!tx_count) tx_table_blank()});
 }
 
 function del_tx(id) {
@@ -205,17 +201,20 @@ document.getElementById('mb_btn').addEventListener('click', (e) => {
 });
 
 mb_reset.addEventListener('click', (e) => {
-  if(confirm("Select OK to confirm reset mb limit.\nThis will clear device transactions.")) {
+  if(confirm("Select OK to delete all transactions.")) {
     fetch('/a/x.php?dev=clear_mb&mac=' + e.target.dataset.mac).then((r)=>device_info());
   }
 });
 
 tbody.addEventListener('click', (e) => {
+  if( e.target.parentNode.dataset.ts === undefined ) return;
+
   if( confirm("OK to delete the txn date.\n" + utc_to_local(e.target.parentNode.dataset.ts)) ) {
     del_tx(e.target.parentNode.dataset.sid)
   }
 });
 
+ip_addr.style.cursor = 'pointer';
 ip_addr.addEventListener('dblclick', (e) => {
   let ip = ip_addr.innerText.split('.').map(i=>parseInt(i)).join('.');
 

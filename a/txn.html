@@ -54,9 +54,12 @@ function displayTxn(txn) {
      col_ts.appendChild(txt_ts);
      col_tt.appendChild(txt_tt);
 
-    row.setAttribute('class',  'devinfo');
-    row.setAttribute('data-mac', txn.mac);
-    row.setAttribute('title', txn.ip);
+
+    row.className = 'devinfo';
+    row.dataset.mac = txn.mac;
+    row.style.cursor = 'pointer';
+
+    col_mac.dataset.tooltip = txn.ip;
 
     tx_display.innerText=(++tx_count);
 }

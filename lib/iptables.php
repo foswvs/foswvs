@@ -13,19 +13,24 @@ class Iptables {
   }
 
   public function add_client() {
-    while( shell_exec("sudo iptables -nL FORWARD | grep -w '{$this->ip}'") == NULL ) {
+    while( shell_exec("sudo iptables -t nat -nL PREROUTING | grep -w '{$this->ip}'") == NULL ) {
       exec("sudo iptables -t nat -I PREROUTING -s {$this->ip} -j ACCEPT");
-      exec("sudo iptables -A FORWARD -d {$this->ip} -j ACCEPT");
-      exec("sudo iptables -A FORWARD -s {$this->ip} -j ACCEPT");
+    }
+
+    while( shell_exec("sudo iptables -nL FORWARD | grep -w '{$this->ip}'") == NULL ) {
+      exec("sudo iptables -A FORWARD -d {$this->ip} -j ACCEPT; sudo iptables -A FORWARD -s {$this->ip} -j ACCEPT");
       sleep(1);
     }
   }
 
   public function rem_client() {
-    while( shell_exec("sudo iptables -nL FORWARD | grep -w '{$this->ip}'") ) {
+    while( shell_exec("sudo iptables -t nat -nL PREROUTING | grep -w '{$this->ip}'") ) {
       exec("sudo iptables -t nat -D PREROUTING -s {$this->ip} -j ACCEPT");
-      exec("sudo iptables -D FORWARD -d {$this->ip} -j ACCEPT");
-      exec("sudo iptables -D FORWARD -s {$this->ip} -j ACCEPT");
+      sleep(1);
+    }
+
+    while( shell_exec("sudo iptables -nL FORWARD | grep -w '{$this->ip}'") ) {
+      exec("sudo iptables -D FORWARD -s {$this->ip} -j ACCEPT; sudo iptables -D FORWARD -d {$this->ip} -j ACCEPT");
       sleep(1);
     }
   }

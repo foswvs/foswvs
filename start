@@ -13,5 +13,5 @@ fi
 
 while true
 do
-  /home/pi/foswvs/api/clients > /dev/null
+  $APPDIR/api/clients > /dev/null
 done

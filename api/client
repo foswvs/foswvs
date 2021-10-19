@@ -5,7 +5,6 @@ require __DIR__ . '/../lib/autoload.php';
 $ip = $argv[1];
 $mac = $argv[2];
 $host = $argv[3];
-$date = date('Y-m-d H:i:s');
 
 if( !filter_var($mac, FILTER_VALIDATE_MAC) ) {
   $mac = implode(':',array_map(function($s){return str_pad($s,2,'0',STR_PAD_LEFT);},explode(':',$mac)));

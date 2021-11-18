@@ -1,7 +1,9 @@
-log/*
+log/
 app/
+tmp/
 conf/db.catchall
 conf/foswvs.db-shm
 conf/foswvs.db-wal
 conf/iptables_latest.txt
 conf/named.conf
+conf/password.sha256

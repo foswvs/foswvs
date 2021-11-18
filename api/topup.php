@@ -5,15 +5,16 @@ set_time_limit(60);
 require '../lib/autoload.php';
 
 $IP = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);
-$MAC = Network::device_mac($IP);
-
 $db = new Database();
-$db->set_mac($MAC);
 
-if( !$db->get_device_id() ) {
+$db->set_ip($IP);
+
+if( !$db->get_device_id_by_ip() ) {
   http_response_code(401);
   exit;
 }
+
+$MAC = $db->get_device_mac();
 
 if( $db->get_topup_count() > 5 ) {
   http_response_code(429);

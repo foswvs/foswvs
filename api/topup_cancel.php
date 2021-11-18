@@ -2,7 +2,16 @@
 require '../lib/autoload.php';
 
 $IP = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);
-$MAC = Network::device_mac($IP);
+$db = new Database();
+
+$db->set_ip($IP);
+
+if( !$db->get_device_id_by_ip() ) {
+  http_response_code(401);
+  exit;
+}
+
+$MAC = $db->get_device_mac();
 
 $coinslot = new Coinslot();
 

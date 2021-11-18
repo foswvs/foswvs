@@ -259,7 +259,7 @@ function data_usage() {
         l.innerText=format_mb(j.mb_limit);
 
         if (j.mb_used>1) {
-          f.innerText = `(${format_mb(mb_free)})`;
+          f.innerText = `/${format_mb(mb_free)}`;
           f.style.display = mb_free>1 ? 'inline' : 'none';
         }
 

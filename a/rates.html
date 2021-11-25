@@ -55,7 +55,7 @@ fetch('./rates.php').then((r)=>r.json()).then((r)=> {
     c2.appendChild(r_dis);
 
     r_amt.addEventListener('keyup', () => {
-      let n = parseInt(r_amt.value) || 1;
+      let n = parseInt(r_amt.value) || 0;
 
       if( n > 1000 ) n = 1000;
 
@@ -65,7 +65,7 @@ fetch('./rates.php').then((r)=>r.json()).then((r)=> {
     });
 
     r_val.addEventListener('keyup', () => {
-      let n = parseInt(r_val.value) || 10;
+      let n = parseInt(r_val.value) || 0;
 
       if( n > 1e8 ) n = 1e8;
 

@@ -46,7 +46,7 @@ $coinslot->sensor_on();
 while( $coinslot->sensor_read() ) {
   if( $coinslot->slot_read() ) {
     $count++;
-    usleep(22000);
+    usleep(22000*2);
   }
 
   $timer = time() - $start;

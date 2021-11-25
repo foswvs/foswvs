@@ -31,6 +31,10 @@
   font-family: 'font6';
   src: url('/fonts/BungeeOutline-Regular.ttf') format('truetype');
 }
+@font-face {
+  font-family: 'font7';
+  src: url('/fonts/Shadow-7WdR.ttf') format('truetype');
+}
 
 body {
   background-color: #fff;
@@ -116,9 +120,9 @@ hr {
   <div>Data Usage: <span id="mb_used">0</span>/<span id="mb_limit">0</span><span id="mb_free" style="display:none;">&nbsp;</span></div>
   <div>MAC Address: <span id="mac_addr">Identifying...</span></div>
   <div>IP Address: <span id="ip_addr">0.0.0.0</span></div>
-  <div><a href="/txn.html">VIEW TRANSACTIONS</a></div>
-  <div>&#x20B1;1.00 = 30MB; &#x20B1;5.00 = 350MB<br>&#x20B1;10.00 = 1GB; &#x20B1;30.00 = 4GB</div>
-  <p>VALID 'TIL CONSUMED. NO EXPIRY.</p>
+  <div style="margin-top:4px;"><a href="/txn.html" style="font-weight:bold;background:#ccc;color:#fff;padding:4px;text-decoration:none;border-radius:3px;border:1px solid #bbb;">VIEW TRANSACTIONS</a></div>
+  <div style="font-weight:bold;margin-top:10px;"><span style="background-color:red;color:white;padding:2px;border-radius:3px;border:1px solid #cc0000;">&#x20B1;1.00 = 24MB; &#x20B1;5.00 = 256MB; &#x20B1;50.00 = 5GB</span></div>
+  <div style="font-family:font7;font-size:1.8em;color:red;">* NO EXPIRATION *</div>
 </div>
 <audio id="beep" src="/js/sfx/beep.mp3" preload="auto" loop></audio>
 <audio id="bump" src="/js/sfx/bump.wav" preload="auto" loop></audio>
@@ -137,6 +141,8 @@ const beep = document.getElementById('beep'),
          s = document.getElementById('stat'),
          w = document.getElementById('wait'),
          m = document.getElementById('mb');
+
+const peso = new Intl.NumberFormat('en-PH', {style: 'currency', currency: 'PHP'});
 
 var new_coin = 0, mb_free = 0;
 
@@ -218,7 +224,7 @@ function topup_check() {
         let j = JSON.parse(x.responseText);
 
         w.innerText = `waiting for payment (${j.cd})`;
-        m.innerText = format_mb(j.mb);
+        m.innerHTML = 'AMT ' + peso.format(j.amt);
         w.style.display='block';
         btn.innerText='done';
 
@@ -260,7 +266,7 @@ function data_usage() {
 
         if (j.mb_used>1) {
           f.innerText = `/${format_mb(mb_free)}`;
-          f.style.display = mb_free>1 ? 'inline' : 'none';
+          f.style.display = mb_free>1e9 ? 'inline' : 'none';
         }
 
         mac.innerText = j.mac;

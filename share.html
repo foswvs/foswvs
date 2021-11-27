@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<title>Share</title>
+<link href="/css/pico.min.css" rel="stylesheet">
+</head>
+<body>
+<main class="container">
+  <article>
+    <p id="ask" style="color:red;text-transform:uppercase;display:none;"></p>
+    <input id="mbs" type="text" placeholder="ASK MB SIZE">
+    <p id="xox" style="color:red;text-transform:uppercase;display:none;">..</p>
+    <input id="txt" type="text" placeholder="SHARE CODE">
+    <button class="primary" onclick="location.assign('/')" type="button">CANCEL</button>  
+  </article>
+</main>
+<script>
+const ask = document.getElementById('ask'),
+      btn = document.getElementById('btn'),
+      mbs = document.getElementById('mbs'),          
+      txt = document.getElementById('txt'),          
+      xox = document.getElementById('xox'),
+      xhr = new XMLHttpRequest();
+
+mbs.addEventListener('keyup',(e)=> {
+  let s = parseInt(mbs.value);
+  ask.innerText =  `ask ${format_mb(s)} data to your peer`;
+  ask.style.display = s > 0 ? 'block' : 'none';
+
+  if( e.keyCode === 13 ) {
+    xhr.addEventListener('readystatechange', () => {
+      if(xhr.readyState==4) {
+        if( xhr.status === 200 ) {
+          txt.value = xhr.responseText;
+          xox.innerText = 'code expire in minute';
+          xox.style.display = 'block';
+        }
+
+        if( xhr.status === 403 ) {
+          ask.innerText = 'ask data you want from your peer';
+          ask.style.display = 'block';
+        }
+      }
+    });
+
+    xhr.open('POST','/api/share.php');
+    xhr.send(parseInt(mbs.value));
+  }
+});
+
+txt.addEventListener('keyup',(e)=> {
+  var code = txt.value;
+
+  xox.style.display = 'none';
+
+  if( code.length === 5 && e.keyCode === 13 ) {
+    xhr.addEventListener('readystatechange', () => {
+      if(xhr.readyState==4) {
+        xox.style.display = 'block';
+
+        if( xhr.status === 200 ) {
+          txt.value = '';
+          xox.innerText = xhr.responseText;
+        }
+
+        if( xhr.status === 403 ) {
+          xox.innerText = xhr.responseText;
+        }
+      }
+    });
+    xhr.open('PUT','/api/share.php');
+    xhr.send(code);
+  }
+});
+
+function format_mb(size) {
+  size = parseFloat(size) || 0;
+
+  if( size<1 ) return '0MB';
+
+  let base = Math.floor(Math.log(size) / Math.log(1024));
+  let unit = ['MB','GB','TB','PB','EB','ZB','YB'];
+
+  size = size / Math.pow(1024, base);
+  size = Number.isInteger(size) ? size : size.toFixed(2);
+
+  return size + unit[base];
+}
+</script>
+</body>
+</html>

@@ -283,4 +283,18 @@ class Database extends SQLite3 {
   public function set_topup_count() {
     $this->exec("UPDATE devices SET topup_count=topup_count+1, topup_at=CURRENT_TIMESTAMP WHERE id={$this->devid}");
   }
+
+  public function add_sharetx($tok, $mb) {
+    $this->exec("INSERT INTO sharetx(device_id,mb_size,token) VALUES({$this->devid},{$mb},'{$tok}')");
+  }
+
+  public function get_sharetx($tok) {
+    $cmd = $this->query("SELECT device_id,mb_size FROM sharetx WHERE token='{$tok}' AND created_at > DATETIME(CURRENT_TIMESTAMP,'-1 MINUTE') ORDER BY id DESC  LIMIT 1");
+
+    return $cmd->fetchArray(SQLITE3_NUM);
+  }
+
+  public function rem_sharetx($tok) {
+    $this->exec("DELETE FROM sharetx WHERE token='{$tok}'");
+  }
 }

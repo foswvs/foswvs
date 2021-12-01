@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<title>Rates</title>
+<link href="/css/pico.min.css" rel="stylesheet">
+<style>
+@font-face {
+  font-family: 'font7';
+  src: url('/fonts/Shadow-7WdR.ttf') format('truetype');
+}
+.r{font-family:font7;font-size:1.8em;color:red;text-align:center;}
+</style>
+</head>
+<body>
+<main class="container">
+  <article style="margin-top:0 !important;margin-bottom:1em !important;">
+    <div class="r" style="font-size:3em;">WiFi RATES</div>
+    <hr/>
+    <div id="rates"></div>
+    <hr/>
+    <div class="r" style="font-size:2em;">NO EXPIRATION!</div>
+  </article>
+  <button class="primary" onclick="location.assign('/')" type="button">MAIN PORTAL</button>
+</main>
+<script>
+const x = new XMLHttpRequest(),
+      d = document.getElementById('rates'),
+      p = new Intl.NumberFormat('en-PH', { style:'currency', currency:'PHP' });
+
+document.addEventListener('DOMContentLoaded',()=>{
+  x.addEventListener('readystatechange',()=>{
+    if( x.readyState === 4 ) {
+      if( x.status === 200 ) {
+        let rates = JSON.parse(x.responseText);
+
+        for(k in rates) {
+          let s =document.createElement('div');
+          s.innerHTML = `${p.format(k)} = ${format_mb(rates[k])}`;
+          s.className = 'r';
+          d.appendChild(s);
+        }
+      }
+    }
+  });
+
+  x.open('GET','/conf/rates.json');
+  x.send();
+});
+
+function format_mb(size) {
+  size = parseFloat(size) || 0;
+
+  if( size<1 ) return '0MB';
+
+  let base = Math.floor(Math.log(size) / Math.log(1024));
+  let unit = ['MB','GB','TB','PB','EB','ZB','YB'];
+
+  size = size / Math.pow(1024, base);
+  size = Number.isInteger(size) ? size : size.toFixed(2);
+
+  return size + unit[base];
+}
+</script>
+</body>
+</html>

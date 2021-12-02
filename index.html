@@ -99,11 +99,26 @@ hr {
 }
 
 .main {
-  border:1px solid #eee;
   margin:10px auto 0;
   max-width:380px;
   padding:10px 0 50px;
   text-align:center;
+}
+ul {
+  padding:0;
+}
+ul li {
+  list-style:none;
+  font-size:1.2em;
+  padding:4px 0;
+}
+ul li a {
+  font-family:font1;
+  text-decoration:none;
+  background-color:#2e8baa;
+  color:white;
+  padding:2px 4px;
+  border-radius:3px;
 }
 </style>
 </head>
@@ -120,14 +135,17 @@ hr {
   <div>Data Usage: <span id="mb_used">0</span>/<span id="mb_limit">0</span><span id="mb_free" style="display:none;">&nbsp;</span></div>
   <div>MAC Address: <span id="mac_addr">Identifying...</span></div>
   <div>IP Address: <span id="ip_addr">0.0.0.0</span></div>
-  <br>
-  <div>
-    <a href="/share.html" style="font-weight:bold;background:#8a9454;color:#fff;padding:4px;text-decoration:none;border-radius:3px;border:1px solid #7b8548;">DATA SHARING</a>
-    <br/><br/>
-    <a href="/rates.html" style="font-weight:bold;background-color:red;color:white;padding:4px;border-radius:3px;border:1px solid #cc0000;text-decoration:none;">VIEW RATES</a>
-    <br/><br/>
-    <a href="/txn.html" style="font-weight:bold;background:#426eb3;color:#fff;padding:4px;text-decoration:none;border-radius:3px;border:1px solid #3d6dba;">VIEW TRANSACTIONS</a>
-  </div>
+  <ul>
+    <li>
+      <a href="/rates.html">VIEW RATES</a>
+    </li>
+    <li>
+      <a href="/s.html">DATA SHARING</a>
+    </li>
+    <li>
+      <a href="/txn.html">VIEW TRANSACTIONS</a>
+    </li>
+  </ul>
 </div>
 <audio id="beep" src="/js/sfx/beep.mp3" preload="auto" loop></audio>
 <audio id="bump" src="/js/sfx/bump.wav" preload="auto" loop></audio>

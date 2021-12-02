@@ -64,4 +64,6 @@ foreach($temp as $ip=>$mb) {
   }
 }
 
+$db->clear_sharetx();
+
 if( count($temp) < 4 ) sleep(1);

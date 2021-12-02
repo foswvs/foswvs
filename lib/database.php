@@ -101,7 +101,8 @@ class Database extends SQLite3 {
 
   public function create_table() {
     $this->exec("CREATE TABLE IF NOT EXISTS devices (id INTEGER PRIMARY KEY AUTOINCREMENT, mac_addr TEXT NOT NULL UNIQUE, ip_addr DEFAULT '127.0.0.1', hostname DEFAULT '-NA-', topup_count DEFAULT 0, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP, topup_at DEFAULT CURRENT_TIMESTAMP);");
-    $this->exec("CREATE TABLE IF NOT EXISTS session (id INTEGER PRIMARY KEY AUTOINCREMENT, device_id INTEGER, piso_count DEFAULT 0, mb_limit DEFAULT 0, mb_used DEFAULT 0, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP)");
+    $this->exec("CREATE TABLE IF NOT EXISTS session (id INTEGER PRIMARY KEY AUTOINCREMENT, device_id INTEGER, piso_count DEFAULT 0, mb_limit DEFAULT 0, mb_used DEFAULT 0, created_at DEFAULT CURRENT_TIMESTAMP, updated_at DEFAULT CURRENT_TIMESTAMP);");
+    $this->exec("CREATE TABLE sharetx (id INTEGER PRIMARY KEY AUTOINCREMENT, device_id INTEGER,token TEXT, created_at DEFAULT CURRENT_TIMESTAMP);");
   }
 
   public function get_devices() {
@@ -284,17 +285,21 @@ class Database extends SQLite3 {
     $this->exec("UPDATE devices SET topup_count=topup_count+1, topup_at=CURRENT_TIMESTAMP WHERE id={$this->devid}");
   }
 
-  public function add_sharetx($tok, $mb) {
-    $this->exec("INSERT INTO sharetx(device_id,mb_size,token) VALUES({$this->devid},{$mb},'{$tok}')");
+  public function add_sharetx($tok) {
+    $this->exec("INSERT INTO sharetx(device_id,token) VALUES({$this->devid},'{$tok}')");
   }
 
-  public function get_sharetx($tok) {
-    $cmd = $this->query("SELECT device_id,mb_size FROM sharetx WHERE token='{$tok}' AND created_at > DATETIME(CURRENT_TIMESTAMP,'-1 MINUTE') ORDER BY id DESC  LIMIT 1");
+  public function get_sharetx_did($tok) {
+    $cmd = $this->query("SELECT device_id FROM sharetx WHERE token='{$tok}' ORDER BY id DESC  LIMIT 1");
 
-    return $cmd->fetchArray(SQLITE3_NUM);
+    return $cmd->fetchArray(SQLITE3_NUM)[0];
   }
 
   public function rem_sharetx($tok) {
     $this->exec("DELETE FROM sharetx WHERE token='{$tok}'");
+  }
+
+  public function clear_sharetx() {
+    $this->exec("DELETE FROM sharetx WHERE created_at < DATETIME(CURRENT_TIMESTAMP,'-1 MINUTE')");
   }
 }

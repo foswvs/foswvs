@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<title>Share</title>
+<link href="/css/pico.min.css" rel="stylesheet">
+</head>
+<body>
+<main class="container">
+  <article style="margin-top:auto !important;">
+    <label>Enter code to share your data to your peer</label>
+    <input id="code" type="text" placeholder="CODE">
+    <input id="size" type="text" placeholder="MB SIZE">
+    <button id="btn" class="primary" type="button">SHARE DATA</button>
+  </article>
+
+  <article>
+    <label>Share this code to ask data to your peer</label>
+    <input id="sc" type="text" value="" readonly>
+    <button class="primary" onclick="location.assign('/')" type="button">CANCEL</button>  
+  </article>
+</main>
+<script>
+const code = document.getElementById('code'),
+      size = document.getElementById('size'),          
+      btn = document.getElementById('btn'),
+      s = document.getElementById('sc');
+
+document.addEventListener('DOMContentLoaded',sharetx_code);
+
+document.addEventListener('keypress',(e)=> {
+  if( e.keyCode === 13 ) {
+    sharetx();
+  }
+});
+
+btn.addEventListener('click', sharetx);
+
+function sharetx() {
+  let c = code.value,
+      s = size.value,
+      x = new XMLHttpRequest();
+
+  if( c.length !== 5 ) {
+    alert('Invalid code');
+    return;
+  }
+  
+  if( !Number.isInteger(parseInt(s)) ) {
+    alert('Invalid size');
+    return;
+  }
+
+  x.addEventListener('readystatechange', () => {
+    if( x.readyState === 4 ) {
+      if( x.status === 200 ) {
+        alert(x.responseText);
+      }
+    }
+  });
+
+  x.open('PUT','/api/s.php');
+  x.send([c,s].join('|'));
+}
+
+function sharetx_code() {
+  let x = new XMLHttpRequest();
+
+  x.addEventListener('readystatechange',()=> {
+    if( x.readyState === 4 ) {
+      if( x.status === 200 ) {
+        s.value = x.responseText;
+      }
+    }
+  });
+
+  x.open('GET','/api/s.php');
+  x.send();
+}
+
+function format_mb(size) {
+  size = parseFloat(size) || 0;
+
+  if( size<1 ) return '0MB';
+
+  let base = Math.floor(Math.log(size) / Math.log(1024));
+  let unit = ['MB','GB','TB','PB','EB','ZB','YB'];
+
+  size = size / Math.pow(1024, base);
+  size = Number.isInteger(size) ? size : size.toFixed(2);
+
+  return size + unit[base];
+}
+</script>
+</body>
+</html>

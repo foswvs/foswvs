@@ -34,12 +34,13 @@ if( $_SERVER['REQUEST_METHOD'] == "PUT" ) {
     exit("invalid mb size");
   }
 
-  if( !$did = $db->get_sharetx_did($code) ) {
+  if( !$did = $db->get_sharetx_did(strtoupper($code)) ) {
     exit("invalid code");
   }
 
-  $db->rem_sharetx($code);
-
+  if( $db->get_did() === $did ) {
+    exit("valid code");
+  }
 
   [$limit, $used] = $db->get_data_usage();
   $free = $limit - $used;

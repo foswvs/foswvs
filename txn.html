@@ -6,19 +6,85 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>Transaction History</title>
-<link href="/css/normalize.css" rel="stylesheet">
-<link href="/css/skeleton.css" rel="stylesheet">
-<style>p,table th,table td{font-size:12px;}</style>
+<link href="/css/pico.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="container main" style="max-width:380px;border:1px solid #eeeeff;padding:0 10px;">
-  <div class="row">
-    <table class="u-full-width" id="txn_history">
-      <tr><th>Date</th><th>Data</th><th>Amt</th></tr>
+<main>
+  <article style="margin-top:auto !important;">
+    <center>TRANSACTION HISTORY</center>
+    <hr/>
+    <table role="grid">
+      <thead>
+        <tr><th>AMT</th><th>DATE</th><th>DATA</th></tr>
+      </thead>
+      <tbody>
+      </tbody>
     </table>
-    <p style="text-align:center;"><a class="button" href="/">thank you!</a></p>
-  </div>
-</div>
-<script src="/js/txn.js"></script>
+    <button class="secondary" onclick="location.assign('/')" type="button">CANCEL</button>  
+  </article>
+</main>
+<script>
+const peso = Intl.NumberFormat('en-PH', {style: 'currency', currency: 'PHP'});
+var amount = 0, tx_count = 0, mb_limit = 0;
+
+function txnHistory(txn) {
+     amount = amount + txn.amt;
+   mb_limit = mb_limit + txn.mb_limit; tx_count++;
+  let table = document.getElementsByTagName('tbody')[0],
+        row = table.insertRow(-1),
+    col_amt = row.insertCell(0),
+     col_ts = row.insertCell(1),
+     col_mb = row.insertCell(2),
+    txt_amt = document.createTextNode(txn.amt==0 ? 'FREE' : peso.format(txn.amt)),
+     txt_mb = document.createTextNode(format_mb(txn.mb_limit)),
+     txt_ts = document.createTextNode(utc_to_local(txn.ts));
+
+    col_amt.appendChild(txt_amt);
+     col_mb.appendChild(txt_mb);
+     col_ts.appendChild(txt_ts);
+}
+
+function notxn(){
+  let table = document.getElementsByTagName('tbody')[0],
+        row = table.insertRow(-1),
+      blank = row.insertCell(0);
+
+      blank.setAttribute('colspan', 3);
+      blank.style.textAlign = 'center';
+      blank.appendChild(document.createTextNode('No Transaction History'));
+}
+
+function totaltxn(){
+  let table = document.getElementsByTagName('tbody')[0],
+        row = table.insertRow(-1),
+      blank = row.insertCell(0);
+
+      blank.setAttribute('colspan', 3);
+      blank.appendChild(document.createTextNode(`${tx_count} TRANSACTION${tx_count>1?'S':''} / ${peso.format(amount)} / ${format_mb(mb_limit)}`));
+      blank.style.textAlign='center';
+}
+
+function utc_to_local(ts) {
+  return new Date(parseInt(ts)).toLocaleString("en-US", {timeZone: 'Asia/Manila', hour12: true});
+}
+
+function format_mb(size) {
+  if( !size ) return size + 'MB';
+
+  let base = Math.floor(Math.log(size) / Math.log(1024));
+  let unit = ['MB','GB','TB','PB','EB','ZB','YB'];
+
+  size = size / Math.pow(1024, base);
+  size = Number.isInteger(size) ? size : parseFloat(size).toFixed(2);
+
+  return size + unit[base];
+}
+
+function getDeviceTxn() {
+  fetch('/api/txn.php').then((x) => x.json()).then((x) => { x.forEach((tx) => { tx.ts ? txnHistory(tx) : notxn(); }); totaltxn(); });
+}
+
+getDeviceTxn();
+</script>
 </body>
 </html>

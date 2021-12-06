@@ -16,7 +16,7 @@ if( !$db->get_device_id_by_ip() ) {
 
 $MAC = $db->get_device_mac();
 
-if( $db->get_topup_count() > 5 ) {
+if( $db->get_topup_count() > 2 ) {
   http_response_code(429);
   exit;
 }
@@ -46,7 +46,7 @@ $coinslot->sensor_on();
 while( $coinslot->sensor_read() ) {
   if( $coinslot->slot_read() ) {
     $count++;
-    usleep(22000*2);
+    usleep(22000*2*2);
   }
 
   $timer = time() - $start;

@@ -31,22 +31,22 @@ if( $_SERVER['REQUEST_METHOD'] == "PUT" ) {
   list($code, $size) = $data;
 
   if( !filter_var($size, FILTER_VALIDATE_INT) ) {
-    exit("invalid mb size");
+    exit("Enter 1 to 999");
   }
 
   if( !$did = $db->get_sharetx_did(strtoupper($code)) ) {
-    exit("invalid code");
+    exit("Code Expired");
   }
 
   if( $db->get_did() === $did ) {
-    exit("valid code");
+    exit("Not Allowed Using Own Code");
   }
 
   [$limit, $used] = $db->get_data_usage();
   $free = $limit - $used;
 
   if( $free < $size ) {
-    exit("insufficient data");
+    exit("Insufficient Data");
   }
 
   $db->set_mb_used($size);
@@ -57,8 +57,7 @@ if( $_SERVER['REQUEST_METHOD'] == "PUT" ) {
   $db->set_did($did);
   $db->add_session();
 
-  exit("successfully shared " . Helper::format_mb($size));
+  exit("Successfully Shared " . Helper::format_mb($size));
 }
 
 http_response_code(403);
-exit('opss');

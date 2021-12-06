@@ -20,7 +20,7 @@ center{color:#ccc;}
 <main class="container">
   <article style="margin-top:0 !important;margin-bottom:1em !important;">
     <div class="r" style="font-size:3em;">WiFi RATES</div>
-    <center>will change anytime w/o prior notice</center>
+    <center>may change anytime w/o prior notice</center>
     <hr/>
     <div id="rates"></div>
     <hr/>
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
   });
 
-  x.open('GET','/conf/rates.json');
+  x.open('GET','/conf/rates.json?_=' + Date.now());
   x.send();
 });
 

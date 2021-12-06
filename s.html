@@ -11,16 +11,18 @@
 <body>
 <main class="container">
   <article style="margin-top:auto !important;">
-    <label>Enter code to share your data to your peer</label>
-    <input id="code" type="text" placeholder="CODE">
-    <input id="size" type="text" placeholder="MB SIZE">
+    <p>Share <code id="sc">-----</code> to ask data from your peer</p>
+    <hr/>
+    <label for="code">Enter code to share your data to your peer</label>
+    <input id="code" type="text" placeholder="CODE" onfocus="this.select();">
+    <input id="size" type="text" placeholder="MB SIZE" onfocus="this.select();">
     <button id="btn" class="primary" type="button">SHARE DATA</button>
+    <button class="secondary" onclick="location.assign('/')" type="button">CANCEL</button>  
   </article>
 
-  <article>
+  <article style="display:none;">
     <label>Share this code to ask data from your peer</label>
-    <input id="sc" type="text" value="" readonly>
-    <button class="primary" onclick="location.assign('/')" type="button">CANCEL</button>  
+    <input id="sc_" type="text" value="" readonly>
   </article>
 </main>
 <script>
@@ -61,7 +63,7 @@ function sharetx_code() {
   x.addEventListener('readystatechange',()=> {
     if( x.readyState === 4 ) {
       if( x.status === 200 ) {
-        s.value = x.responseText;
+        s.innerText = x.responseText;
         setInterval(sharetx_code, 6e4);
       }
     }

@@ -81,5 +81,6 @@ $db->set_mb_limit($mb);
 
 $db->add_session();
 
+$db->exec("UPDATE devices SET topup_count=0 WHERE id=" . $db->get_did());
 $ipt = new Iptables($IP);
 $ipt->add_client();

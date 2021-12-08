@@ -12,6 +12,20 @@
 <body>
 <main class="container">
   <button onclick="location.assign('view.html');">admin portal</button>
+  <figure style="border:2px solid #ccc;border-radius:4px;">
+    <table role="grid" style="margin-bottom:0;">
+      <thead>
+        <tr><th>Sum</th><th>This</th><th>Last</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Day</td><td id="sumday">---</td><td id="lastday">---</td></tr>
+        <tr><td>Week</td><td id="sumweek">---</td><td id="lastweek">---</td></tr>
+        <tr><td>Month</td><td id="summonth">---</td><td id="lastmonth">---</td></tr>
+        <tr><td>Year</td><td id="sumyear">---</td><td id="lastyear">---</td></tr>
+      </tbody>
+    </table>
+  </figure>
+
   <figure>
   <table id="txns" role="grid">
     <thead>
@@ -28,6 +42,33 @@
 <script src="/js/a.js"></script>
 <script>
 var subtotal = 0, limit = 25, offset = 0, tx_count=0, tx_display=document.getElementById('tx_count');
+
+document.addEventListener('DOMContentLoaded', earnings_sum);
+
+function earnings_sum() {
+  const x = new XMLHttpRequest();
+
+  x.addEventListener('readystatechange',()=> {
+    if( x.readyState === 4 ) {
+      if( x.status === 200 ) {
+        let s = JSON.parse(x.responseText);
+
+        document.getElementById('sumday').innerText = peso.format(s.day);
+        document.getElementById('sumweek').innerText = peso.format(s.week);
+        document.getElementById('summonth').innerText = peso.format(s.month);
+        document.getElementById('sumyear').innerText = peso.format(s.year);
+
+        document.getElementById('lastday').innerText = peso.format(s.last_day);
+        document.getElementById('lastweek').innerText = peso.format(s.last_week);
+        document.getElementById('lastmonth').innerText = peso.format(s.last_month);
+        document.getElementById('lastyear').innerText = peso.format(s.last_year);
+      }
+    }
+  });
+
+  x.open('GET','earnings_summary.php');
+  x.send();
+}
 
 function displayTxn(txn) {
    subtotal = subtotal + txn.amt;

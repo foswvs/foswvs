@@ -20,6 +20,16 @@ if( $_SERVER['REQUEST_METHOD'] == "GET" ) {
   exit($code);
 }
 
+if( $_SERVER['REQUEST_METHOD'] == "POST" ) {
+  $d = $db->get_did();
+  $q = $db->query("SELECT mb_limit FROM session WHERE device_id={$d} AND created_at > DATETIME('now','-3 seconds');");
+  $r = $q->fetchArray(SQLITE3_NUM)[0];
+
+  if( !$r ) exit(http_response_code(204));
+
+  exit("You Received " . Helper::format_mb($r));
+}
+
 if( $_SERVER['REQUEST_METHOD'] == "PUT" ) {
   $d = file_get_contents("php://input");
 

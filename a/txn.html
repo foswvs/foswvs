@@ -7,13 +7,24 @@
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>transactions</title>
 <link href="/css/pico.min.css" rel="stylesheet">
-<style>td,th{white-space:nowrap;}</style>
+<style>
+td,th {
+  white-space:nowrap;
+}
+figure {
+  border: 2px solid #ccc;
+  border-radius: 4px;
+}
+table {
+  margin-bottom: 0;
+}
+</style>
 </head>
 <body>
 <main class="container">
   <button onclick="location.assign('view.html');">admin portal</button>
-  <figure style="border:2px solid #ccc;border-radius:4px;">
-    <table role="grid" style="margin-bottom:0;">
+  <figure>
+    <table role="grid">
       <thead>
         <tr><th>Sum</th><th>This</th><th>Last</th></tr>
       </thead>
@@ -99,8 +110,6 @@ function displayTxn(txn) {
     row.className = 'devinfo';
     row.dataset.mac = txn.mac;
     row.style.cursor = 'pointer';
-
-    col_mac.dataset.tooltip = txn.ip;
 
     tx_display.innerText=(++tx_count);
 }

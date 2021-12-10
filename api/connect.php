@@ -1,4 +1,9 @@
 <?php
+if( $_SERVER['REQUEST_METHOD'] !== 'POST' ) {
+  http_response_code(403);
+  exit;
+}
+
 require '../lib/autoload.php';
 
 $IP = filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP);

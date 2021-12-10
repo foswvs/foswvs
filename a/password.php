@@ -8,7 +8,7 @@ if( $_COOKIE['hash'] !== file_get_contents($password) ) {
   exit;
 }
 
-$opt = array("options" => array("regexp" => "/.{5,25}/"));
+$opt = array("options" => array("regexp" => "/.{3,25}/"));
 
 if( $pwd = filter_input(INPUT_POST,'password', FILTER_VALIDATE_REGEXP, $opt) ) {
   file_put_contents($password, hash('sha256', $pwd));

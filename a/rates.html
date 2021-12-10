@@ -7,7 +7,33 @@
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>rates</title>
 <link href="/css/pico.min.css" rel="stylesheet">
-<style>td,th{white-space:nowrap;padding:2px;}td{border-bottom:0;}.c1{width:22%;}.c2{width:30%;}</style>
+<style>
+figure, table {
+  margin-bottom: 0;
+}
+td, th {
+  white-space: nowrap;
+  padding-left: 0;
+  padding-right: 4px;
+}
+td {
+  border: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+td:nth-child(3) {
+  padding-right: 0;
+}
+tbody tr:nth-child(1) td {
+  padding-top: 1em;
+}
+th:nth-child(1) {
+  width: 20%;
+}
+th:nth-child(2) {
+  width: 32%;
+}
+</style>
 </head>
 <body>
 <main class="container">
@@ -15,7 +41,7 @@
     <figure>
       <table id="rates">
         <thead>
-          <tr><th class="c1">Amount</th><th class="c2">MB Size</th><th>Amount/Unit</th></tr>
+          <tr><th>Amount</th><th>MB Size</th><th>Amount/Unit</th></tr>
         </thead>
         <tbody>
         </tbody>
@@ -54,7 +80,18 @@ fetch('./rates.php').then((r)=>r.json()).then((r)=> {
     c1.appendChild(r_val);
     c2.appendChild(r_dis);
 
-    r_amt.addEventListener('keyup', () => {
+    r_amt.addEventListener('keyup', (e) => {
+      if ( e.keyCode === 65 ) {
+        let clonedRow = r_amt.parentNode.parentNode.cloneNode(true);
+        console.log(clonedRow);
+        tb.appendChild(clonedRow);
+      }
+
+      if ( e.keyCode === 68 ) {
+        let rowIndex = r_amt.parentNode.parentNode.sectionRowIndex;
+        tb.deleteRow(rowIndex);
+      }
+
       let n = parseInt(r_amt.value) || 0;
 
       if( n > 1000 ) n = 1000;
@@ -62,6 +99,7 @@ fetch('./rates.php').then((r)=>r.json()).then((r)=> {
       r_val.name =`rates[${n}]`;
 
       r_amt.value = n;
+
     });
 
     r_val.addEventListener('keyup', () => {
@@ -77,6 +115,7 @@ fetch('./rates.php').then((r)=>r.json()).then((r)=> {
 
     r_amt.addEventListener('click',(e)=>e.target.select());
     r_val.addEventListener('click',(e)=>e.target.select());
+
   }
 
   let b = document.createElement('button');

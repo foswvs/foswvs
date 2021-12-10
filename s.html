@@ -7,6 +7,18 @@
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 <title>Share</title>
 <link href="/css/pico.min.css" rel="stylesheet">
+<style>
+.alert {
+    background-color: green;
+    text-align: center;
+    color: white;
+    padding: 1em 0;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+  }
+</style>
 </head>
 <body>
 <main class="container">
@@ -27,7 +39,50 @@
 </main>
 <script>
 const code = document.getElementById('code'),
-      size = document.getElementById('size');          
+      size = document.getElementById('size'),          
+      time = Date.now();
+
+function share_alert() {
+  const x = new XMLHttpRequest();
+
+  x.addEventListener('readystatechange', () => {
+    if( x.readyState === 4 ) {
+      if( x.status === 200 ) {
+        let p = document.createElement('p');
+
+        p.className = 'alert';
+        p.innerText = x.responseText;
+
+        p.addEventListener('click',()=>p.remove());
+
+        document.body.appendChild(p);
+        share_connect();
+      }
+
+      if( x.status === 204 ) {
+        setTimeout(share_alert,1000);
+      }
+    }
+  });
+
+  x.open('POST','/api/s.php');
+  x.send(time);
+}
+
+function share_connect() {
+  const x = new XMLHttpRequest();
+
+  x.addEventListener('readystatechange', () => {
+    if( x.readyState === 4 ) {
+      if( x.status === 200 ) {
+        setTimeout(()=>window.location.assign('/txn.html'),5000);
+      }
+    }
+  });
+
+  x.open('POST','/api/connect.php');
+  x.send();
+}
 
 function sharetx() {
   let c = code.value,
@@ -63,6 +118,7 @@ function sharetx_code() {
   x.addEventListener('readystatechange',()=> {
     if( x.readyState === 4 ) {
       if( x.status === 200 ) {
+        share_alert();
         s.innerText = x.responseText;
         setInterval(sharetx_code, 6e4);
       }

@@ -60,7 +60,7 @@ function totaltxn(){
       blank = row.insertCell(0);
 
       blank.setAttribute('colspan', 3);
-      blank.appendChild(document.createTextNode(`${tx_count} TRANSACTION${tx_count>1?'S':''} / ${peso.format(amount)} / ${format_mb(mb_limit)}`));
+      blank.appendChild(document.createTextNode(`${peso.format(amount)} / ${format_mb(mb_limit)} / ${tx_count} TRANSACTION${tx_count>1?'S':''}`));
       blank.style.textAlign='center';
 }
 

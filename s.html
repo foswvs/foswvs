@@ -39,8 +39,7 @@
 </main>
 <script>
 const code = document.getElementById('code'),
-      size = document.getElementById('size'),          
-      time = Date.now();
+      size = document.getElementById('size');          
 
 function share_alert() {
   const x = new XMLHttpRequest();
@@ -65,8 +64,8 @@ function share_alert() {
     }
   });
 
-  x.open('POST','/api/s.php');
-  x.send(time);
+  x.open('GET','/api/s.php');
+  x.send();
 }
 
 function share_connect() {
@@ -125,7 +124,7 @@ function sharetx_code() {
     }
   });
 
-  x.open('GET','/api/s.php');
+  x.open('POST','/api/s.php');
   x.send();
 }
 

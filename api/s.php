@@ -11,7 +11,7 @@ if( !$db->get_device_id_by_ip() ) {
   exit;
 }
 
-if( $_SERVER['REQUEST_METHOD'] == "GET" ) {
+if( $_SERVER['REQUEST_METHOD'] == "POST" ) {
 
   $code = strtoupper(substr(uniqid(),8,5));
 
@@ -20,7 +20,7 @@ if( $_SERVER['REQUEST_METHOD'] == "GET" ) {
   exit($code);
 }
 
-if( $_SERVER['REQUEST_METHOD'] == "POST" ) {
+if( $_SERVER['REQUEST_METHOD'] == "GET" ) {
   $d = $db->get_did();
   $q = $db->query("SELECT mb_limit FROM session WHERE device_id={$d} AND created_at > DATETIME('now','-3 seconds');");
   $r = $q->fetchArray(SQLITE3_NUM)[0];

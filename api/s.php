@@ -41,14 +41,17 @@ if( $_SERVER['REQUEST_METHOD'] == "PUT" ) {
   list($code, $size) = $data;
 
   if( !filter_var($size, FILTER_VALIDATE_INT) ) {
+    http_response_code(400);
     exit("Enter 1 to 999");
   }
 
   if( !$did = $db->get_sharetx_did(strtoupper($code)) ) {
+    http_response_code(400);
     exit("Code Expired");
   }
 
   if( $db->get_did() === $did ) {
+    http_response_code(400);
     exit("Not Allowed Using Own Code");
   }
 
@@ -56,6 +59,7 @@ if( $_SERVER['REQUEST_METHOD'] == "PUT" ) {
   $free = $limit - $used;
 
   if( $free < $size ) {
+    http_response_code(400);
     exit("Insufficient Data");
   }
 

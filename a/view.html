@@ -13,11 +13,47 @@
   <button onclick="location.assign('txn.html');">transactions</button>
   <button onclick="location.assign('list_devices.html');">list devices</button>
   <button onclick="location.assign('active_devices.html');">active devices</button>
-  <button onclick="location.assign('password.html');">update password</button>
+  <button onclick="location.assign('chpwd.html');">update password</button>
   <button onclick="location.assign('rates.html');">update rates</button>
   <button onclick="location.assign('plugins.html');">plugins</button>
-  <button onclick="location.assign('logout.php');">logout</button>
+  <button onclick="logout();">logout</button>
 </main>
 <script src="/js/theme.js"></script>
+<script>
+function check() {
+  const x = new XMLHttpRequest();
+
+  x.addEventListener('readystatechange',()=> {
+    if( x.readyState === 4 ) {
+      if( x.status === 200 ) {
+        return;
+      }
+
+      if( x.status === 401 ) {
+        window.location.assign('login.html');
+      }
+    }
+  });
+
+  x.open('GET','pass.php');
+  x.send();
+}
+
+function logout() {
+  const x = new XMLHttpRequest();
+
+  x.addEventListener('readystatechange',()=> {
+    if( x.readyState === 4 ) {
+      if( x.status === 200 ) {
+        window.location.assign('login.html');
+      }
+    }
+  });
+
+  x.open('DELETE','pass.php');
+  x.send();
+}
+document.addEventListener('DOMContentLoaded', check);
+</script>
 </body>
 </html>

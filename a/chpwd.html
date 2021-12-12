@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<title>change password</title>
+<link href="/css/pico.min.css" rel="stylesheet">
+<style>
+.alert {
+  background-color: green;
+  text-align: center;
+  color: white;
+  padding: .75em 0;
+  position: fixed;
+  margin: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+.error {
+  background-color: red !important;
+}
+</style>
+</head>
+<body>
+<main class="container">
+  <article>
+    <label for="password">CHANGE PASSWORD</label>
+    <input id="password" name="password" type="password" placeholder="password" pattern=".{3,25}" title="password must be between 3-25 characters" required>
+ 
+    <button class="primary" onclick="change();" type="button">UPDATE</button>
+    <button class="secondary" onclick="location.assign('view.html');" type="button">CANCEL</button>
+    </form>
+  </article>
+</main>
+<script src="/js/theme.js"></script>
+<script>
+function alert(t, c = 1) {
+  let p = document.createElement('p');
+
+  p.className = c ? 'alert' : 'alert error';
+  p.innerText = t;
+
+  p.addEventListener('click',()=>p.remove());
+
+  document.body.appendChild(p);
+
+  setTimeout(()=>p.remove(),4000);
+}
+
+function change() {
+  const p = document.getElementById('password'),
+        x = new XMLHttpRequest();
+
+  if( p.value.length < 3 ) {
+    alert('password too weak', 0);
+    return;
+  }
+
+  x.addEventListener('readystatechange', ()=> {
+    if( x.readyState === 4 ) {
+      if( x.status === 200 ) {
+        alert('Password Changed');
+      }
+
+      if( x.status === 401 ) {
+        alert('Forbidden', 0);
+      }
+    }
+  });
+
+  x.open('PATCH','pass.php');
+  x.send(btoa(p.value));
+}
+
+document.addEventListener('keyup', (e)=> {
+  if( e.keyCode === 13 ) {
+    change();
+  }
+});
+</script>
+</body>
+</html>

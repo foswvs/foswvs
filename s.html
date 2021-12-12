@@ -9,15 +9,19 @@
 <link href="/css/pico.min.css" rel="stylesheet">
 <style>
 .alert {
-    background-color: green;
-    text-align: center;
-    color: white;
-    padding: 1em 0;
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    left: 0;
-  }
+  background-color: green;
+  text-align: center;
+  color: white;
+  padding: 1em 0;
+  position: fixed;
+  margin: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+.error {
+  background-color: red !important;
+}
 </style>
 </head>
 <body>
@@ -27,7 +31,7 @@
     <hr/>
     <label for="code">Enter code to share your data to your peer</label>
     <input id="code" type="text" placeholder="CODE" onfocus="this.select();">
-    <input id="size" type="text" placeholder="MB SIZE" onfocus="this.select();">
+    <input id="size" type="number" placeholder="MB SIZE" onfocus="this.select();">
     <button id="btn" class="primary" type="button">SHARE DATA</button>
     <button class="secondary" onclick="location.assign('/')" type="button">CANCEL</button>  
   </article>
@@ -41,20 +45,26 @@
 const code = document.getElementById('code'),
       size = document.getElementById('size');          
 
+function alert(t, c = 1) {
+  let p = document.createElement('p');
+
+  p.className = c ? 'alert' : 'alert error';
+  p.innerText = t;
+
+  p.addEventListener('click',()=>p.remove());
+
+  document.body.appendChild(p);
+
+  setTimeout(()=>p.remove(),5000);
+}
+
 function share_alert() {
   const x = new XMLHttpRequest();
 
   x.addEventListener('readystatechange', () => {
     if( x.readyState === 4 ) {
       if( x.status === 200 ) {
-        let p = document.createElement('p');
-
-        p.className = 'alert';
-        p.innerText = x.responseText;
-
-        p.addEventListener('click',()=>p.remove());
-
-        document.body.appendChild(p);
+        alert(x.responseText);
         share_connect();
       }
 
@@ -74,7 +84,7 @@ function share_connect() {
   x.addEventListener('readystatechange', () => {
     if( x.readyState === 4 ) {
       if( x.status === 200 ) {
-        setTimeout(()=>window.location.assign('/txn.html'),5000);
+        console.log('connected!');
       }
     }
   });
@@ -89,19 +99,29 @@ function sharetx() {
       x = new XMLHttpRequest();
 
   if( c.length !== 5 ) {
-    alert('Invalid code');
+    alert('Invalid Code', 0);
+    code.focus();
     return;
   }
   
   if( !Number.isInteger(parseInt(s)) ) {
-    alert('Invalid size');
+    alert('Invalid Size', 0);
+    size.focus();
     return;
   }
 
   x.addEventListener('readystatechange', () => {
+    if( x.readyState === 1 ) {
+      code.value = ''; code.focus();
+    }
+
     if( x.readyState === 4 ) {
       if( x.status === 200 ) {
         alert(x.responseText);
+      }
+
+      if( x.status === 400 ) {
+        alert(x.responseText, 0);
       }
     }
   });
@@ -128,6 +148,20 @@ function sharetx_code() {
   x.send();
 }
 
+function format_mb(size) {
+  size = parseFloat(size) || 0;
+
+  if( size<1 ) return '0MB';
+
+  let base = Math.floor(Math.log(size) / Math.log(1024));
+  let unit = ['MB','GB','TB','PB','EB','ZB','YB'];
+
+  size = size / Math.pow(1024, base);
+  size = Number.isInteger(size) ? size : size.toFixed(2);
+
+  return size + unit[base];
+}
+
 document.addEventListener('DOMContentLoaded', sharetx_code);
 
 document.addEventListener('keypress',(e)=> {
@@ -136,7 +170,18 @@ document.addEventListener('keypress',(e)=> {
   }
 });
 
-document.getElementById('btn').addEventListener('click', sharetx);
+let b = document.getElementById('btn');
+
+b.addEventListener('click', sharetx);
+
+size.addEventListener('keyup', ()=> {
+  if( !Number.isInteger(parseInt(size.value)) ) {
+    return;
+  }
+
+  b.innerText = 'share ' + format_mb(size.value);
+  b.style.textTransform = 'uppercase';
+});
 </script>
 </body>
 </html>
